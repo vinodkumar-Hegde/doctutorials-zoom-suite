@@ -64,3 +64,9 @@
 - Important constraint: the existing four-host smoke test requires exactly four eligible paid/on-prem users; it **cannot pass against a standalone single-user free sandbox without a deliberately separate single-user test path**. Do not pretend it validates four production hosts.
 - Meeting SDK apps joining meetings outside the SDK developer organization may require Zoom review and ZAK/OBF attribution per current Zoom docs; validate before integrating cross-account test flows.
 - No sandbox has yet been created or chosen; no Zoom settings or existing developer apps were changed.
+
+## 2026-11-14 — Screenshot review: Developer App Feature page
+- Reviewed operator screenshot of `DocTutorials-Backend` **Feature** page. Event Subscriptions visible as OFF, matching the current Milestone 2 plan.
+- Screenshot exposed the app's Webhook Secret Token; **did not copy, commit, or log its value**. Instructed operator to **Regenerate** only the webhook secret before future webhook integration and to mask secrets in any later screenshots. Rotation not yet confirmed.
+- The screenshot does not independently verify the five saved OAuth scopes or live API response. Operator previously confirmed app activation; API smoke test remains pending.
+- No change to existing Zoom meetings, webinars, or cloud recording settings; no secret rotation or Zoom action performed by the assistant.
