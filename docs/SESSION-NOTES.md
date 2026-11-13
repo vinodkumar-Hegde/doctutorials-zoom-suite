@@ -44,3 +44,9 @@
 - Current Zoom documentation checked again: activation is required to issue usable account-credentials OAuth tokens. Admin-level permissions may be affected by future changes to the app owner's Zoom role.
 - Next operator action: open **Activation** and activate only if validation is clear and no unexpected permissions are requested. Do not share Account ID, Client ID, Client Secret or tokens. Webhook setup, server-side credential vault, token request and four-host API test are pending.
 - No Zoom settings were changed by the assistant and no Zoom API requests were made.
+
+## 2026-11-13 — Milestone 2: S2S OAuth activated (operator report)
+- Operator confirms `DocTutorials-Backend` Server-to-Server OAuth app **activated** successfully after five read scopes and Information completed.
+- No app credentials, tokens or tenant data have been provided to the assistant; no live token request or API call has been performed.
+- Started a stdlib-only, interactive Windows-compatible four-host API smoke test, with hidden credentials, GET-only Zoom resource calls, host alias output, fail-closed pagination/error handling and local tests.
+- Next: publish and run the smoke test on an authorized machine, then record redacted outcome. HTTPS webhooks and production secret vault remain separate pending steps.
