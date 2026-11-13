@@ -57,3 +57,10 @@
 - Added Windows operator runbook `docs/16-MILESTONE-2-SECURE-API-SMOKE.md`. Updated supporting setup, roadmap and official reference documents.
 - Operator has **not** provided secrets and has **not** yet reported live API results. Authentication and four-host retrieval are therefore pending tenant verification, as are production secret storage and webhook endpoint.
 - Next: operator runs read-only test locally, shares only sanitized outcome and counts. Keep cloud recording settings unchanged.
+
+## 2026-11-14 — Question: separate free Zoom sandbox
+- Reviewed official Zoom product and developer documentation. Basic accounts can host ordinary meetings and make native desktop local recordings; webinars and Zoom cloud recording are paid features; RTMS is unsupported on Basic.
+- Recommended, as a **proposal only**, isolating the first API and SDK development exercises in a separate Basic Zoom organization rather than touching live account configurations. Official S2S creation prerequisites mention a Zoom account and correct roles/scopes; exact Basic account app-entitlement must be checked in the developer portal.
+- Important constraint: the existing four-host smoke test requires exactly four eligible paid/on-prem users; it **cannot pass against a standalone single-user free sandbox without a deliberately separate single-user test path**. Do not pretend it validates four production hosts.
+- Meeting SDK apps joining meetings outside the SDK developer organization may require Zoom review and ZAK/OBF attribution per current Zoom docs; validate before integrating cross-account test flows.
+- No sandbox has yet been created or chosen; no Zoom settings or existing developer apps were changed.
