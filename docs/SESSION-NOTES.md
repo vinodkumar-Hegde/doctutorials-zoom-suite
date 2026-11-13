@@ -50,3 +50,10 @@
 - No app credentials, tokens or tenant data have been provided to the assistant; no live token request or API call has been performed.
 - Started a stdlib-only, interactive Windows-compatible four-host API smoke test, with hidden credentials, GET-only Zoom resource calls, host alias output, fail-closed pagination/error handling and local tests.
 - Next: publish and run the smoke test on an authorized machine, then record redacted outcome. HTTPS webhooks and production secret vault remain separate pending steps.
+
+## 2026-11-13 — Milestone 2: Secure OAuth four-host test committed
+- Added `backend/zoom_s2s_smoke_test.py`: Python 3.10+ stdlib-only token exchange, credential entry via hidden prompts, fixed Zoom HTTPS endpoints, read-only GET resource queries, pagination, explicit four-host selection and sanitized output.
+- Added `tests/test_zoom_s2s_smoke_test.py`. Nine mock-based unit tests passed in isolated local runtime (request methods, Basic/Bearer handling, pagination, input selection, error sanitization, fail-closed JSON, path restrictions).
+- Added Windows operator runbook `docs/16-MILESTONE-2-SECURE-API-SMOKE.md`. Updated supporting setup, roadmap and official reference documents.
+- Operator has **not** provided secrets and has **not** yet reported live API results. Authentication and four-host retrieval are therefore pending tenant verification, as are production secret storage and webhook endpoint.
+- Next: operator runs read-only test locally, shares only sanitized outcome and counts. Keep cloud recording settings unchanged.
