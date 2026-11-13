@@ -18,6 +18,17 @@ Verified/consulted 2026-11-13. Zoom documentation and SDK capabilities may chang
 - Zoom meeting/webinar webhook events: https://developers.zoom.us/docs/api/meetings/events/
 - General Meeting SDK policy: https://developers.zoom.us/docs/meeting-sdk/
 
+## Milestone 2 — Verified against current Zoom developer docs (2026-11-13)
+- Create S2S OAuth app (current console steps / activation): https://developers.zoom.us/docs/internal-apps/create/
+- S2S role permissions and account-wide scope: https://developers.zoom.us/docs/internal-apps/
+- S2S token and no refresh token: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
+- Granular admin scopes for users, meetings, webinars and cloud recordings: https://developers.zoom.us/docs/internal-apps/oauth-scopes-granular/
+- Meeting API and cloud recording endpoints: https://developers.zoom.us/docs/api/meetings/
+- Webhooks HTTPS/CRC/HMAC/event subscriptions: https://developers.zoom.us/docs/api/webhooks/
+- Meeting/webinar started/ended events: https://developers.zoom.us/docs/api/meetings/events/
+
+These confirm documentation, **not** that the customer app has been configured or tested.
+
 ## Verification matrix to complete
 | Capability | Evidence needed | Status |
 |---|---|---|
