@@ -21,7 +21,8 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 ## Test environment policy (proposal, 2026-11-14)
 - [ ] Choose separate Zoom Basic sandbox (not yet confirmed by operator) for initial S2S token/GET and ordinary meeting/local-recording tests, if S2S app creation is available for the sandbox owner.
 - [ ] Create separate internal S2S app/credentials **in sandbox**; do not copy production app credentials or join tokens into sandbox.
-- [ ] Use current five-scope test against sandbox's actual user count (the four-host test script intentionally requires four eligible hosts; use a separate one-host test or parameterization rather than bypassing that assertion).
+- [x] Implement explicit `--sandbox-single-user` read-only mode for one active Basic account (does not exercise webinar APIs or count as production acceptance).
+- [ ] Run one-user sandbox mode and verify OAuth and meeting GET results; first OAuth and users GET already succeeded, but the new mode has not yet been run.
 - [ ] Keep final four licensed-host mapping, webinar panelist, simultaneous recordings, and cloud safety backup tests on authorized paid staging or production account with explicit operator approval.
 - [ ] For iPad Meeting SDK joining meetings hosted outside SDK developer account, verify Zoom's current review and ZAK/OBF requirements before choosing cross-account test setup.
 
@@ -33,7 +34,9 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 - [ ] Provision account credentials to an approved backend vault (never GitHub/chat).
 - [x] Implement secure local Python S2S OAuth + four-host read-only API smoke test; nine isolated offline unit tests passed (2026-11-13).
 - [x] Operator cloned the private repo on Windows; confirmed Git 2.56.0, Python 3.11.9 and **9/9** offline unit tests passing (2026-11-14).
-- [ ] Execute LIVE token exchange and GET requests against four intended Zoom host users; record non-sensitive results only.
+- [x] First LIVE S2S token exchange and `GET /users` completed on operator Windows workstation: both PASS, **1 active user / 0 eligible licensed hosts** (2026-11-14; tenant identity unverified).
+- [x] Added separate opt-in one-user Basic/sandbox smoke test mode with four unit-test cases (unit tests awaiting operator rerun); default four-host requirement retained.
+- [ ] Execute four-host live GET checks against the correct authorized four-host organization; record non-sensitive results only.
 - [ ] Read four users and future meetings/webinars using least-privilege scopes (actual live verification pending).
 - [ ] Validate HTTPS webhook and signed messages; dedupe events.
 - [ ] Receive start/end and cloud recording completion events in test.
