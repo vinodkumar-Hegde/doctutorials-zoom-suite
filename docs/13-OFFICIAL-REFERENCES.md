@@ -29,6 +29,15 @@ Verified/consulted 2026-11-13. Zoom documentation and SDK capabilities may chang
 
 These confirm documentation, **not** that the customer app has been configured or tested.
 
+## Milestone 2 — API smoke test implementation (2026-11-13)
+- S2S `account_credentials` POST grant: https://developers.zoom.us/docs/integrations/oauth/
+- S2S expiry and no refresh token: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
+- List active users `GET /users`: https://developers.zoom.us/docs/api/users/
+- List user meetings/webinars and get details: https://developers.zoom.us/docs/api/meetings/
+- Read-only scope reference: https://developers.zoom.us/docs/internal-apps/oauth-scopes-granular/
+
+Python standalone proof and nine offline unit tests were run; **no actual tenant API test was performed**.
+
 ## Verification matrix to complete
 | Capability | Evidence needed | Status |
 |---|---|---|
