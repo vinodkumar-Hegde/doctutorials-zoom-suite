@@ -19,12 +19,14 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 **Pass criteria:** Cloud backup works reliably on all four host users and can be recovered if local recorder fails. Unchecked lines above remain validation tasks, not claims that admin configuration was not performed.
 
 ## Gate 2 — Developer backend
-**Status (2026-11-13):** IN PROGRESS — official S2S OAuth setup path and initial read-only scopes reviewed; `DocTutorials-Backend` app creation operator-confirmed on 2026-11-13. Information and five read-only admin scopes operator-confirmed completed (not independently inspected); activation operator-confirmed; secret management and live API tests remain pending. Guide: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md). No live app credentials or successful API/webhook tests have been confirmed.
+**Status (2026-11-13):** IN PROGRESS — official S2S OAuth setup path and initial read-only scopes reviewed; `DocTutorials-Backend` app creation operator-confirmed on 2026-11-13. Information and five read-only admin scopes operator-confirmed completed (not independently inspected); activation operator-confirmed; secret management and live API tests remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No live app credentials or successful API/webhook tests have been confirmed.
 - [x] Create Server-to-Server OAuth app `DocTutorials-Backend` (operator-confirmed; ownership/tenant verification pending).
 - [x] Complete app Information and add five least-privilege read-only admin scopes (operator-confirmed 2026-11-13; scope evidence pending).
 - [x] Activate `DocTutorials-Backend` (operator-confirmed 2026-11-13; token exchange not independently checked).
 - [ ] Provision account credentials to an approved backend vault (never GitHub/chat).
-- [ ] Read four users and future meetings/webinars using least-privilege scopes.
+- [x] Implement secure local Python S2S OAuth + four-host read-only API smoke test; nine isolated offline unit tests passed (2026-11-13).
+- [ ] Execute LIVE token exchange and GET requests against four intended Zoom host users; record non-sensitive results only.
+- [ ] Read four users and future meetings/webinars using least-privilege scopes (actual live verification pending).
 - [ ] Validate HTTPS webhook and signed messages; dedupe events.
 - [ ] Receive start/end and cloud recording completion events in test.
 **Pass criteria:** API correctly maps sessions to host user, and cloud archive can download verified recordings.
