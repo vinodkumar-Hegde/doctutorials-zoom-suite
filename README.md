@@ -32,7 +32,10 @@ An integrated faculty teaching and recording platform built around four existing
 - `docs/SESSION-NOTES.md` — ongoing work log
 - `docs/ZOOM-CONFIG-CHECKLIST.md` — actionable checkboxes
 - `docs/14-REPOSITORY-PUBLISH.md` — one-time private GitHub setup and release steps
-- `docs/15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md` — current OAuth app configuration checklist
+- `docs/15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md` — OAuth app configuration checklist
+- `docs/16-MILESTONE-2-SECURE-API-SMOKE.md` — PowerShell procedure and safe reporting
+- `backend/zoom_s2s_smoke_test.py` — standard-library-only S2S read-only four-host API test
+- `tests/test_zoom_s2s_smoke_test.py` — nine offline unit tests
 - `AGENTS.md` — development-agent standing instructions
 
 ## Architecture sketch
@@ -62,6 +65,6 @@ flowchart TD
 - The Zoom Meeting SDK is for interactive apps, **not unattended media-recording bots**. RTMS is an architectural fallback if local-native controls fail.
 
 ## How to start
-Milestone 1 cloud recording settings are reported as implemented by the operator. Do not repeat changes to live account settings. Collect Gate 1 redacted evidence in parallel with Gate 2. Follow `docs/15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md` to create the read-only `DocTutorials-Backend` app; operator-confirmed app creation, Information and scope setup reported complete; activation operator-confirmed; secure credentials and live API test evidence are pending. See `docs/10-ROADMAP-ACCEPTANCE.md` and `docs/14-REPOSITORY-PUBLISH.md`.
+Milestone 1 cloud recording settings are reported as implemented by the operator. Do not repeat changes to live account settings. Collect Gate 1 redacted evidence in parallel with Gate 2. Follow `docs/15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md` to create the read-only `DocTutorials-Backend` app; operator-confirmed app creation, Information and scope setup reported complete; activation operator-confirmed; a safe four-host read-only smoke test is committed and nine offline tests pass; live tenant verification and secret-vault provisioning remain pending. See `docs/10-ROADMAP-ACCEPTANCE.md` and `docs/14-REPOSITORY-PUBLISH.md`.
 
 **Do not commit passwords, SDK secrets, OAuth credentials, session join URLs, access tokens, ZAK tokens, recordings, learner personal data, or private faculty data.** Use a secret manager and `.env.example` for key names only.
