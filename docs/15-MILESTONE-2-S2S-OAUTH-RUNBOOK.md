@@ -57,6 +57,11 @@ Scopes verified against https://developers.zoom.us/docs/internal-apps/oauth-scop
 
 ## Stage D — Features / Webhooks (defer until endpoint deployed)
 
+**2026-11-14 screenshot review:** The app's Feature page shows Event Subscriptions **OFF**, as intended. The screenshot also displayed the **Webhook Secret Token** in readable text. **Action required before any webhook use:** regenerate only this Webhook Secret Token via **Feature → Token → Regenerate**, keep Event Subscriptions OFF, and do not publish/display the replacement token. Rotation is **not yet operator-confirmed**. This token is distinct from S2S App Credentials/Client Secret; regenerating the webhook token does not change meeting/webinar configuration. Review any existing webhook consumer before rotating, though none is configured for this new app based on the visible toggle.
+
+- [ ] Operator confirms rotation of screenshot-exposed **Webhook Secret Token**; never log the old or new token.
+
+
 - [ ] Do not enable/activate event subscriptions against an invented URL or third-party webhook receiver.
 - [ ] First deploy a **public HTTPS TLS 1.2+ fully qualified domain** endpoint handling POST and Zoom's `endpoint.url_validation` challenge-response within three seconds.
 - [ ] Verify HMAC SHA256 signatures using `x-zm-request-timestamp`, the **raw** request body, and the Zoom webhook secret; check timestamp skew, dedupe events, and avoid secret/token logging.
