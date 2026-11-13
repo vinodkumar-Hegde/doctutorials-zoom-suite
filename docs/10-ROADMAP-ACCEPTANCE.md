@@ -22,7 +22,7 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 - [ ] Choose separate Zoom Basic sandbox (not yet confirmed by operator) for initial S2S token/GET and ordinary meeting/local-recording tests, if S2S app creation is available for the sandbox owner.
 - [ ] Create separate internal S2S app/credentials **in sandbox**; do not copy production app credentials or join tokens into sandbox.
 - [x] Implement explicit `--sandbox-single-user` read-only mode for one active Basic account (does not exercise webinar APIs or count as production acceptance).
-- [ ] Run one-user sandbox mode and verify OAuth and meeting GET results; first OAuth and users GET already succeeded, but the new mode has not yet been run.
+- [ ] Run one-user sandbox mode and verify OAuth and meeting GET results; first OAuth and users GET already succeeded **using the free Zoom sandbox credentials (operator confirmed 2026-11-14)**, but the new mode has not yet been run.
 - [ ] Keep final four licensed-host mapping, webinar panelist, simultaneous recordings, and cloud safety backup tests on authorized paid staging or production account with explicit operator approval.
 - [ ] For iPad Meeting SDK joining meetings hosted outside SDK developer account, verify Zoom's current review and ZAK/OBF requirements before choosing cross-account test setup.
 
