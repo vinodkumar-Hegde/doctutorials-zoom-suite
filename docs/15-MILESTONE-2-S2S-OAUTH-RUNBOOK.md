@@ -1,7 +1,7 @@
 # Milestone 2 — Server-to-Server OAuth Operator Runbook
 
 **Last reviewed:** 2026-11-13  
-**Status:** IN PROGRESS — instructions and scope mapping validated against current Zoom documentation; app not yet reported created or activated.  
+**Status:** IN PROGRESS — operator reports `DocTutorials-Backend` created as Server-to-Server OAuth on 2026-11-13. Information, scopes, activation, credential vault and live API verification still pending.  
 **Owner:** DocTutorials Zoom administrator.  
 **Environment:** One Zoom organization with four licensed meeting/webinar host users.
 
@@ -22,11 +22,11 @@ Official: https://developers.zoom.us/docs/internal-apps/ and https://developers.
 
 ## Stage B — Create the app (admin)
 
-- [ ] Developer → Created Apps → **+** → **Build an app** (UI placement may vary).
-- [ ] Select **Server-to-Server OAuth**; click **Create**.
-- [ ] Name it **DocTutorials-Backend**.
+- [x] Developer → Created Apps → **+** → **Build an app** (operator-confirmed).
+- [x] Select **Server-to-Server OAuth**; click **Create** (operator-confirmed).
+- [x] Name it **DocTutorials-Backend** (operator-confirmed).
 - [ ] On **App Credentials**, identify **Account ID**, **Client ID**, **Client Secret**. Place them only in an approved secret manager under keys named below. Never paste values into chat, screenshots, GitHub, tickets, logs, or spreadsheets. Do **not** share credentials with faculty.
-- [ ] Complete **Information** (company and authorized developer contact name/email; exact owner details are not committed).
+- [ ] Complete **Information**: short description `Internal integration for managing DocTutorials Zoom meetings, webinars, faculty sessions, and recording backups.`; company `DocTutorials` (use the verified legal/company name if required); authorized developer contact name and email (required for activation). No exact personal contact details are committed.
 
 **No redirect URI is required for the Server-to-Server OAuth account-credentials grant**. It does not require an interactive end-user consent login.
 
@@ -81,7 +81,7 @@ Official: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
 
 | Proof | Status |
 |---|---|
-| App creation under correct Zoom organization | NOT YET VERIFIED |
+| App creation under correct Zoom organization | OPERATOR REPORT: CREATED; organization ownership not independently checked |
 | App activation | NOT YET VERIFIED |
 | Exact permitted read-only scopes | NOT YET VERIFIED |
 | Secure server-side secret storage | NOT YET VERIFIED |
@@ -92,7 +92,7 @@ Official: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
 
 ## Operator handoff, first screen
 
-Open Zoom App Marketplace → **Developers → Created Apps**. Create **DocTutorials-Backend** using **Server-to-Server OAuth**. Report only that the app was **created** and which navigation section is visible (e.g. App Credentials, Information, Features, Scopes, Activation). **Do not share Account ID, Client ID, Client Secret, tokens, or full credentials screenshots.**
+**App created (operator confirmed).** Next: Information → Features (defer event subscriptions) → Scopes (five minimum admin granular read scopes) → Save. Report only completed sections and whether the app can be activated; no Account ID, Client ID, Client Secret, tokens, or screenshots showing credentials. Activate only after reviewing permissions and secret storage plan.
 
 ## Rollback
 
