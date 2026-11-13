@@ -35,7 +35,7 @@ An integrated faculty teaching and recording platform built around four existing
 - `docs/15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md` — OAuth app configuration checklist
 - `docs/16-MILESTONE-2-SECURE-API-SMOKE.md` — PowerShell procedure and safe reporting
 - `backend/zoom_s2s_smoke_test.py` — standard-library-only S2S read-only four-host API test
-- `tests/test_zoom_s2s_smoke_test.py` — nine offline unit tests
+- `tests/test_zoom_s2s_smoke_test.py` — 13 offline unit tests
 - `AGENTS.md` — development-agent standing instructions
 
 ## Architecture sketch
@@ -70,4 +70,4 @@ Milestone 1 cloud recording settings are reported as implemented by the operator
 **Do not commit passwords, SDK secrets, OAuth credentials, session join URLs, access tokens, ZAK tokens, recordings, learner personal data, or private faculty data.** Use a secret manager and `.env.example` for key names only.
 ## Live OAuth status and separate Basic sandbox mode (2026-11-14)
 
-The first real S2S token grant and `GET /users` **passed**, but that app's organization returned only **one active user and zero eligible paid hosts**. The production four-host acceptance test **did not pass** and remains pending. The Windows operator previously confirmed nine offline tests passed. The code now also supports `python backend\zoom_s2s_smoke_test.py --sandbox-single-user` for explicit one-user Basic meeting-read tests, without treating the result as four-host or webinar acceptance. Pull the latest code and run the expanded offline test suite first. See `docs/16-MILESTONE-2-SECURE-API-SMOKE.md` for safe instructions.
+The first real S2S token grant and `GET /users` **passed**, but that app's organization returned only **one active user and zero eligible paid hosts**. The production four-host acceptance test **did not pass** and remains pending. The Windows operator subsequently confirmed **13/13 offline tests PASS**, plus a live free sandbox run with OAuth PASS, users GET PASS (1) and scheduled meetings GET PASS (0), with detail GET SKIPPED. The code supports `python backend\zoom_s2s_smoke_test.py --sandbox-single-user` for explicit one-user Basic meeting-read tests, without treating the result as four-host or webinar acceptance. To exercise meeting detail GET, schedule a harmless future meeting in the separate sandbox and rerun the one-user read-only test; production remains separate. See `docs/16-MILESTONE-2-SECURE-API-SMOKE.md` for safe instructions.
