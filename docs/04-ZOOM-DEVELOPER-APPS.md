@@ -1,6 +1,6 @@
 # Zoom Developer Apps Configuration — Stage 2 in progress
 
-**Admin-only setup. Do not store real secrets in this repository.** Current Server-to-Server OAuth steps and relevant read-only granular scopes were checked against Zoom official documentation on 2026-11-13. Activation, credentials, API responses, and entitlement are not yet verified in the DocTutorials tenant.
+**Admin-only setup. Do not store real secrets in this repository.** Current Server-to-Server OAuth steps and relevant read-only granular scopes were checked against Zoom official documentation on 2026-11-13. Operator confirms `DocTutorials-Backend` S2S app created on 2026-11-13; Information, scopes, activation, credentials, API responses, and entitlement are not yet verified.
 
 ## App A: `DocTutorials-Backend` — Server-to-Server OAuth
 Purpose: manage meeting/webinar schedules for the four users, read metadata, and archive completed **cloud** recordings. This app uses Zoom account-level backend authorization.
@@ -47,4 +47,4 @@ Official: https://developers.zoom.us/docs/plugin-sdk/windows/get-started/ and ht
 See `.env.example`; values live only in secret manager. No credentials or tokens in git.
 
 ## Milestone 2 operator walkthrough (2026-11-13)
-The step-by-step, scope-exact runbook is in [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md). The first action is to create **DocTutorials-Backend** as a Server-to-Server OAuth app. Add admin read scopes for four-host user, meeting and webinar metadata; defer the HTTPS webhook subscription until the endpoint is deployed. Do not mistake activation or written docs for an actual tested app.
+The step-by-step, scope-exact runbook is in [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md). The operator has created **DocTutorials-Backend** as a Server-to-Server OAuth app. The next action is to complete Information, leave webhook subscriptions off until the backend exists, then add five read-only admin scopes. Add admin read scopes for four-host user, meeting and webinar metadata; defer the HTTPS webhook subscription until the endpoint is deployed. Do not mistake activation or written docs for an actual tested app.
