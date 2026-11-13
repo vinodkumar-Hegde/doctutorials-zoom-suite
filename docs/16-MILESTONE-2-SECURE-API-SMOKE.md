@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-14
 **App:** DocTutorials-Backend — Server-to-Server OAuth
-**State:** Operator Windows offline 9/9 tests passed. **LIVE** OAuth token exchange and `GET /users` subsequently **PASSED** for the credentials used, but returned **one active user, zero eligible licensed/on-prem hosts**; thus four-host production acceptance remains **NOT PASSED**. Code now includes opt-in single-user sandbox mode and four additional unit cases, awaiting user-side test verification.
+**State:** Operator Windows **13/13 offline tests PASS**. One-user Basic sandbox live S2S OAuth token exchange, active users GET (1), and meetings-list GET (0) **PASS** on 2026-11-14. Meeting detail GET skipped (none scheduled); webinar and four-host production verification **PENDING**.
 
 ## Purpose
 
@@ -30,7 +30,7 @@ Clone the **private** repository and run the offline tests. If you already clone
     py -3 --version
     py -3 -m unittest discover -s tests -v
 
-You should see **nine** offline mock tests passing. This does not prove the live Zoom integration.
+You should see **13** offline mock tests passing. Offline tests alone do not prove the live Zoom integration.
 
 To run the live read-only test:
 
@@ -93,7 +93,7 @@ This mode:
 - Keeps the default `python backend\zoom_s2s_smoke_test.py` behavior unchanged and requires four eligible paid hosts there.
 - Uses the same three hidden prompts. Credentials must come from the app belonging to the tenant intended for this run; never share them with chat or commit them.
 
-**Offline test note:** The initial nine tests were confirmed on the operator's Windows PC; four additional source-level unit cases have been committed for the sandbox mode, but must still be run and verified on that machine. Expected number is now **13**.
+**Operator validation (2026-11-14):** All **13** offline tests passed. The live one-user Basic sandbox run reported OAuth PASS, list active users PASS (1), sandbox meetings list GET succeeded (0), and overall RESULT PASS. Meeting-detail GET was SKIPPED for lack of a scheduled future meeting; webinar not tested. Four-host production acceptance is still pending.
 
 If the one-user result was unexpected and the operator intended to reach an organization with four licensed hosts, **do not switch on sandbox mode to mask the issue**. Instead check the Zoom signed-in organization and the Account ID, Client ID and Client Secret associated with the intended activated S2S app. Do not mix credentials from two apps or paste them into chat.
 
@@ -121,8 +121,10 @@ Webhook event subscriptions and cloud recording download scopes are separate wor
 - [x] App Information and five read-only scopes — operator confirmed
 - [x] App activated — operator confirmed
 - [x] Local mock-based tests — nine tests pass
-- [ ] Live OAuth token request with tenant credentials
-- [ ] Four intended licensed hosts selected and read
+- [x] Live OAuth token request with **sandbox** tenant credentials (no secrets shared)
+- [x] Basic sandbox active user GET and scheduled meetings list GET; zero future meetings, detail GET skipped
+- [ ] Sandbox meeting detail GET after scheduling a throwaway future test meeting
+- [ ] Four intended licensed production hosts selected and read
 - [ ] Meetings/webinars and available individual details read
 - [ ] Production secret manager provisioned
 - [ ] Cloud archive API integration
