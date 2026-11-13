@@ -19,8 +19,10 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 **Pass criteria:** Cloud backup works reliably on all four host users and can be recovered if local recorder fails. Unchecked lines above remain validation tasks, not claims that admin configuration was not performed.
 
 ## Gate 2 — Developer backend
-**Status (2026-11-13):** IN PROGRESS — official S2S OAuth setup path and initial read-only scopes reviewed; operator still needs to create and activate Zoom app. Guide: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md). No live app credentials or successful API/webhook tests have been confirmed.
-- [ ] Create Server-to-Server OAuth app; secure secrets.
+**Status (2026-11-13):** IN PROGRESS — official S2S OAuth setup path and initial read-only scopes reviewed; `DocTutorials-Backend` app creation operator-confirmed on 2026-11-13. Information, scopes, activation, secret management and API tests remain pending. Guide: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md). No live app credentials or successful API/webhook tests have been confirmed.
+- [x] Create Server-to-Server OAuth app `DocTutorials-Backend` (operator-confirmed; ownership/tenant verification pending).
+- [ ] Complete app Information and add five least-privilege read-only admin scopes.
+- [ ] Activate app and securely provision account credentials to backend vault (never GitHub/chat).
 - [ ] Read four users and future meetings/webinars using least-privilege scopes.
 - [ ] Validate HTTPS webhook and signed messages; dedupe events.
 - [ ] Receive start/end and cloud recording completion events in test.
