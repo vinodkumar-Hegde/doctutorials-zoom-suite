@@ -48,3 +48,7 @@ See `.env.example`; values live only in secret manager. No credentials or tokens
 
 ## Milestone 2 operator walkthrough (2026-11-13)
 The step-by-step, scope-exact runbook is in [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md). The operator has created **DocTutorials-Backend** as a Server-to-Server OAuth app. The operator reports Information and five read-only admin scopes configured. Activation is now operator-confirmed. Next: run the safe read-only API smoke test using local hidden credential prompts; do not store credentials in source or chat, and do not enable webhooks yet. Webhooks remain deferred. Add admin read scopes for four-host user, meeting and webinar metadata; defer the HTTPS webhook subscription until the endpoint is deployed. Do not mistake activation or written docs for an actual tested app.
+
+## Server-to-Server OAuth read-only proof implementation
+
+The first secure offline-tested script is at [`../backend/zoom_s2s_smoke_test.py`](../backend/zoom_s2s_smoke_test.py) with live operator instructions in [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). It reads exactly four selected host users (not necessarily the account admin) using only Zoom GET resource APIs. Nine offline unit tests pass. **No tenant credentials were received and no live OAuth test was run yet.** This is not the production FastAPI backend; production secret-vault provisioning remains an acceptance gate.
