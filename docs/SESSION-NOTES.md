@@ -23,3 +23,11 @@
 - Published 21 baseline v0.1 documentation and configuration files to `main`.
 - Milestone 1 cloud recording was reported implemented by the operator; evidence and per-host validation remain open.
 - Next: Gate 2, developer app and read-only Server-to-Server OAuth.
+
+## 2026-11-13 — Milestone 2 S2S OAuth guidance started
+- Retrieved current `AGENTS.md`, architecture, roadmap and developer-app guide directly from private GitHub repository, plus requirements/risks/references/work log.
+- Verified official Zoom S2S app creation path, role prerequisite, granular read scopes, activation requirement, token grant, and webhook endpoint security requirements.
+- Added [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) with staged admin actions, scope matrix, webhook deferral and acceptance checklist.
+- Operator asked to create `DocTutorials-Backend` in Zoom Marketplace; no app creation/activation or access token/API response observed yet.
+- Milestone 1 remains operator-reported implemented with independent evidence pending. No changes to Zoom production settings.
+- Next: operator confirms Developer Portal app created, then assist with Information → Scopes → Activation, without collecting credentials.
