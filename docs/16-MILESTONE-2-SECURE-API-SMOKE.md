@@ -63,6 +63,14 @@ The tool reads pagination tokens, validates response structure, and on HTTP fail
 
 **Safe information to share here:** the final RESULT line, host A–D counts, and a sanitized HTTP code if the test fails. Do not send host names, emails, IDs, screenshots of the host picker, app credentials, access tokens, meeting IDs, join links, or recording content.
 
+## Safety with existing sessions and integrations
+
+The smoke test uses a Zoom OAuth **token exchange** and **GET** resource endpoints only. It has no capability to create, edit, delete, start, or end meetings/webinars; it does not modify Zoom cloud-recording settings, existing Developer Apps, app subscriptions or active sessions. It does not need to be run during a live class.
+
+**Limited operational caveat:** Zoom API quotas are account-wide and shared across all applications installed on that account. This one-off test makes a small number of requests, but on an already rate-limited account it could contribute to HTTP 429 responses for existing integrations. Run it **once during a quiet/off-peak window**, avoid parallel repeated tests, and stop on any error. For maximum isolation, do the first validation against a nonproduction Zoom account if one with representative licenses is available, or run the production-account smoke test outside active classes. The read-only test does not guarantee that an existing integration will never experience rate limiting.
+
+Official: https://developers.zoom.us/docs/api/rate-limits/
+
 ## Common issues
 
 | Result | What to check |
