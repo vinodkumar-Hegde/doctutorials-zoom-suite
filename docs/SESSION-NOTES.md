@@ -87,3 +87,11 @@
 - `python --version` returns Python 3.11.9; supported by our smoke test.
 - Recommended checking `Test-Path "C:\\Program Files\\Git\\cmd\\git.exe"` and running Git via absolute path; if present, append that directory to the PowerShell session PATH temporarily, then clone the private repository and run nine offline tests.
 - Not yet confirmed Git executable path, clone, test results or live Zoom API success. No Zoom settings changed.
+
+## 2026-11-14 — Windows development environment now operational (operator evidence)
+- Operator verified `C:\Program Files\Git\cmd\git.exe` exists and reports **Git 2.56.0.windows.4**. Current PowerShell session PATH was updated with `C:\Program Files\Git\cmd`, after which `git --version` succeeded. This PATH modification is session-only unless the user later persists it.
+- `python --version` reported **Python 3.11.9**, compatible with the S2S smoke test; `py` launcher is unnecessary.
+- Operator successfully cloned the private `vinodkumar-Hegde/doctutorials-zoom-suite` repository to `C:\Users\PC\doctutorials-zoom-suite`.
+- Operator ran `python -m unittest discover -s tests -v`: **9 tests passed**, with no failures. This is independent confirmation of offline test success on the intended Windows workstation.
+- The operator also checked alternate Git paths that returned False; this is expected because the installed binary is under Program Files.
+- **Live Zoom tenant OAuth/API smoke test has NOT been reported run**. Next: with private inputs on a trusted workstation, run `python backend\zoom_s2s_smoke_test.py` against the intended Zoom tenant only with operator authorization. This four-host script is for a tenant with >=4 eligible users, not a standalone one-user free sandbox. Avoid active-class windows due to shared API quotas, do not share secrets or raw account identifiers.
