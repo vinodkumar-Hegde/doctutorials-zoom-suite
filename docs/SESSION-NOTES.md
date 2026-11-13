@@ -81,3 +81,9 @@
 - The `py` launcher is not on PATH; it is optional because `python` works. Future Windows test instructions should use `python -m unittest discover -s tests -v` and `python backend\\zoom_s2s_smoke_test.py`.
 - `git --version` is still not recognized. Next: reopen PowerShell to refresh PATH; if still absent install Git (`winget install --id Git.Git -e --source winget`), reopen PowerShell and verify. Fallback direct executable path: `C:\\Program Files\\Git\\cmd\\git.exe` (only if it exists).
 - No successful clone or local test evidence yet; Zoom S2S app remains operator-confirmed activated, live API verification pending.
+
+## 2026-11-14 — Git installed according to winget but PowerShell PATH unresolved
+- Operator reports `winget install --id Git.Git -e --source winget` says an existing Git installation is present and no upgrade is available, but `git --version` remains unrecognized in the current PowerShell session.
+- `python --version` returns Python 3.11.9; supported by our smoke test.
+- Recommended checking `Test-Path "C:\\Program Files\\Git\\cmd\\git.exe"` and running Git via absolute path; if present, append that directory to the PowerShell session PATH temporarily, then clone the private repository and run nine offline tests.
+- Not yet confirmed Git executable path, clone, test results or live Zoom API success. No Zoom settings changed.
