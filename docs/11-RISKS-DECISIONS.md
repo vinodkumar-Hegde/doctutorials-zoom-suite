@@ -17,10 +17,13 @@ Date: 2026-11-13. Status terms: `ACCEPTED`, `PROPOSED`, `OPEN`, `REJECTED`.
 
 - **ADR-012 [PROPOSED]** One internal Server-to-Server OAuth app for four Zoom hosts, with least-privilege read-only account scopes initially. Webhook subscriptions are deferred until a signed, validated, public HTTPS endpoint exists; cloud-recording read access added for archive implementation with explicit approval. No passwords or tokens shared with faculty. Operator app creation and API validation pending.
 
+- **ADR-013 [PROPOSED]** Prefer a separate Zoom Basic organization as a nonproduction sandbox for API token/read-only meeting tests and initial native meeting/local-recording and iPad Meeting SDK experiments, subject to app entitlements. Never reuse production S2S credentials in a sandbox app; an S2S app's tokens access only its own Zoom organization. Basic does not provide webinar hosting or Zoom cloud recording, and a single free user cannot validate four concurrent licensed hosts. Preserve live-account acceptance gates for all paid features. The operator has not yet selected or created a sandbox.
+
 ## Top risks
 | Risk | Severity | Mitigation |
 |---|---|---|
 | Plugin SDK missing reliable local record API/permission | Critical | Single-client proof; fallback explicit human operation or RTMS evaluation |
+| Free sandbox is mistaken for full production parity | High | Keep 4-host, webinar and cloud backup acceptance tests on separately authorized paid staging/live accounts |
 | Four Zoom Workplace VMs unstable / account conflict | Critical | Load tests, physical worker fallback |
 | Webinar host cannot start fully unattended | High | Office-host startup design with manual supported fallback |
 | iPad panelist joins SDK as attendee / cannot share | High | Real webinar POC before app build |
