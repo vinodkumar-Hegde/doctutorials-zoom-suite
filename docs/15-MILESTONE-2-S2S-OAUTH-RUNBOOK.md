@@ -99,3 +99,9 @@ Official: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
 ## Rollback
 
 This stage does **not** require changing existing webinar or cloud recording settings. If activation fails, stop and note the displayed non-sensitive error; do not widen scopes or alter live meeting settings blindly. Deactivating or removing an app later must be scheduled because that interrupts the backend integration once in service.
+
+## Stage F — Live read-only API test (ready for operator)
+
+The standalone Windows test implementation and precise private-input instructions have been published in [16-MILESTONE-2-SECURE-API-SMOKE.md](16-MILESTONE-2-SECURE-API-SMOKE.md). The repository now contains the Python 3 standard-library-only implementation in [../backend/zoom_s2s_smoke_test.py](../backend/zoom_s2s_smoke_test.py) and its nine mock-based tests in [../tests/test_zoom_s2s_smoke_test.py](../tests/test_zoom_s2s_smoke_test.py).
+
+**Status:** Script published; offline unit tests passed; actual Zoom token exchange and four-host GETs **NOT YET RUN**. Operator to execute on trusted Windows workstation, sharing only redacted Host A–D count/results. Vault and HTTPS webhooks remain pending.
