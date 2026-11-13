@@ -70,3 +70,8 @@
 - Screenshot exposed the app's Webhook Secret Token; **did not copy, commit, or log its value**. Instructed operator to **Regenerate** only the webhook secret before future webhook integration and to mask secrets in any later screenshots. Rotation not yet confirmed.
 - The screenshot does not independently verify the five saved OAuth scopes or live API response. Operator previously confirmed app activation; API smoke test remains pending.
 - No change to existing Zoom meetings, webinars, or cloud recording settings; no secret rotation or Zoom action performed by the assistant.
+
+## 2026-11-14 — Windows local setup blocker: Git and Python commands not found
+- Operator ran the initial Windows PowerShell commands on `C:\Users\PC`. `git` and `py` were not recognized, so the repository was not cloned and no Python tests executed on this Windows workstation.
+- Advised installing Git for Windows and Python 3.13 with `winget` (or official installers), closing/reopening PowerShell, verifying `git --version`, `py --version` / `python --version`, then cloning the private repository and running the offline unit tests.
+- **No evidence yet** that Git/Python were installed, the repository cloned, offline tests passed on Windows, or live Zoom API credentials/test were used. Zoom production configuration remains unchanged.
