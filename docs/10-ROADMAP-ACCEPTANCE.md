@@ -19,23 +19,24 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 **Pass criteria:** Cloud backup works reliably on all four host users and can be recovered if local recorder fails. Unchecked lines above remain validation tasks, not claims that admin configuration was not performed.
 
 ## Test environment policy (proposal, 2026-11-14)
-- [ ] Choose separate Zoom Basic sandbox (not yet confirmed by operator) for initial S2S token/GET and ordinary meeting/local-recording tests, if S2S app creation is available for the sandbox owner.
-- [ ] Create separate internal S2S app/credentials **in sandbox**; do not copy production app credentials or join tokens into sandbox.
+- [x] Use separate Zoom Basic sandbox for initial S2S token/GET and ordinary meeting/local-recording tests (operator confirmed credentials belong to Basic sandbox; live token and GETs passed 2026-11-14).
+- [x] S2S app credentials belonging to separate Basic sandbox authenticated successfully (operator report 2026-11-14); exact sandbox app name not established. Do not copy production credentials into sandbox.
 - [x] Implement explicit `--sandbox-single-user` read-only mode for one active Basic account (does not exercise webinar APIs or count as production acceptance).
-- [ ] Run one-user sandbox mode and verify OAuth and meeting GET results; first OAuth and users GET already succeeded **using the free Zoom sandbox credentials (operator confirmed 2026-11-14)**, but the new mode has not yet been run.
+- [x] Run one-user sandbox mode: OAuth token PASS, active users GET PASS (1), meeting list GET PASS (0), RESULT PASS (2026-11-14; operator-confirmed). Detail GET skipped due to no future meetings; webinar API not tested.
 - [ ] Keep final four licensed-host mapping, webinar panelist, simultaneous recordings, and cloud safety backup tests on authorized paid staging or production account with explicit operator approval.
 - [ ] For iPad Meeting SDK joining meetings hosted outside SDK developer account, verify Zoom's current review and ZAK/OBF requirements before choosing cross-account test setup.
 
 ## Gate 2 — Developer backend
-**Status (2026-11-13):** IN PROGRESS — official S2S OAuth setup path and initial read-only scopes reviewed; `DocTutorials-Backend` app creation operator-confirmed on 2026-11-13. Information and five read-only admin scopes operator-confirmed completed (not independently inspected); activation operator-confirmed; secret management and live API tests remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No live app credentials or successful API/webhook tests have been confirmed.
+**Status (2026-11-14):** IN PROGRESS — initial read-only scopes and S2S app activation operator-confirmed. One-user free sandbox live OAuth/users/meetings-list GET **PASS**; 13 Windows offline tests **PASS**. Four-host production, individual meeting detail, webhook, and production secret-vault acceptance remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No live app credentials or successful API/webhook tests have been confirmed.
 - [x] Create Server-to-Server OAuth app `DocTutorials-Backend` (operator-confirmed; ownership/tenant verification pending).
 - [x] Complete app Information and add five least-privilege read-only admin scopes (operator-confirmed 2026-11-13; scope evidence pending).
 - [x] Activate `DocTutorials-Backend` (operator-confirmed 2026-11-13; token exchange not independently checked).
 - [ ] Provision account credentials to an approved backend vault (never GitHub/chat).
 - [x] Implement secure local Python S2S OAuth + four-host read-only API smoke test; nine isolated offline unit tests passed (2026-11-13).
 - [x] Operator cloned the private repo on Windows; confirmed Git 2.56.0, Python 3.11.9 and **9/9** offline unit tests passing (2026-11-14).
-- [x] First LIVE S2S token exchange and `GET /users` completed on operator Windows workstation: both PASS, **1 active user / 0 eligible licensed hosts** (2026-11-14; tenant identity unverified).
-- [x] Added separate opt-in one-user Basic/sandbox smoke test mode with four unit-test cases (unit tests awaiting operator rerun); default four-host requirement retained.
+- [x] First LIVE S2S token exchange, `GET /users`, and (sandbox mode) user meetings-list GET completed on Windows: PASS using the separate free Zoom sandbox (1 active user, 0 meetings).
+- [x] Added separate opt-in one-user Basic/sandbox smoke test mode with four additional unit tests; **13/13 offline tests passed on operator Windows PC** (2026-11-14); default four-host requirement retained.
+- [ ] Verify individual future meeting detail GET in sandbox (no scheduled meeting existed on first run).
 - [ ] Execute four-host live GET checks against the correct authorized four-host organization; record non-sensitive results only.
 - [ ] Read four users and future meetings/webinars using least-privilege scopes (actual live verification pending).
 - [ ] Validate HTTPS webhook and signed messages; dedupe events.
