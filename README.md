@@ -1,6 +1,6 @@
 # DocTutorials Zoom Suite
 
-**Status:** Architecture baseline v0.1; Gate 1 operator-reported implemented (evidence pending); Gate 2 S2S OAuth setup in progress (`DocTutorials-Backend` created per operator; scopes/activation pending)  
+**Status:** Architecture baseline v0.1; Gate 1 operator-reported implemented (evidence pending); Gate 2 S2S OAuth setup in progress (`DocTutorials-Backend` created per operator; Information + five read scopes operator-confirmed; activation pending)  
 **Updated:** 2026-11-13  
 **Owner:** DocTutorials  
 **Repository:** Private `vinodkumar-Hegde/doctutorials-zoom-suite`.
@@ -62,6 +62,6 @@ flowchart TD
 - The Zoom Meeting SDK is for interactive apps, **not unattended media-recording bots**. RTMS is an architectural fallback if local-native controls fail.
 
 ## How to start
-Milestone 1 cloud recording settings are reported as implemented by the operator. Do not repeat changes to live account settings. Collect Gate 1 redacted evidence in parallel with Gate 2. Follow `docs/15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md` to create the read-only `DocTutorials-Backend` app; operator-confirmed app creation, Information/scopes/activation and API test evidence are pending. See `docs/10-ROADMAP-ACCEPTANCE.md` and `docs/14-REPOSITORY-PUBLISH.md`.
+Milestone 1 cloud recording settings are reported as implemented by the operator. Do not repeat changes to live account settings. Collect Gate 1 redacted evidence in parallel with Gate 2. Follow `docs/15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md` to create the read-only `DocTutorials-Backend` app; operator-confirmed app creation, Information and scope setup reported complete; activation and API test evidence are pending. See `docs/10-ROADMAP-ACCEPTANCE.md` and `docs/14-REPOSITORY-PUBLISH.md`.
 
 **Do not commit passwords, SDK secrets, OAuth credentials, session join URLs, access tokens, ZAK tokens, recordings, learner personal data, or private faculty data.** Use a secret manager and `.env.example` for key names only.
