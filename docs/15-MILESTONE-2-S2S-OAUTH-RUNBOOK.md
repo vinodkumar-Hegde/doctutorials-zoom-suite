@@ -1,7 +1,7 @@
 # Milestone 2 — Server-to-Server OAuth Operator Runbook
 
 **Last reviewed:** 2026-11-13  
-**Status:** IN PROGRESS — operator reports `DocTutorials-Backend` created as Server-to-Server OAuth on 2026-11-13. Information and all five initial read-only scopes operator-confirmed completed on 2026-11-13; activation, credential vault and live API verification still pending.  
+**Status:** IN PROGRESS — operator reports `DocTutorials-Backend` created as Server-to-Server OAuth on 2026-11-13. Information and all five initial read-only scopes operator-confirmed completed on 2026-11-13; activation operator-confirmed on 2026-11-13; secure backend credential provisioning and live API verification pending.  
 **Owner:** DocTutorials Zoom administrator.  
 **Environment:** One Zoom organization with four licensed meeting/webinar host users.
 
@@ -70,7 +70,7 @@ Official: https://developers.zoom.us/docs/api/webhooks/ and https://developers.z
 ## Stage E — Activate and prove API access (after scopes)
 
 - [ ] Resolve app's Information/Scopes/Activation validation warnings.
-- [ ] Activate the **internal** app; Zoom says a deactivated app cannot issue usable access tokens.
+- [x] Activate the **internal** app (operator-confirmed 2026-11-13; token-based confirmation still pending).
 - [ ] Store `ZOOM_ACCOUNT_ID`, `ZOOM_S2S_CLIENT_ID`, `ZOOM_S2S_CLIENT_SECRET` in an approved server-side vault. They must not appear in frontend/iPad/Windows builds or git.
 - [ ] The backend obtains a time-limited token using POST `https://zoom.us/oauth/token`, grant `account_credentials`, account_id, and HTTP Basic client credentials. No refresh token: reacquire on expiry, securely cache per service.
 - [ ] Verify `GET https://api.zoom.us/v2/users`, then for each approved host: `GET /users/{userId}/meetings` and `GET /users/{userId}/webinars` (use the exact Zoom API syntax per endpoint). Do not put raw user IDs in public logs.
@@ -84,7 +84,7 @@ Official: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
 | Proof | Status |
 |---|---|
 | App creation under correct Zoom organization | OPERATOR REPORT: CREATED; organization ownership not independently checked |
-| App activation | NOT YET VERIFIED |
+| App activation | OPERATOR REPORT: ACTIVATED; token exchange pending |
 | Exact permitted read-only scopes | OPERATOR REPORT: ALL FIVE SELECTED; activation/API verification pending |
 | Secure server-side secret storage | NOT YET VERIFIED |
 | API read of four approved host users | NOT YET VERIFIED |
@@ -94,7 +94,7 @@ Official: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
 
 ## Operator handoff, first screen
 
-**App created, Information and five scopes configured (operator-confirmed).** Next: Zoom Developer Portal → DocTutorials-Backend → **Activation**, review warnings, and activate if no unexpected access is requested. Report only the status ('Activated', 'Blocked' and non-sensitive validation messages). Do not share Account ID, Client ID, Client Secret, tokens, credential-bearing screenshots, or other sensitive data. Then arrange server-side vault and a read-only API smoke test; webhook features remain deferred.
+**App created, Information and five scopes configured (operator-confirmed).** **S2S app created, information and five initial scopes configured, and activation completed (operator-confirmed).** Next: run the standalone secure API smoke test from an authorized Windows admin workstation using local hidden credential prompts. Do not share Account ID, Client ID, Client Secret, access token, host IDs or credential-bearing screenshots. A separate production vault and backend integration remain pending; webhook features are deferred.
 
 ## Rollback
 
