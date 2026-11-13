@@ -7,6 +7,7 @@ This script does not write credentials, access tokens, user information or API d
 
 from __future__ import annotations
 
+import argparse
 import base64
 import getpass
 import json
@@ -179,13 +180,30 @@ def choose_hosts(candidates: list[dict], input_fn: Callable[[str], str] = input)
     return [candidates[p-1] for p in positions]
 
 
-def run(client: ZoomReadOnlyClient) -> int:
+def run(client: ZoomReadOnlyClient, *, sandbox_single_user: bool = False) -> int:
     print("DocTutorials Zoom S2S OAuth — READ-ONLY test")
     print("No tokens, account IDs, host IDs, join links or API responses are written to disk.")
     client.authenticate()
     print("OAuth token request: PASS")
     users = client.list_users()
     print(f"List active users: PASS ({len(users)} total)")
+    if sandbox_single_user:
+        # Explicit nonproduction test: do not require a paid license or webinar access.
+        # Fail closed if the token unexpectedly resolves to a multi-user organization.
+        if len(users) != 1 or not isinstance(users[0].get("id"), str) or not users[0]["id"]:
+            raise SmokeTestError("Sandbox mode requires exactly one active user with an ID; no account changes made.")
+        print("MODE: SINGLE-USER SANDBOX (NOT four-host or webinar acceptance)")
+        meetings = client.list_meetings(users[0]["id"])
+        meeting_detail = "SKIPPED (no scheduled meeting)"
+        if meetings:
+            meeting_id = meetings[0].get("id")
+            if meeting_id is None:
+                raise SmokeTestError("Sandbox meeting list lacked a meeting ID.")
+            client.check_meeting_detail(meeting_id)
+            meeting_detail = "PASS"
+        print(f"Sandbox user: meetings={len(meetings)}, meeting detail={meeting_detail}, webinars=NOT TESTED")
+        print("RESULT: PASS — single-user sandbox read-only test. Four-host and webinar tests still pending.")
+        return 0
     candidates = eligible_users(users)
     print(f"Eligible paid/on-prem host candidates: {len(candidates)}")
     hosts = choose_hosts(candidates)
@@ -216,13 +234,20 @@ def run(client: ZoomReadOnlyClient) -> int:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Zoom S2S read-only test: production four-host default or single-user sandbox.")
+    parser.add_argument(
+        "--sandbox-single-user",
+        action="store_true",
+        help="Read one active user and meetings only; never counts as production four-host acceptance.",
+    )
+    args = parser.parse_args()
     try:
         creds = ZoomCredentials(
             account_id=get_credential("ZOOM_ACCOUNT_ID", "Zoom Account ID (hidden): "),
             client_id=get_credential("ZOOM_S2S_CLIENT_ID", "S2S Client ID (hidden): "),
             client_secret=get_credential("ZOOM_S2S_CLIENT_SECRET", "S2S Client Secret (hidden): "),
         )
-        return run(ZoomReadOnlyClient(creds))
+        return run(ZoomReadOnlyClient(creds), sandbox_single_user=args.sandbox_single_user)
     except (SmokeTestError, KeyboardInterrupt) as exc:
         message = "Interrupted by operator." if isinstance(exc, KeyboardInterrupt) else str(exc)
         print(f"RESULT: NOT PASSED — {message}", file=sys.stderr)
