@@ -75,3 +75,9 @@
 - Operator ran the initial Windows PowerShell commands on `C:\Users\PC`. `git` and `py` were not recognized, so the repository was not cloned and no Python tests executed on this Windows workstation.
 - Advised installing Git for Windows and Python 3.13 with `winget` (or official installers), closing/reopening PowerShell, verifying `git --version`, `py --version` / `python --version`, then cloning the private repository and running the offline unit tests.
 - **No evidence yet** that Git/Python were installed, the repository cloned, offline tests passed on Windows, or live Zoom API credentials/test were used. Zoom production configuration remains unchanged.
+
+## 2026-11-14 — Windows Python installation confirmed; Git still missing
+- Operator reports Python 3.13.17 Windows installer completed successfully, but current `python --version` resolves to **Python 3.11.9**; Python 3.11 is compatible with our stdlib-only OAuth smoke test.
+- The `py` launcher is not on PATH; it is optional because `python` works. Future Windows test instructions should use `python -m unittest discover -s tests -v` and `python backend\\zoom_s2s_smoke_test.py`.
+- `git --version` is still not recognized. Next: reopen PowerShell to refresh PATH; if still absent install Git (`winget install --id Git.Git -e --source winget`), reopen PowerShell and verify. Fallback direct executable path: `C:\\Program Files\\Git\\cmd\\git.exe` (only if it exists).
+- No successful clone or local test evidence yet; Zoom S2S app remains operator-confirmed activated, live API verification pending.
