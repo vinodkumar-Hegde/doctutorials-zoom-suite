@@ -1,7 +1,7 @@
 # Milestone 2 — Server-to-Server OAuth Operator Runbook
 
 **Last reviewed:** 2026-11-13  
-**Status:** IN PROGRESS — operator reports `DocTutorials-Backend` created as Server-to-Server OAuth on 2026-11-13. Information, scopes, activation, credential vault and live API verification still pending.  
+**Status:** IN PROGRESS — operator reports `DocTutorials-Backend` created as Server-to-Server OAuth on 2026-11-13. Information and all five initial read-only scopes operator-confirmed completed on 2026-11-13; activation, credential vault and live API verification still pending.  
 **Owner:** DocTutorials Zoom administrator.  
 **Environment:** One Zoom organization with four licensed meeting/webinar host users.
 
@@ -26,11 +26,13 @@ Official: https://developers.zoom.us/docs/internal-apps/ and https://developers.
 - [x] Select **Server-to-Server OAuth**; click **Create** (operator-confirmed).
 - [x] Name it **DocTutorials-Backend** (operator-confirmed).
 - [ ] On **App Credentials**, identify **Account ID**, **Client ID**, **Client Secret**. Place them only in an approved secret manager under keys named below. Never paste values into chat, screenshots, GitHub, tickets, logs, or spreadsheets. Do **not** share credentials with faculty.
-- [ ] Complete **Information**: short description `Internal integration for managing DocTutorials Zoom meetings, webinars, faculty sessions, and recording backups.`; company `DocTutorials` (use the verified legal/company name if required); authorized developer contact name and email (required for activation). No exact personal contact details are committed.
+- [x] Complete **Information** (operator-confirmed, individual fields not independently inspected): short description `Internal integration for managing DocTutorials Zoom meetings, webinars, faculty sessions, and recording backups.`; company `DocTutorials` (use the verified legal/company name if required); authorized developer contact name and email (required for activation). No exact personal contact details are committed.
 
 **No redirect URI is required for the Server-to-Server OAuth account-credentials grant**. It does not require an interactive end-user consent login.
 
 ## Stage C — Read-only scopes (minimum initial proof)
+
+**Operator reported all five initial read-only scopes saved on 2026-11-13; not independently inspected in Zoom.**
 
 In **Scopes → Add Scopes**, search for and select these specific **admin** granular permissions. Add only those actually required for the first test. All names below are documented in Zoom's granular scope table:
 
@@ -83,7 +85,7 @@ Official: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
 |---|---|
 | App creation under correct Zoom organization | OPERATOR REPORT: CREATED; organization ownership not independently checked |
 | App activation | NOT YET VERIFIED |
-| Exact permitted read-only scopes | NOT YET VERIFIED |
+| Exact permitted read-only scopes | OPERATOR REPORT: ALL FIVE SELECTED; activation/API verification pending |
 | Secure server-side secret storage | NOT YET VERIFIED |
 | API read of four approved host users | NOT YET VERIFIED |
 | Read of host meeting and webinar schedules | NOT YET VERIFIED |
@@ -92,7 +94,7 @@ Official: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
 
 ## Operator handoff, first screen
 
-**App created (operator confirmed).** Next: Information → Features (defer event subscriptions) → Scopes (five minimum admin granular read scopes) → Save. Report only completed sections and whether the app can be activated; no Account ID, Client ID, Client Secret, tokens, or screenshots showing credentials. Activate only after reviewing permissions and secret storage plan.
+**App created, Information and five scopes configured (operator-confirmed).** Next: Zoom Developer Portal → DocTutorials-Backend → **Activation**, review warnings, and activate if no unexpected access is requested. Report only the status ('Activated', 'Blocked' and non-sensitive validation messages). Do not share Account ID, Client ID, Client Secret, tokens, credential-bearing screenshots, or other sensitive data. Then arrange server-side vault and a read-only API smoke test; webhook features remain deferred.
 
 ## Rollback
 
