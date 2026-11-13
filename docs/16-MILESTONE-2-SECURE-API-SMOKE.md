@@ -136,3 +136,9 @@ Official sources:
 - https://developers.zoom.us/docs/api/users/
 - https://developers.zoom.us/docs/api/meetings/
 - https://developers.zoom.us/docs/internal-apps/oauth-scopes-granular/
+
+## 2026-11-14 — Repeated zero-meeting sandbox results and operator next action
+
+The operator reran the single-user sandbox test twice: OAuth PASS, active users GET PASS (1), meetings-list GET PASS (0), and detail SKIPPED both times. This is **not** an API authentication or permissions failure. Per [Zoom's List Meetings API](https://developers.zoom.us/docs/api/meetings/), `GET /users/{userId}/meetings` defaults to `type=scheduled` and returns a host's unexpired scheduled meetings, not instant meetings. The script's existing query uses that default. No API code change is needed.
+
+**Operator action:** In the same free Zoom account associated with the sandbox app's credentials, schedule and **save** one ordinary future meeting (not instant, PMI-only or an invite to someone else's meeting), confirm it appears in the account's scheduled-meetings list, and rerun `python backend\zoom_s2s_smoke_test.py --sandbox-single-user`. Expected: `meetings>=1` and `meeting detail=PASS`. If the Zoom UI lists a future meeting but the API still shows zero, investigate account identity, meeting host and filter without sharing meeting details or account IDs. Production four-host test remains pending.
