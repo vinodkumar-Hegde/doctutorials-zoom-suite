@@ -12,8 +12,10 @@ Date: 2026-11-13. Status terms: `ACCEPTED`, `PROPOSED`, `OPEN`, `REJECTED`.
 - **ADR-007 [OPEN]** Windows isolation: four VMs on one server vs four physical workers.
 - **ADR-008 [PROPOSED]** Cloud auto-recording remains independent/continuous even if local recording is paused by faculty.
 - **ADR-009 [OPEN]** Webinar panelist joins through custom iPad Meeting SDK without individual Zoom login: test entitlement and invitation flow.
-- **ADR-010 [PROPOSED]** GitHub repository: dedicated private `doctutorials-zoom-suite` under the linked GitHub owner; remote creation and initial push pending.
+- **ADR-010 [ACCEPTED]** GitHub repository: private `vinodkumar-Hegde/doctutorials-zoom-suite`, published on 2026-11-13.
 - **ADR-011 [ACCEPTED]** Milestone 1 cloud auto-recording is operator-reported implemented as of 2026-11-13; acceptance evidence remains pending. Do not reconfigure live Zoom settings simply to close paperwork.
+
+- **ADR-012 [PROPOSED]** One internal Server-to-Server OAuth app for four Zoom hosts, with least-privilege read-only account scopes initially. Webhook subscriptions are deferred until a signed, validated, public HTTPS endpoint exists; cloud-recording read access added for archive implementation with explicit approval. No passwords or tokens shared with faculty. Operator app creation and API validation pending.
 
 ## Top risks
 | Risk | Severity | Mitigation |
