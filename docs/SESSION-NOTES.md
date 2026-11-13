@@ -38,3 +38,9 @@
 - Documentation checked against current official Zoom create-app and granular scopes pages; links retained in `docs/13-OFFICIAL-REFERENCES.md`.
 - No Zoom secret, token, account ID, live API response, or credential screenshot received. No API or webhook calls made. App activation and scope selection are **not yet confirmed**; next step is operator confirmation followed by safe activation/verification.
 - Milestone 1 cloud recording remains operator-reported implemented; no production settings changed in this step.
+
+## 2026-11-13 — Milestone 2: Information and scopes completed (operator report)
+- Operator replied 'done' to the step covering Zoom app **Information** and the five initial **admin read-only** scopes for `DocTutorials-Backend`; marked both operator-confirmed, not independently audited.
+- Current Zoom documentation checked again: activation is required to issue usable account-credentials OAuth tokens. Admin-level permissions may be affected by future changes to the app owner's Zoom role.
+- Next operator action: open **Activation** and activate only if validation is clear and no unexpected permissions are requested. Do not share Account ID, Client ID, Client Secret or tokens. Webhook setup, server-side credential vault, token request and four-host API test are pending.
+- No Zoom settings were changed by the assistant and no Zoom API requests were made.
