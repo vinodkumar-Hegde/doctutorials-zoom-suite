@@ -90,5 +90,63 @@ class ZoomSmokeTestTests(unittest.TestCase):
         c._access_token='token'
         with self.assertRaises(z.SmokeTestError):c.list_users()
 
+
+    def test_sandbox_one_basic_user_checks_meetings_only(self):
+        class SandboxClient:
+            calls = []
+            def authenticate(self): self.calls.append("oauth")
+            def list_users(self):
+                self.calls.append("users")
+                return [{"id": "sandbox-id", "type": 1}]
+            def list_meetings(self, user_id):
+                self.calls.append("meetings")
+                self.assert_host_id = user_id
+                return [{"id": 101}]
+            def check_meeting_detail(self, meeting_id):
+                self.calls.append("detail")
+                self.assert_meeting_id = meeting_id
+            def list_webinars(self, user_id):
+                raise AssertionError("Sandbox must not invoke webinar endpoints")
+
+        client = SandboxClient()
+        output = io.StringIO()
+        with patch("sys.stdout", output):
+            status = z.run(client, sandbox_single_user=True)
+        self.assertEqual(status, 0)
+        self.assertEqual(client.calls, ["oauth", "users", "meetings", "detail"])
+        self.assertEqual(client.assert_host_id, "sandbox-id")
+        self.assertEqual(client.assert_meeting_id, 101)
+        self.assertIn("NOT four-host", output.getvalue())
+        self.assertIn("webinars=NOT TESTED", output.getvalue())
+
+    def test_sandbox_basic_user_with_no_meetings_skips_detail(self):
+        class SandboxClient:
+            def authenticate(self): pass
+            def list_users(self): return [{"id": "sandbox-id", "type": 1}]
+            def list_meetings(self, user_id): return []
+            def check_meeting_detail(self, meeting_id):
+                raise AssertionError("No detail GET when there are no meetings")
+
+        with patch("sys.stdout", io.StringIO()) as fake_out:
+            self.assertEqual(z.run(SandboxClient(), sandbox_single_user=True), 0)
+            self.assertIn("meeting detail=SKIPPED", fake_out.getvalue())
+
+    def test_sandbox_rejects_multi_user_organization(self):
+        class SandboxClient:
+            def authenticate(self): pass
+            def list_users(self):
+                return [{"id": "user1", "type": 1}, {"id": "user2", "type": 1}]
+        with patch("sys.stdout", io.StringIO()):
+            with self.assertRaisesRegex(z.SmokeTestError, "requires exactly one active user"):
+                z.run(SandboxClient(), sandbox_single_user=True)
+
+    def test_default_mode_rejects_single_basic_user(self):
+        class SandboxClient:
+            def authenticate(self): pass
+            def list_users(self): return [{"id": "basic-user", "type": 1}]
+        with patch("sys.stdout", io.StringIO()):
+            with self.assertRaisesRegex(z.SmokeTestError, "expected at least 4"):
+                z.run(SandboxClient())
+
 if __name__=='__main__':
     unittest.main()
