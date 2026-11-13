@@ -31,3 +31,10 @@
 - Operator asked to create `DocTutorials-Backend` in Zoom Marketplace; no app creation/activation or access token/API response observed yet.
 - Milestone 1 remains operator-reported implemented with independent evidence pending. No changes to Zoom production settings.
 - Next: operator confirms Developer Portal app created, then assist with Information → Scopes → Activation, without collecting credentials.
+
+## 2026-11-13 — Milestone 2: OAuth application created (operator report)
+- Operator confirmed `DocTutorials-Backend` has been created as a **Server-to-Server OAuth** app in the Zoom Developer Portal and the configuration pages are visible.
+- Guided completion of **Information** (short description, organization name, authorized developer contact), **Feature** (defer webhooks), and five granular admin **read-only** scopes for users, meetings and webinars.
+- Documentation checked against current official Zoom create-app and granular scopes pages; links retained in `docs/13-OFFICIAL-REFERENCES.md`.
+- No Zoom secret, token, account ID, live API response, or credential screenshot received. No API or webhook calls made. App activation and scope selection are **not yet confirmed**; next step is operator confirmation followed by safe activation/verification.
+- Milestone 1 cloud recording remains operator-reported implemented; no production settings changed in this step.
