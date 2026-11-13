@@ -18,6 +18,13 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 - [ ] Measure capacity/retention and confirm privacy notice.
 **Pass criteria:** Cloud backup works reliably on all four host users and can be recovered if local recorder fails. Unchecked lines above remain validation tasks, not claims that admin configuration was not performed.
 
+## Test environment policy (proposal, 2026-11-14)
+- [ ] Choose separate Zoom Basic sandbox (not yet confirmed by operator) for initial S2S token/GET and ordinary meeting/local-recording tests, if S2S app creation is available for the sandbox owner.
+- [ ] Create separate internal S2S app/credentials **in sandbox**; do not copy production app credentials or join tokens into sandbox.
+- [ ] Use current five-scope test against sandbox's actual user count (the four-host test script intentionally requires four eligible hosts; use a separate one-host test or parameterization rather than bypassing that assertion).
+- [ ] Keep final four licensed-host mapping, webinar panelist, simultaneous recordings, and cloud safety backup tests on authorized paid staging or production account with explicit operator approval.
+- [ ] For iPad Meeting SDK joining meetings hosted outside SDK developer account, verify Zoom's current review and ZAK/OBF requirements before choosing cross-account test setup.
+
 ## Gate 2 — Developer backend
 **Status (2026-11-13):** IN PROGRESS — official S2S OAuth setup path and initial read-only scopes reviewed; `DocTutorials-Backend` app creation operator-confirmed on 2026-11-13. Information and five read-only admin scopes operator-confirmed completed (not independently inspected); activation operator-confirmed; secret management and live API tests remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No live app credentials or successful API/webhook tests have been confirmed.
 - [x] Create Server-to-Server OAuth app `DocTutorials-Backend` (operator-confirmed; ownership/tenant verification pending).
