@@ -30,6 +30,7 @@ Date: 2026-11-13. Status terms: `ACCEPTED`, `PROPOSED`, `OPEN`, `REJECTED`.
 | Initial lecturer seconds missing | High | Prepare and start recording before faculty instruction; cloud auto backup |
 | Cloud storage exhausted | High | Measure actual plan, alert on quota, archive and approved retention |
 | Credential/PII leakage via GitHub/logs | Critical | Private repo, vault, ignore, secret scanning, RBAC |
+| Webhook signing secret visible in shared screenshot (2026-11-14) | High | Rotate this app's webhook secret before subscriptions are enabled; never commit value; operator confirmation pending |
 | Webhook latency/duplicates | Medium | Idempotency, state reconciliation, not relying on webhooks for first frame |
 | Full-device iPad screens expose notifications | High | Faculty privacy checklist, Focus mode, in-app reminder |
 | Network/storage failure damages video | High | Local SSD, file conversion handling, retries, safe recovery |
