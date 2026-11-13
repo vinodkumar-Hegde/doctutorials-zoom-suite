@@ -1,8 +1,8 @@
 # Milestone 2 — Secure Zoom API Smoke Test on Windows
 
-**Updated:** 2026-11-13
+**Updated:** 2026-11-14
 **App:** DocTutorials-Backend — Server-to-Server OAuth
-**State:** Test code committed; nine offline unit tests passed; **no live Zoom tenant API test has been performed**.
+**State:** Test code committed; 9/9 offline unit tests also passed on operator Windows workstation on 2026-11-14; **no live Zoom tenant API test has been reported**.
 
 ## Purpose
 
@@ -16,6 +16,10 @@ The test authenticates with the Account ID, Client ID and Client Secret for the 
 - The Zoom S2S app has been activated, with five granular read scopes: user:read:list_users:admin, meeting:read:list_meetings:admin, meeting:read:meeting:admin, webinar:read:list_webinars:admin, webinar:read:webinar:admin.
 - The authorized admin can view App Credentials in Zoom Developer Portal. Never paste secrets or account identifiers into chat, GitHub, issue comments, or screenshots.
 - Test in an interactive PowerShell window. Do not record the screen while entering credentials.
+
+## Operator workstation verification (2026-11-14)
+
+The operator confirmed Python 3.11.9 and Git 2.56.0 on Windows, successfully cloned the private repository and ran **all nine** offline tests with `python -m unittest discover -s tests -v` (`OK`). Git was made available in the current PowerShell session by adding `C:\Program Files\Git\cmd` to `$env:Path`; this adjustment is not persistent across new shells. The script can be launched using `python` without the optional `py` launcher.
 
 ## Run the test (PowerShell)
 
