@@ -77,7 +77,7 @@ Official: https://developers.zoom.us/docs/api/rate-limits/
 
 ## One-user sandbox test (separate from production acceptance)
 
-On 2026-11-14, the operator's S2S app credentials successfully authenticated and listed one active Zoom user, but **zero eligible licensed hosts**. This is consistent with a separate Basic account but does **not prove** whether the correct production tenant was used. The default command deliberately rejected the four-host acceptance test rather than falsely passing.
+On 2026-11-14, the operator's S2S app credentials successfully authenticated and listed one active Zoom user, but **zero eligible licensed hosts**. The operator subsequently confirmed these credentials were from their **free Zoom Basic sandbox**, not the four-host production organization. The default command deliberately rejected the four-host acceptance test rather than falsely passing.
 
 The script now supports an **explicit opt-in** one-user read-only sandbox mode. Run on a trusted Windows workstation **from the cloned repository directory**:
 
