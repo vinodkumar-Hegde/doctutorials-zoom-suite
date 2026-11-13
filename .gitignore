@@ -1,0 +1,36 @@
+# Credentials and config
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.pem
+*.key
+*.mobileprovision
+*.pfx
+secrets/
+private/
+
+# Data and recordings
+recordings/
+*.mp4
+*.m4a
+*.mkv
+*.mov
+*.zoom
+*.zip.tmp
+*.db
+
+# Python/JS
+__pycache__/
+.venv/
+node_modules/
+dist/
+build/
+*.pyc
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
