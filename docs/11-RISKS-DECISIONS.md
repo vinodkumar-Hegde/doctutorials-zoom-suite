@@ -21,6 +21,8 @@ Date: 2026-11-13. Status terms: `ACCEPTED`, `PROPOSED`, `OPEN`, `REJECTED`.
 
 - **ADR-014 [ACCEPTED — operator decision 2026-11-14]** Implement and validate **Zoom Meetings first** in the isolated free Basic sandbox. All active integration work, API smoke tests, and operator instructions must avoid Zoom Webinar API calls. Implement webinar APIs, panelist workflows and webinar-specific recording only in a later phase after meeting integration is tested and the operator explicitly reopens webinar work. This **defers**, not removes, webinar capabilities from the full product requirements. A previously prepared five-scope S2S app may already have webinar read scopes; do not broaden scopes or change live app settings merely to enforce application-level phasing.
 
+- **ADR-015 [PROPOSED — 2026-11-14]** One-channel Windows recorder feasibility must be proven using a separate **Plugin SDK General App OAuth connection** to a signed-in Zoom Workplace Windows client and Zoom's provided PSDKTest demo before implementing a native bridge. Keep Zoom S2S API credentials separate. Build no Start/Pause/Resume/Stop UI buttons until methods, permissions, callbacks and MP4 finalization are verified. A read-only artifact probe is not recording automation. Meetings-first ADR-014 continues; webinars deferred. Review after SDK demo evidence.
+
 ## Top risks
 | Risk | Severity | Mitigation |
 |---|---|---|
