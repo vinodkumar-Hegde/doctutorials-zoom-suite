@@ -46,7 +46,9 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] Added separate opt-in one-user Basic/sandbox smoke test mode; after meetings-only adjustments and two additional regressions, **15/15 offline tests passed** on operator Windows PC (2026-11-14).
 - [x] Verify individual future meeting detail GET in sandbox: **meetings=1, meeting detail=PASS** (operator evidence 2026-11-14).
 - [x] Commit an initial sandbox-only localhost FastAPI Meetings read-service prototype and 8 mock-based tests (2026-11-14; code unverified on operator machine; no deployment).
-- [ ] Operator runs 23 offline tests and the authenticated localhost Meetings API using [local runbook](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md); verify security guardrails and safe output before accepting Gate 2B.
+- [x] Operator launched sandbox-local FastAPI server and saw startup announcement at `http://127.0.0.1:8765` following hidden S2S credential prompts (2026-11-14); **not yet proof of authenticated HTTP client GET**.
+- [ ] Operator runs 23 offline tests (results not yet shared) and the authenticated localhost Meetings API client using [local runbook](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md); verify successful GET and safe output before accepting Gate 2B.
+- [ ] Rotate ephemeral localhost API session key by stopping/restarting local backend after sharing the two temporary keys in chat; do not share replacement key or place it in GitHub.
 - [ ] Execute four-host live GET checks against the correct authorized four-host organization; record non-sensitive results only.
 - [ ] Read four intended paid users and their future **meetings** using least-privilege scopes (production tenant read-only verification pending). Webinar API acceptance deferred.
 - [ ] Validate HTTPS webhook and signed messages; dedupe events.
