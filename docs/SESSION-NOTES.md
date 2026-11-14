@@ -275,3 +275,8 @@
 - Reverified Zoom official iOS SDK packaging: `version.txt` plus `lib/MobileRTC.xcframework`, `lib/MobileRTCResources.bundle`, `lib/MobileRTCScreenShare.xcframework` (optional add-on for full-device screen broadcast). Do not assume archive version from its name; inspect `version.txt` after extraction.
 - Next operator command: locate/downloaded Zoom SDK archive under Mac Downloads, extract outside repo if zipped, and report **SDK version and filenames only**. Main app's Xcode project does not yet link vendor SDK. SDK/JWT credentials remain private, no production changes, webinars/Windows recorder deferred.
 - Current Zoom developer docs list max supported system iOS 26 for Meeting SDK, while operator's simulator is iPadOS 27.2: do not claim Meeting SDK works on that simulator until runtime proven or compatibility updated by the vendor.
+
+## 2026-11-15 — Downloaded iOS SDK ZIP located in Mac Downloads
+- Operator's `ls -lht ~/Downloads` output confirms **`zoom-sdk-ios-7.2.5.40220.zip` (about 187 MB)** in Mac Downloads. Prior `find` of unpacked SDK frameworks returned no results because downloaded SDK remains a ZIP.
+- File name indicates vendor 7.2.5.40220 distribution, but actual `version.txt`/contents **not yet inspected**. SDK archive remains outside private GitHub repo. Do not copy proprietary ZIP/frameworks or credentials to GitHub.
+- Next step: extract with `ditto -x -k` into `~/Downloads/DocTutorialsZoomSDK` then find `version.txt`, `MobileRTC.xcframework`, `MobileRTCResources.bundle`, `MobileRTCScreenShare.xcframework`. iOS SDK linking, JWT backend, ReplayKit extension and live meeting joining are not yet complete.
