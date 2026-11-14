@@ -227,3 +227,10 @@
 - Stage 4A iPad SwiftUI scaffold remains committed but **not built or run**. This is a developer tool prerequisite, not an app compile failure.
 - Next action: install full Xcode from official Mac App Store, launch once to accept licensing and components, then `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` and `xcodebuild -version`. If App Store reports incompatibility, check macOS version before choosing a supported Xcode.
 - No Windows recording work resumed. Meeting SDK connection and full-device screen broadcast remain untested.
+
+## 2026-11-14 — Full Xcode is now activated and functional on Mac
+- Operator successfully selected full developer directory and ran `xcodebuild -version` on Mac:
+  `/Applications/Xcode.app/Contents/Developer`, `Xcode 27.2`, `Build version 27B52`.
+- This supersedes earlier CommandLineTools-only and invalid developer-directory errors; Xcode activation prerequisite is now **PASSED**.
+- **Not yet established:** Git/Homebrew/XcodeGen availability on Mac, repository cloned on Mac, app compilation, iPad signing, Meeting SDK setup, ReplayKit extension and live sharing. No feature acceptance checked off merely from Xcode version.
+- Next Mac operator command checks `git --version`, `brew --version` and whether `~/doctutorials-zoom-suite` already exists. Do not clone blindly or overwrite an existing working tree.
