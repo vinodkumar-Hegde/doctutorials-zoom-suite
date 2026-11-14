@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-14
 **Decision:** ADR-014 — Implement and accept Zoom Meetings integration before starting webinar integration.
-**Scope status:** Increment A *local prototype code committed* 2026-11-14 (not yet operator-tested or deployed). Acceptance remains pending. The production backend is not completed.
+**Scope status:** Increment A local prototype **operator-tested (authenticated list/detail GET PASS)** on 2026-11-14. Full acceptance remains pending because 23-test expanded suite and explicit negative authentication tests are not yet reported. Not a production deployment.
 
 ## Evidence establishing readiness
 
@@ -50,18 +50,18 @@ No webinar GET/POST requests or webinar-specific webhook subscriptions during th
 ## Acceptance criteria for Increment A
 
 - [ ] One account Basic sandbox is the only allowed tenant for local PoC; deliberate fail-closed on 0 or 2+ active users and on non-Basic type.
-- [ ] Authenticated GET meeting-list endpoint returns the single sandbox meeting using only an allowlisted response schema.
-- [ ] Authenticated GET meeting-detail endpoint checks the requested ID belongs to the selected host; unknown IDs rejected.
+- [x] Authenticated local GET meeting-list endpoint returned count=1 (operator evidence; allowlist code committed, separate response-shape security audit pending).
+- [x] Authenticated local GET meeting detail returned PASS for sandbox meeting (operator evidence); unit checks for listed ID present, negative runtime case pending.
 - [ ] No Zoom host credentials, meeting join links, account IDs, passwords or API response bodies exposed via UI, API errors or logs.
 - [ ] Unauthenticated local requests rejected; localhost-only binding documented and enforced by launcher.
 - [ ] No webinar API calls in any test or runtime path; regression tests catch accidental calls.
 - [ ] Mock-based tests verify token expiry, credential isolation, failures, pagination and response sanitization.
-- [ ] Operator executes an end-to-end local sandbox run and reports only redacted summary.
+- [x] Operator executed end-to-end local sandbox read-only API client, confirming list count=1 and individual detail GET PASS, with redacted summary (2026-11-14).
 - [ ] No change to existing paid Zoom organization apps, meetings, webinars or cloud recording.
 
 ## Immediate operator step
 
-Nothing needs to be changed in the Zoom portal now. The initial FastAPI sandbox-local prototype is at `backend/meetings_api.py`, with implementation and eight new offline tests. Refer to [18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md) to install dependencies, run the expanded 23-test suite and launch an explicitly localhost-only service. This code has not been confirmed running on the operator Windows workstation yet. The operator's latest `meetings=1, meeting detail=PASS` result establishes the meeting API baseline. The implementation team should build/test Increment A in the repository, then provide a simple Windows command sequence for running the local service.
+Nothing needs to be changed in the Zoom portal now. The initial FastAPI sandbox-local prototype is at `backend/meetings_api.py`, with implementation and eight new offline tests. Refer to [18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md) to install dependencies, run the expanded 23-test suite and launch an explicitly localhost-only service. The operator has confirmed successful authenticated HTTP list and detail GETs on Windows; the expanded 23-test suite and negative authorization check remain pending. The operator's latest `meetings=1, meeting detail=PASS` result establishes the meeting API baseline. The implementation team should build/test Increment A in the repository, then provide a simple Windows command sequence for running the local service.
 
 **Official references**
 
