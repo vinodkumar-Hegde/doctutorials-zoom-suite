@@ -220,3 +220,10 @@
 - Wrote [Stage 4A runbook](20-IPAD-MEETINGS-SCREENSHARE-DEVELOPMENT.md) for Mac + XcodeGen project generation, simulator/real-iPad UI tests, Zoom Meetings SDK integration and the Apple-confirmed Goodnotes broadcast acceptance test.
 - **This session has not built or run an iOS app, not linked Zoom SDK, not created Apple App Groups, not issued a JWT, not joined a meeting or started screen broadcast.** UI scaffold and policy tests are source files only; do not call the product functional.
 - Next operator environment check: Mac with Xcode (for Meeting SDK 7+, Xcode 26+) and an iPad available for physical ReplayKit testing. The operator's Windows Visual Studio installation is not used for this iPad app.
+
+## 2026-11-14 — iPad build prerequisite: full Xcode absent on Mac
+- Operator's Mac Terminal `xcodebuild -version` returned `xcode-select: error: tool 'xcodebuild' requires Xcode, but active developer directory '/Library/Developer/CommandLineTools' is a command line tools instance`.
+- Operator checked `/Applications/Xcode.app/Contents/Developer` and reported **Full Xcode: NOT FOUND**.
+- Stage 4A iPad SwiftUI scaffold remains committed but **not built or run**. This is a developer tool prerequisite, not an app compile failure.
+- Next action: install full Xcode from official Mac App Store, launch once to accept licensing and components, then `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` and `xcodebuild -version`. If App Store reports incompatibility, check macOS version before choosing a supported Xcode.
+- No Windows recording work resumed. Meeting SDK connection and full-device screen broadcast remain untested.
