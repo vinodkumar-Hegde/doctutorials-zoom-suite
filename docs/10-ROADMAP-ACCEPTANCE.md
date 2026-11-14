@@ -89,7 +89,9 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] Stage an SDK-version-dependent ReplayKit SampleHandler template separately from the build; **not a working broadcast extension**.
 - [x] Mac full Xcode developer directory selected, `xcodebuild -version` PASS: **Xcode 27.2 (27B52)** (operator 2026-11-14).
 - [x] Mac clone of the private repository succeeded; `git status` confirmed clean, up-to-date `main` (operator report 2026-11-15).
-- [ ] Install/check XcodeGen, generate project from `ipad/DocTutorialsScreenShare/project.yml`, build/run SwiftUI shell and pass five XCTest cases (Mac operator result pending).
+- [x] XcodeGen 2.46.0 installed, project generated, and **SwiftUI app visibly launched** in iPad (A16) iPadOS 27.2 simulator (operator screenshot 2026-11-15).
+- [ ] Run and pass five XCTest `ScreenSharePolicy` cases on Mac simulator (not yet reported).
+- [ ] Sign and run app on a physical iPad, then integrate Zoom Meeting SDK and ReplayKit for real sharing (not yet done).
 - [ ] Setup iOS General App + Meeting SDK, registered App Group and **server-side short-lived SDK JWT**; leave secrets off device.
 - [ ] Join one Basic sandbox Zoom **Meeting** as an authorized participant without Zoom host password; verify SDK callback and muted iPad microphone/camera.
 - [ ] Complete proper ReplayKit Broadcast Upload Extension + Zoom screen share framework; user confirms Apple's OS prompt.
