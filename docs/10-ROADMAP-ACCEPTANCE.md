@@ -45,7 +45,8 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] First LIVE S2S token exchange, `GET /users`, and (sandbox mode) user meetings-list GET completed on Windows: PASS using the separate free Zoom sandbox (1 active user, 0 meetings).
 - [x] Added separate opt-in one-user Basic/sandbox smoke test mode; after meetings-only adjustments and two additional regressions, **15/15 offline tests passed** on operator Windows PC (2026-11-14).
 - [x] Verify individual future meeting detail GET in sandbox: **meetings=1, meeting detail=PASS** (operator evidence 2026-11-14).
-- [ ] Implement secure meetings-only local backend service using [Gate 2B acceptance plan](17-MEETINGS-BACKEND-IMPLEMENTATION.md); no production deployment yet.
+- [x] Commit an initial sandbox-only localhost FastAPI Meetings read-service prototype and 8 mock-based tests (2026-11-14; code unverified on operator machine; no deployment).
+- [ ] Operator runs 23 offline tests and the authenticated localhost Meetings API using [local runbook](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md); verify security guardrails and safe output before accepting Gate 2B.
 - [ ] Execute four-host live GET checks against the correct authorized four-host organization; record non-sensitive results only.
 - [ ] Read four intended paid users and their future **meetings** using least-privilege scopes (production tenant read-only verification pending). Webinar API acceptance deferred.
 - [ ] Validate HTTPS webhook and signed messages; dedupe events.
