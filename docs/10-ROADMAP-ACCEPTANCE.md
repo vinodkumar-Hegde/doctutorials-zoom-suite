@@ -27,15 +27,15 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 - [ ] For iPad Meeting SDK joining meetings hosted outside SDK developer account, verify Zoom's current review and ZAK/OBF requirements before choosing cross-account test setup.
 
 ## Current delivery sequence — operator-approved meetings first (2026-11-14)
-1. **NOW — Basic sandbox meetings:** Verify S2S authentication, user list, scheduled meeting list and individual meeting detail (the first live sandbox meetings list had zero items; detail GET still pending).
-2. **NEXT — meeting integration only:** Build securely configured read-only backend endpoints; validate meeting scheduling/updates and event handling only after separate authorization and nonproduction tests. Do not alter any live meeting/webinar settings.
+1. **COMPLETED (read-only sandbox proof) — Basic sandbox meetings:** S2S authentication, user list, scheduled meeting list and individual meeting detail PASS for one sandbox meeting.
+2. **IN PROGRESS — meeting integration only:** Authenticated loopback-only FastAPI meeting list/detail GETs passed the operator's live sandbox client test (2026-11-14); local unit-test expansion, negative authentication checks, and production hardening remain pending. Any scheduling writes/event handling need separate authorization and nonproduction tests.
 3. **LATER — webinar integration:** Only after meeting integration acceptance, test webinars, panelists, scopes, lifecycle and any relevant recording flows on an authorized paid environment. No webinar API GET or webhook subscription in current integration phase.
 4. **PRODUCTION ACCEPTANCE STILL REQUIRED:** Four licensed hosts, cloud backup, local recording and concurrency feasibility are not validated by the one-user Basic sandbox.
 
 The default four-host read-only smoke test has been changed to **meetings-only**; its webinar calls are disabled in the active code path. The one-user sandbox mode remains meetings-only. Two new offline test cases were committed (15 total); the operator reran the suite and all **15/15 passed** (2026-11-14).
 
 ## Gate 2 — Developer backend
-**Status (2026-11-14):** **SANDBOX READ-ONLY MEETINGS POC PASSED** — S2S token, users list, meetings list, and **individual meeting detail** all succeeded against one Basic sandbox user. The Windows operator also confirmed **15/15** offline tests passed. Full secure FastAPI backend, write APIs, four-host production, webhooks and production vault remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No real credentials have been shared with the assistant. The operator has verified live **sandbox meeting GET** APIs; webhook and production API tests have not been performed.
+**Status (2026-11-14):** **SANDBOX READ-ONLY MEETINGS POC PASSED**, including the authenticated local FastAPI client path: local meetings GET PASS (count 1), detail GET PASS. The Windows operator confirmed **15/15** earlier offline tests; **23-test expanded suite result not yet shared**. Production backend, write APIs, four-host production, webhooks and secret vault remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No real credentials have been shared with the assistant. The operator has verified live **sandbox meeting GET** APIs; webhook and production API tests have not been performed.
 - [x] Create Server-to-Server OAuth app `DocTutorials-Backend` (operator-confirmed; ownership/tenant verification pending).
 - [x] Complete app Information and add five least-privilege read-only admin scopes (operator-confirmed 2026-11-13; scope evidence pending).
 - [x] Activate `DocTutorials-Backend` (operator-confirmed 2026-11-13; token exchange not independently checked).
@@ -46,8 +46,9 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] Added separate opt-in one-user Basic/sandbox smoke test mode; after meetings-only adjustments and two additional regressions, **15/15 offline tests passed** on operator Windows PC (2026-11-14).
 - [x] Verify individual future meeting detail GET in sandbox: **meetings=1, meeting detail=PASS** (operator evidence 2026-11-14).
 - [x] Commit an initial sandbox-only localhost FastAPI Meetings read-service prototype and 8 mock-based tests (2026-11-14; code unverified on operator machine; no deployment).
-- [x] Operator launched sandbox-local FastAPI server and saw startup announcement at `http://127.0.0.1:8765` following hidden S2S credential prompts (2026-11-14); **not yet proof of authenticated HTTP client GET**.
-- [ ] Operator runs 23 offline tests (results not yet shared) and the authenticated localhost Meetings API client using [local runbook](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md); verify successful GET and safe output before accepting Gate 2B.
+- [x] Operator launched sandbox-local FastAPI server at `http://127.0.0.1:8765` and then **successfully tested authenticated localhost GET /v1/meetings (count=1) and GET /v1/meetings/1** with the client (2026-11-14).
+- [x] Authenticated localhost Meetings API client PASS (meetings=1, detail PASS, no webinar APIs), operator evidence 2026-11-14.
+- [ ] Operator shares 23-test expanded suite results (not provided yet), and separately verify rejection of unauthenticated requests before closing Gate 2B acceptance.
 - [ ] Rotate ephemeral localhost API session key by stopping/restarting local backend after sharing the two temporary keys in chat; do not share replacement key or place it in GitHub.
 - [ ] Execute four-host live GET checks against the correct authorized four-host organization; record non-sensitive results only.
 - [ ] Read four intended paid users and their future **meetings** using least-privilege scopes (production tenant read-only verification pending). Webinar API acceptance deferred.
