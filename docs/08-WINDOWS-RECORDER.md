@@ -1,7 +1,7 @@
 # Windows Recorder — Four Independent Channels
 
 ## Current intent
-One Windows workstation (user says hardware meets earlier recommended sizing) supports at least four independent sessions from different Zoom host users. Each Zoom host user is mapped to a distinct recording worker and isolated output directory.
+One Windows workstation is intended to support at least four independent sessions from different Zoom host users. **This is a target, not a verified capability.** Each Zoom host user is mapped to a distinct recording worker and isolated output directory.
 
 ## Candidate architecture A — isolated Windows environments
 - Four separate Windows VM/user environments; each runs an authorized signed-in Zoom Workplace client (exact account/host identity plan to test).
@@ -15,14 +15,18 @@ One Windows workstation (user says hardware meets earlier recommended sizing) su
 ## Candidate architecture B — four physical recording clients
 If four VMs are unsupported or unreliable, use four Windows mini-PCs (one per host) managed from one dashboard and archive to the same NAS. This costs more hardware but reduces virtualization uncertainty.
 
+## Stage 3A — Meetings-only, one-channel SDK feasibility (active 2026-11-14)
+
+The first task is proving **one native Zoom Workplace Windows Plugin SDK connection and recording control** in the isolated free Zoom Basic sandbox, without any webinar activity or changes to production. See [19-GATE3-WINDOWS-PLUGIN-SDK-RECORDER-SPIKE.md](19-GATE3-WINDOWS-PLUGIN-SDK-RECORDER-SPIKE.md) for the official demo, authorization prerequisites, Windows test commands and acceptance criteria. The read-only environment and finalized MP4 probe plus 12 new tests have been committed; native Plugin SDK connection and record commands are **not** yet implemented or tested. The SDK requires its own OAuth authorization and the `plugin_sdk:read:connection_meta` scope; prior S2S OAuth does not establish that connection.
+
 ## SDK proof-of-concept order
 1. Confirm Windows Zoom Workplace version >= 7.0.2 and matching Plugin SDK.
 2. Authenticate native Plugin SDK against one actual signed-in Zoom client.
-3. Verify current meeting/webinar context and host identity.
+3. Verify current **meeting** context and authorized role (webinar checks deferred).
 4. Verify the **actual supported API and privileges** for start, stop, pause and resume local recording; do not assume all are available.
-5. Record a live webinar including laptop webcam/audio and iPad broadcast; inspect output.
+5. Record one authorized **sandbox Zoom Meeting** with laptop webcam/audio and screen share; inspect output. Defer iPad/webinar to later acceptance.
 6. Stop and confirm Zoom conversion, MP4 presence, file health and duration.
-7. Repeat with two simultaneous workers; then three; then four. Monitor CPU, memory, disks, media quality and sessions.
+7. After one SDK-controlled meeting recording is independently verified, repeat with two workers; then three; then four. Monitor CPU, memory, disks, media quality and sessions.
 8. Document rollback and manual startup for host/auth failures.
 
 ## Recorder-worker contract (proposal)
