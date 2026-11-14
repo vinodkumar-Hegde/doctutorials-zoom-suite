@@ -200,3 +200,9 @@
 - Prior readiness evidence remains valid: 35/35 offline tests PASS, Windows detected and Zoom executable candidate FOUND. No Plugin SDK IPC, recording permissions or native control tests have been performed.
 - Official Zoom Plugin SDK Windows demo requires **Visual Studio 2019 or later** and `PSDKTest.sln` in **Release/x64**; Microsoft currently offers **Visual Studio Community 2026** and a **Desktop development with C++** installer workload. Recommended selecting that workload with MSVC x64/x86 and Windows SDK, using only the official Microsoft downloader and observing applicable commercial licensing.
 - Next operator steps: install Visual Studio with C++ desktop workload; rerun the `vswhere` check; report actual Windows Zoom Workplace version separately. Do not change Zoom tenant settings, install plugin tokens or switch to webinar development.
+
+## 2026-11-14 — Visual Studio installed but C++ workload still not detected
+- Operator reported Visual Studio installation, but twice re-ran the existing PowerShell `vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64` check and received **Visual Studio C++ tools: NOT FOUND**.
+- No evidence yet of completed **Desktop development with C++** workload, matching MSVC x64/x86 components, Windows SDK or Visual Studio registered installation path. Do not assert the full Visual Studio product installation failed; the filtered detection could also exclude an incomplete or unusually configured instance.
+- Advised using official **Visual Studio Installer → Modify → Desktop development with C++** with MSVC x64/x86 and Windows SDK, then rerun a more diagnostic `vswhere -all -products *` query and workload-specific query.
+- SDK demo build and Plugin SDK IPC remain blocked. Prior 35/35 offline Windows tests, Zoom executable candidate found, and Basic sandbox Meetings backend success remain valid. No production Zoom configuration change.
