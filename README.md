@@ -35,7 +35,7 @@ An integrated faculty teaching and recording platform built around four existing
 - `docs/15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md` — OAuth app configuration checklist
 - `docs/16-MILESTONE-2-SECURE-API-SMOKE.md` — PowerShell procedure and safe reporting
 - `backend/zoom_s2s_smoke_test.py` — standard-library-only S2S read-only four-host API test
-- `tests/test_zoom_s2s_smoke_test.py` — 13 offline unit tests
+- `tests/test_zoom_s2s_smoke_test.py` — 15 offline tests (13 operator-confirmed passed; two new cases pending rerun)
 - `AGENTS.md` — development-agent standing instructions
 
 ## Architecture sketch
@@ -71,3 +71,7 @@ Milestone 1 cloud recording settings are reported as implemented by the operator
 ## Live OAuth status and separate Basic sandbox mode (2026-11-14)
 
 The first real S2S token grant and `GET /users` **passed**, but that app's organization returned only **one active user and zero eligible paid hosts**. The production four-host acceptance test **did not pass** and remains pending. The Windows operator subsequently confirmed **13/13 offline tests PASS**, plus a live free sandbox run with OAuth PASS, users GET PASS (1) and scheduled meetings GET PASS (0), with detail GET SKIPPED. The code supports `python backend\zoom_s2s_smoke_test.py --sandbox-single-user` for explicit one-user Basic meeting-read tests, without treating the result as four-host or webinar acceptance. To exercise meeting detail GET, schedule a harmless future meeting in the separate sandbox and rerun the one-user read-only test; production remains separate. See `docs/16-MILESTONE-2-SECURE-API-SMOKE.md` for safe instructions.
+
+## Operator scope decision: meetings first (2026-11-14)
+
+Current development will implement and validate **Zoom Meetings only**, starting in the free sandbox. Webinar integration, webinar panelist flows and webinar-specific API calls are deferred until meetings are tested and the operator explicitly authorizes the next phase. The read-only smoke test's default four-host path now also avoids webinar GETs. **15 offline tests** are committed; the two newest regression tests still need to be run on the Windows workstation. The long-term product requirement for webinar support remains unchanged.
