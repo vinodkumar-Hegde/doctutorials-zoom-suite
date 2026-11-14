@@ -12,6 +12,7 @@ include:
 targets:
   DocTutorialsScreenShare:
     sources:
+      - path: SDKApp
       - path: vendor/ZoomMeetingSDK/lib/MobileRTCResources.bundle
         buildPhase: resources
         type: file
