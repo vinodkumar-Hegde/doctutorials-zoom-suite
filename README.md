@@ -35,7 +35,7 @@ An integrated faculty teaching and recording platform built around four existing
 - `docs/15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md` — OAuth app configuration checklist
 - `docs/16-MILESTONE-2-SECURE-API-SMOKE.md` — PowerShell procedure and safe reporting
 - `backend/zoom_s2s_smoke_test.py` — standard-library-only S2S read-only four-host API test
-- `tests/test_zoom_s2s_smoke_test.py` — 15 offline tests (13 operator-confirmed passed; two new cases pending rerun)
+- `tests/test_zoom_s2s_smoke_test.py` — 15 offline tests (15/15 operator-confirmed passed on Windows)
 - `AGENTS.md` — development-agent standing instructions
 
 ## Architecture sketch
@@ -74,4 +74,8 @@ The first real S2S token grant and `GET /users` **passed**, but that app's organ
 
 ## Operator scope decision: meetings first (2026-11-14)
 
-Current development will implement and validate **Zoom Meetings only**, starting in the free sandbox. Webinar integration, webinar panelist flows and webinar-specific API calls are deferred until meetings are tested and the operator explicitly authorizes the next phase. The read-only smoke test's default four-host path now also avoids webinar GETs. **15 offline tests** are committed; the two newest regression tests still need to be run on the Windows workstation. The long-term product requirement for webinar support remains unchanged.
+Current development will implement and validate **Zoom Meetings only**, starting in the free sandbox. Webinar integration, webinar panelist flows and webinar-specific API calls are deferred until meetings are tested and the operator explicitly authorizes the next phase. The read-only smoke test's default four-host path now also avoids webinar GETs. **15/15 offline tests** passed on the Windows workstation. Sandbox meeting-list and individual meeting-detail GET **both passed** with a future test meeting (2026-11-14). The long-term product requirement for webinar support remains unchanged.
+
+## Gate 2B — Next: secured meetings-only backend
+
+On 2026-11-14 the Windows operator reported **15/15 unit tests passed**, Zoom sandbox OAuth PASS, users GET PASS (1), scheduled meeting list GET PASS (1) and **meeting detail GET PASS**; webinars remained NOT TESTED. This closes the initial **read-only meeting API PoC**, not the backend service or production integration. [docs/17-MEETINGS-BACKEND-IMPLEMENTATION.md](docs/17-MEETINGS-BACKEND-IMPLEMENTATION.md) defines the next localhost-only, authenticated FastAPI meeting-service proof and acceptance tests. Do not switch on write scopes, webinar calls, webhook subscriptions or production connections as part of this step.
