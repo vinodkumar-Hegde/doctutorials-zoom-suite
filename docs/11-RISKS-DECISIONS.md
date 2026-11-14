@@ -19,6 +19,8 @@ Date: 2026-11-13. Status terms: `ACCEPTED`, `PROPOSED`, `OPEN`, `REJECTED`.
 
 - **ADR-013 [PROPOSED]** Prefer a separate Zoom Basic organization as a nonproduction sandbox for API token/read-only meeting tests and initial native meeting/local-recording and iPad Meeting SDK experiments, subject to app entitlements. Never reuse production S2S credentials in a sandbox app; an S2S app's tokens access only its own Zoom organization. Basic does not provide webinar hosting or Zoom cloud recording, and a single free user cannot validate four concurrent licensed hosts. Preserve live-account acceptance gates for all paid features. The operator has not yet selected or created a sandbox.
 
+- **ADR-014 [ACCEPTED — operator decision 2026-11-14]** Implement and validate **Zoom Meetings first** in the isolated free Basic sandbox. All active integration work, API smoke tests, and operator instructions must avoid Zoom Webinar API calls. Implement webinar APIs, panelist workflows and webinar-specific recording only in a later phase after meeting integration is tested and the operator explicitly reopens webinar work. This **defers**, not removes, webinar capabilities from the full product requirements. A previously prepared five-scope S2S app may already have webinar read scopes; do not broaden scopes or change live app settings merely to enforce application-level phasing.
+
 ## Top risks
 | Risk | Severity | Mitigation |
 |---|---|---|
