@@ -79,3 +79,9 @@ Current development will implement and validate **Zoom Meetings only**, starting
 ## Gate 2B — Next: secured meetings-only backend
 
 On 2026-11-14 the Windows operator reported **15/15 unit tests passed**, Zoom sandbox OAuth PASS, users GET PASS (1), scheduled meeting list GET PASS (1) and **meeting detail GET PASS**; webinars remained NOT TESTED. This closes the initial **read-only meeting API PoC**, not the backend service or production integration. [docs/17-MEETINGS-BACKEND-IMPLEMENTATION.md](docs/17-MEETINGS-BACKEND-IMPLEMENTATION.md) defines the next localhost-only, authenticated FastAPI meeting-service proof and acceptance tests. Do not switch on write scopes, webinar calls, webhook subscriptions or production connections as part of this step.
+
+## Meetings-only local FastAPI prototype (2026-11-14)
+
+An initial **sandbox-only** service is committed: `backend/meetings_service.py`, `backend/meetings_api.py`, `backend/meetings_api_client.py`, and `backend/requirements-local.txt`. It exposes authenticated **localhost-only, read-only** meeting list and detail routes, requires one Basic Zoom sandbox user, generates a session-only local API key, and returns allowlisted fields without join URLs, passcodes or Zoom IDs. No webinar APIs are called.
+
+The original 15 tests passed on operator Windows; **8 additional service tests were committed (23 total)**, but the expanded tests and local API have **not yet been operator-executed**. See [docs/18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md](docs/18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md) for Windows commands. Do not deploy or expose this prototype publicly or use production app credentials.
