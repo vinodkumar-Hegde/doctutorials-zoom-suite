@@ -126,3 +126,9 @@
 - New shell currently resolves `python` to Python 3.13 executable, compatible with the smoke test. Git command itself resolved.
 - Advised `cd "$HOME\doctutorials-zoom-suite"` then `git pull`, `python -m unittest discover -s tests -v`, and `python backend\zoom_s2s_smoke_test.py --sandbox-single-user`. Prior evidence of 13/13 passing offline tests and successful sandbox OAuth/users/empty-meetings GET remains valid; no new test outcome has been received.
 - No production Zoom settings or existing developer apps changed. The four-host production test and sandbox meeting-detail GET remain pending.
+
+## 2026-11-14 — Operator decision: integrate Zoom Meetings first; defer webinars
+- User explicitly directs **meetings-only integration now**; webinars will be addressed only after meetings are tested. Recorded as ADR-014 ACCEPTED; this is an implementation phase change, not removal of long-term webinar requirements.
+- Existing single-user Basic sandbox smoke mode already made no webinar calls. Changed four-host default smoke path to read meeting lists/details only, with `webinars=DEFERRED` output; Zoom Webinar client helper methods remain dormant and no webhook changes or production actions occurred.
+- Added two regression tests that fail if default four-host mode calls webinar APIs; **15 offline tests in repository**. Only the prior 13 tests were operator-confirmed passed; the expanded suite is **pending execution**.
+- Current next step: from Windows repo directory run `git pull` and `python -m unittest discover -s tests -v` (expect 15), then use `python backend\zoom_s2s_smoke_test.py --sandbox-single-user` for meeting details if a future sandbox meeting has been scheduled. Avoid production operations until explicitly approved.
