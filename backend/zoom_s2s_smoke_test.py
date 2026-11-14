@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only, credential-safe Zoom S2S OAuth smoke test for four DocTutorials hosts.
+"""Read-only, credential-safe Zoom S2S OAuth smoke test for DocTutorials meetings.
 
 Python 3.10+; no third-party dependencies. Run only on an authorized computer.
 This script does not write credentials, access tokens, user information or API data.
@@ -211,30 +211,22 @@ def run(client: ZoomReadOnlyClient, *, sandbox_single_user: bool = False) -> int
         label = chr(ord("A") + index)
         user_id = user["id"]
         meetings = client.list_meetings(user_id)
-        webinars = client.list_webinars(user_id)
-        # The GET detail endpoint can only be tested if a non-expired scheduled item exists.
+        # Meetings-only phase: do not call any webinar endpoints.
+        # The GET detail endpoint can only be tested if a scheduled item exists.
         meeting_detail = "SKIPPED (no scheduled meeting)"
-        webinar_detail = "SKIPPED (no scheduled webinar)"
         if meetings:
             mid = meetings[0].get("id")
             if mid is None:
                 raise SmokeTestError("Meeting list lacked a meeting ID.")
             client.check_meeting_detail(mid)
             meeting_detail = "PASS"
-        if webinars:
-            wid = webinars[0].get("id")
-            if wid is None:
-                raise SmokeTestError("Webinar list lacked a webinar ID.")
-            client.check_webinar_detail(wid)
-            webinar_detail = "PASS"
-        print(f"Host {label}: meetings={len(meetings)}, webinars={len(webinars)}, "
-              f"meeting detail={meeting_detail}, webinar detail={webinar_detail}")
-    print("RESULT: PASS — four separate licensed host users were read successfully. No Zoom records modified.")
+        print(f"Host {label}: meetings={len(meetings)}, meeting detail={meeting_detail}, webinars=DEFERRED")
+    print("RESULT: PASS — meetings-only read test for four separate licensed host users. Webinar tests deferred. No Zoom records modified.")
     return 0
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Zoom S2S read-only test: production four-host default or single-user sandbox.")
+    parser = argparse.ArgumentParser(description="Zoom S2S meetings-only read-only test: four-host default or single-user sandbox.")
     parser.add_argument(
         "--sandbox-single-user",
         action="store_true",
