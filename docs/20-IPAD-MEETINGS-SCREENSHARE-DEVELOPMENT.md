@@ -114,3 +114,29 @@ The operator successfully ran `xcode-select -p` and `xcodebuild -version`: `/App
 ## 2026-11-15 — Downloaded iOS SDK ZIP located in Mac Downloads
 - Mac Downloads contains vendor ZIP named `zoom-sdk-ios-7.2.5.40220.zip` (operator-confirmed ~187MB). Previous framework search was empty because package has not been extracted. Exact content/version still require inspection; do not treat ZIP name as verified SDK version.
 - Next: `mkdir -p ~/Downloads/DocTutorialsZoomSDK && ditto -x -k ~/Downloads/zoom-sdk-ios-7.2.5.40220.zip ~/Downloads/DocTutorialsZoomSDK`, then locate `version.txt`, `MobileRTC.xcframework`, `MobileRTCResources.bundle` and `MobileRTCScreenShare.xcframework`. Keep SDK binaries outside Git; SDK integration in Xcode has not yet occurred.
+
+## 2026-11-15 — Vendor SDK extracted; main app linkage prepared
+Operator confirmed downloaded Zoom SDK ZIP was extracted under `~/Downloads/DocTutorialsZoomSDK` and all four required paths exist:
+- `version.txt`
+- `lib/MobileRTC.xcframework`
+- `lib/MobileRTCResources.bundle`
+- `lib/MobileRTCScreenShare.xcframework`
+
+The actual `version.txt` contents have **not yet** been reported; do not equate ZIP name with verified SDK internal version. Our new optional `project-sdk.yml` supplements the known-working UI-only `project.yml`; it links `MobileRTC.xcframework` with embedding and signing and copies `MobileRTCResources.bundle` in the **main app only**. The future `MobileRTCScreenShare.xcframework` requires its own Apple Broadcast Upload Extension and matching App Group; it is deliberately **not** linked to the main app. The staged handler remains excluded.
+
+**Next commands (on the Mac):**
+
+```bash
+cd ~/doctutorials-zoom-suite
+git pull
+cd ipad/DocTutorialsScreenShare
+bash scripts/prepare_zoom_sdk.sh
+xcodegen generate --spec project-sdk.yml
+open DocTutorialsScreenShare.xcodeproj
+```
+
+The preparation script checks files including `version.txt`, reports its first line, and creates `vendor/ZoomMeetingSDK` as a Git-ignored **symlink to the extracted SDK in Downloads**. It does not copy, upload or modify Zoom frameworks. `xcodegen generate --spec project-sdk.yml` replaces the ignored, locally generated Xcode project with the SDK-linkage variant. If generation/build fails, return to the proven UI-only config using `xcodegen generate --spec project.yml`. Neither generated variant has yet proved an actual SDK join.
+
+In Xcode, inspect the app target → General → Frameworks, Libraries and Embedded Content: **MobileRTC = Embed & Sign**. Under Build Phases → Copy Bundle Resources: **MobileRTCResources.bundle**. No `MobileRTCScreenShare` in the main app target. Next verify build only on simulator before adding SDK authentication. Current official Zoom documentation supports up to iOS 26; operator simulator is iPadOS 27.2, so compatibility must be determined empirically or from updated Zoom release notes before declaring SDK runtime support.
+
+Official: https://developers.zoom.us/docs/meeting-sdk/ios/integrate/ and https://developers.zoom.us/docs/meeting-sdk/ios/default-ui/basic-features/ios-screen-share-trouble-tips/; XcodeGen spec https://yonaskolb.github.io/XcodeGen/Docs/ProjectSpec.html
