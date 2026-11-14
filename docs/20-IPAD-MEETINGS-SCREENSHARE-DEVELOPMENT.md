@@ -84,3 +84,9 @@ The operator successfully ran `xcode-select -p` and `xcodebuild -version`: `/App
 - The private repository was cloned successfully at `~/doctutorials-zoom-suite` on Mac. `git status` showed branch `main`, up to date with `origin/main`, clean working tree.
 - Git 2.54.0, Homebrew 7.0.13 and Xcode 27.2 were already confirmed. Next step is installing/checking XcodeGen via `brew install xcodegen`, generating `ipad/DocTutorialsScreenShare/project.yml` with `xcodegen generate`, and opening the generated project.
 - The SwiftUI shell has **not been compiled or tested yet**. The join and broadcast controls remain intentionally inactive and real Zoom/ReplayKit SDK integration is a later milestone.
+
+## 2026-11-15 — Project generated on operator's Mac
+- **XcodeGen 2.46.0 installed via Homebrew: PASS**.
+- **Xcode project generation: PASS**, confirmed output `Created project at .../ipad/DocTutorialsScreenShare/DocTutorialsScreenShare.xcodeproj`.
+- **App build, iPad Simulator run, XCTest 5/5: PENDING**. Xcode opening and any iPad hardware testing have not yet been confirmed.
+- Next: open project in Xcode, select the DocTutorialsScreenShare scheme + iPad Simulator, Cmd+R to build/run. Then Cmd+U to execute five policy tests. Report first red build error if any; do not make feature acceptance claims from project generation alone.
