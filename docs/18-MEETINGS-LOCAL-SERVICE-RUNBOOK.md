@@ -1,7 +1,7 @@
 # Gate 2B — Local Meetings Backend (Free Zoom Sandbox)
 
 **Date:** 2026-11-14
-**Implementation:** Initial sandbox-only FastAPI service committed and **operator-confirmed running** on Windows. Authenticated local API list and detail GET passed (one meeting) on 2026-11-14. The expanded 23-test suite outcome has not yet been shared.
+**Implementation:** Initial sandbox-only FastAPI service committed and **operator-confirmed running** on Windows. Authenticated local API list and detail GET passed (one meeting) on 2026-11-14. The operator subsequently reported that **all 23 offline unit tests passed** (2026-11-14).
 
 ## Scope and safety
 
@@ -26,7 +26,7 @@ Open PowerShell. From any directory, enter:
     python -m unittest discover -s tests -v
     python -m pip install -r backend\requirements-local.txt
 
-The previous 15 tests passed; the new service adds **8** standard-library unit tests, so the current suite now contains **23** tests. **The expanded 23-test suite has not yet been confirmed passing on the operator Windows PC.** Stop and report any failure before running the local HTTP server.
+The previous 15 tests passed; the new service adds **8** standard-library unit tests, so the current suite now contains **23** tests. **The operator reports all 23 offline unit tests PASS on Windows (2026-11-14).** Stop and report any failure before running the local HTTP server.
 
 If `python -m pip` reports a missing pip installation, fix it with official Python installation instructions rather than installing random packages from unknown websites.
 
@@ -117,4 +117,18 @@ The operator ran the localhost API client and supplied these non-sensitive resul
     Local authenticated first meeting detail GET: PASS
     RESULT: PASS — Local Zoom Basic Meetings service. No webinar APIs.
 
-This verifies authenticated local GET list/detail against the free Zoom Basic sandbox through the FastAPI service. **It does not prove 23/23 offline tests passed**, negative auth controls, production identity/RBAC, Windows recording, four-host operation or webinar support. The earlier exposed temporary API key rotation remains operator-unconfirmed; stop/restart the local server when no longer testing and keep new keys private.
+This verifies authenticated local GET list/detail against the free Zoom Basic sandbox through the FastAPI service. **The operator separately confirmed 23/23 offline tests passed.** It does not prove negative live-auth controls, production identity/RBAC, Windows recording, four-host operation or webinar support. The earlier exposed temporary API key rotation remains operator-unconfirmed; stop/restart the local server when no longer testing and keep new keys private.
+
+## Next check — unauthenticated localhost requests (2026-11-14)
+
+With the sandbox-only local server running in PowerShell window A, open window B and send a **GET without any authentication header**:
+
+    try {
+        $r = Invoke-WebRequest -Uri 'http://127.0.0.1:8765/v1/meetings' -UseBasicParsing -ErrorAction Stop
+        "UNEXPECTED HTTP $($r.StatusCode)"
+    } catch {
+        if ($_.Exception.Response) { "HTTP $([int]$_.Exception.Response.StatusCode)" }
+        else { "NETWORK FAILURE — start the local server first" }
+    }
+
+Expected: **HTTP 401** (rejected as unauthorized). An HTTP 200 is a security failure; stop the server and report the issue. A network failure is not a passing authorization test. Do not include any API key in this request. Keep the key from the currently running instance private; two earlier session keys were exposed and rotation is recommended. This check does not modify Zoom meetings.
