@@ -90,3 +90,9 @@ The operator successfully ran `xcode-select -p` and `xcodebuild -version`: `/App
 - **Xcode project generation: PASS**, confirmed output `Created project at .../ipad/DocTutorialsScreenShare/DocTutorialsScreenShare.xcodeproj`.
 - **App build, iPad Simulator run, XCTest 5/5: PENDING**. Xcode opening and any iPad hardware testing have not yet been confirmed.
 - Next: open project in Xcode, select the DocTutorialsScreenShare scheme + iPad Simulator, Cmd+R to build/run. Then Cmd+U to execute five policy tests. Report first red build error if any; do not make feature acceptance claims from project generation alone.
+
+## 2026-11-15 — iPad Simulator UI launched: PASS
+- Operator screenshot confirms the **DocTutorialsScreenShare** SwiftUI app running on an **iPad (A16) iPadOS 27.2 Simulator**.
+- Observed UI: faculty screen-sharing header; no real class loaded, optional sample class; disconnected Zoom Meeting state and disabled Join button; disabled screen broadcast; privacy acknowledgement toggle ON; explicit "Development preview — no meeting is joined or broadcast" label.
+- This passes **UI-only simulator launch**, not Zoom join, actual ReplayKit sharing, physical iPad or end-to-end integration.
+- Next: select `DocTutorialsScreenShare` scheme in Xcode and run `Cmd+U` to execute five screen-share policy XCTest cases. **5/5 not yet confirmed**.
