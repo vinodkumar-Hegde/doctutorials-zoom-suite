@@ -161,3 +161,8 @@
 - This verifies the active local FastAPI GET routes reached the Zoom Basic sandbox and returned one meeting and successful detail through the authenticated local client. No Zoom resource writes or webinar calls were required.
 - **Still pending:** result of expanded **23 offline tests** (only the earlier 15/15 have been confirmed), negative unauthenticated-request test, production vault/RBAC, four paid hosts, webhooks and Windows recording-engine PoC. Prior temporary local key exposure and restart/rotation were advised; no new key was supplied, but actual restart confirmation remains unverified.
 - GitHub roadmap and operator runbooks updated without storing credentials, tokens, keys, meeting IDs or private meeting content.
+
+## 2026-11-14 — Operator confirms expanded 23-unit-test suite passed
+- Operator reports **all tests passed** after instructions to run `python -m unittest discover -s tests -v` on the expanded local Meetings backend suite (23 expected tests). Interpreted as **23/23 operator-confirmed PASS**; precise console summary not pasted and no CI attestation.
+- Previous authenticated local sandbox API proof remains `meetings GET PASS (count=1)`, `meeting detail GET PASS`; Zoom Basic sandbox only, no webinar or production four-host API calls.
+- Remaining near-term security check: send a GET to local `http://127.0.0.1:8765/v1/meetings` **without** `X-DocTutorials-Key` and expect **HTTP 401**; a connection error does not count. Production vault/RBAC, recordings and Windows four-channel control remain unresolved. No Zoom settings changed or secrets committed.
