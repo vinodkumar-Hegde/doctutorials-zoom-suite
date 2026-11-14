@@ -206,3 +206,8 @@
 - No evidence yet of completed **Desktop development with C++** workload, matching MSVC x64/x86 components, Windows SDK or Visual Studio registered installation path. Do not assert the full Visual Studio product installation failed; the filtered detection could also exclude an incomplete or unusually configured instance.
 - Advised using official **Visual Studio Installer → Modify → Desktop development with C++** with MSVC x64/x86 and Windows SDK, then rerun a more diagnostic `vswhere -all -products *` query and workload-specific query.
 - SDK demo build and Plugin SDK IPC remain blocked. Prior 35/35 offline Windows tests, Zoom executable candidate found, and Basic sandbox Meetings backend success remain valid. No production Zoom configuration change.
+
+## 2026-11-14 — MSVC toolset installed and discovered on Windows
+- Operator successfully ran filtered Visual Studio discovery and received `C:\Program Files\Microsoft Visual Studio\18\Community` for `Microsoft.VisualStudio.Component.VC.Tools.x86.x64`.
+- **Visual Studio Community 2026 / MSVC C++ tools detected.** Previous `NOT FOUND` results were before successful tool detection and no longer block proceeding to vendor SDK prerequisites. A Windows SDK install and actual C++ demo compilation have not yet been proven.
+- Previously confirmed: 35/35 offline tests PASS; Windows environment and likely Zoom executable found; plugin IPC and recording commands not tested. Next: confirm Zoom Workplace Windows app version, then sandbox General App Plugin SDK and official demo (no production changes). UI shell may be designed in parallel, but no unsupported controls should be represented as working.
