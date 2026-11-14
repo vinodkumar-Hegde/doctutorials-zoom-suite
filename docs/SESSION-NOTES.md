@@ -260,3 +260,11 @@
 - **Stage 4A UI shell simulator launch: PASS (operator screenshot).** No crash/build error visible on the screenshot, but detailed Xcode build log not provided.
 - **Five XCTest tests have NOT YET been reported**, and the screenshot does **not** establish Zoom Meeting SDK connectivity, faculty authorization, ReplayKit extension build, real iPad device test or media sharing.
 - Next operator task: run `Cmd+U` in Xcode with the iPad simulator selected; report test summary. After policy tests, move into real Zoom Meeting SDK iOS integration against the separate Basic sandbox, and eventually broadcast extension and real-device proof. Windows recording remains last.
+
+## 2026-11-15 — iPad SwiftUI policy XCTest suite PASSED (5/5) in Simulator
+- Operator supplied Xcode screenshot showing five green passing `ScreenSharePolicyTests` and complete console test report: `Executed 5 tests, with 0 failures (0 unexpected) in 0.771 (4.979) seconds`; Xcode showed `Test Completed`.
+- Confirmed cases: `testBroadcastOnlyAfterAllThreeGates`, `testConnectedButNoPrivacyConsentNeverOffersBroadcast`, `testConnectedButNoZoomPermissionNeverOffersBroadcast`, `testDisconnectedNeverOffersBroadcast`, `testStatusNeverClaimsConnectedWhenDisconnected`.
+- iPad (A16) simulator launch previously confirmed; **Gate 4A UI shell and permission policy offline tests PASSED**. This is NOT evidence of SDK auth, joining a meeting, physical iPad signature, or full-device ReplayKit sharing.
+- Xcode output also included nonfatal Info.plist all-orientations advisory and simulator launch telemetry / pointer service warnings; they did not cause failed tests. Keep orientation support under iOS UI polish before release.
+- Next active implementation prerequisite: separate Zoom **General App → Features → Embed → Meeting SDK** for the same authorized Basic sandbox account; obtain SDK distribution and backend-generated short-lived JWT **without putting client ID/secret or JWT in GitHub/chat**. Current official Zoom guidance: https://developers.zoom.us/docs/meeting-sdk/get-credentials/ and https://developers.zoom.us/docs/meeting-sdk/auth/. IOS SDK 7+ requires Xcode 26+ (Mac Xcode 27.2 already confirmed). External-account meetings require Zoom review plus valid additional authorization and are out of this sandbox proof.
+- No webinar integration or Windows recorder development resumed.
