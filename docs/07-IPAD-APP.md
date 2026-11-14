@@ -1,4 +1,8 @@
-# Faculty iPad App — v0.1
+# Faculty iPad App — v0.2 (ACTIVE — Meetings-first)
+
+**2026-11-14 operator priority:** Develop the DocTutorials iPad screen-sharing app now; Windows central recorder last. Initial proof is an authorized **Zoom Meeting in the separate Basic sandbox**. Webinar panelist experience below remains **future**, not part of the active test. See [Stage 4A runbook](20-IPAD-MEETINGS-SCREENSHARE-DEVELOPMENT.md).
+
+**Committed implementation:** `../ipad/DocTutorialsScreenShare/` includes an iPad SwiftUI UI shell, privacy and actual-SDK-state gating, five unrun XCTest policy tests, XcodeGen project spec and an **uncompiled** Zoom ReplayKit SampleHandler template. This is not a working screen-share app yet; no Xcode build, SDK joining or device broadcast was performed.
 
 ## Objective
 One installable branded DocTutorials app for all faculty with DocTutorials login, assigned class list, verified Zoom webinar panelist joining, and iPad full-screen broadcasting.
@@ -6,7 +10,7 @@ One installable branded DocTutorials app for all faculty with DocTutorials login
 ## Proposed UI
 - Login / session refresh
 - Today's classes with course, subject, topic, start time, status
-- Join webinar and 'present from iPad' mode (mic/camera off by default)
+- Join **Meeting first** and 'present from iPad' mode (mic/camera off by default); webinar later
 - Start Screen Broadcast using Apple's ReplayKit picker (user must confirm)
 - Show server-side **cloud backup / local recording** status, independently labeled
 - Recover from disconnect and present instructions for ending screen share
@@ -19,7 +23,7 @@ One installable branded DocTutorials app for all faculty with DocTutorials login
 - Separate licensed Zoom host credentials are never distributed to faculty.
 - Research iPad App Store unlisted / TestFlight distribution and review requirements before release.
 
-## Must-pass prototype
+## Must-pass prototype (original full-product wishlist; Gate 4A Meetings-only proof comes first)
 1. Faculty logs in using DocTutorials credentials.
 2. Session appears only when assigned.
 3. Join existing account-hosted webinar as panelist without host password.
