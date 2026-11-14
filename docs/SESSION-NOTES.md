@@ -139,3 +139,11 @@
 - This closes the first **sandbox S2S read-only Zoom Meetings POC**, confirming actual future meeting listing AND individual meeting detail. It does **not** verify write operations, lifecycle/webhooks, recording, production vault, or paid four-host operations.
 - Added [17-MEETINGS-BACKEND-IMPLEMENTATION.md](17-MEETINGS-BACKEND-IMPLEMENTATION.md), which specifies local authenticated read-only FastAPI service scope, fail-closed sandbox restrictions, security controls, test plan and further production gates. This is an acceptance plan only; no backend service deployed or production Zoom settings changed.
 - Continue ADR-014: **meetings only**; webinar API calls remain deferred until separately authorized.
+
+## 2026-11-14 — Meetings-only local backend prototype committed
+- Added `backend/meetings_service.py`: in-memory Zoom token renewal (conservative 20-minute interval), exactly-one-active-Basic-user gate, meetings-only list/detail GET, detail ID cross-check, and response allowlist omitting sensitive Zoom fields.
+- Added `backend/meetings_api.py`: FastAPI `GET /v1/meetings` and `GET /v1/meetings/{ordinal}` protected by strong session-only header key; script binds loopback `127.0.0.1:8765`, disables public documentation and Uvicorn access logs. No Zoom settings or API write methods.
+- Added `backend/meetings_api_client.py` for a hidden local API key test and `backend/requirements-local.txt` for FastAPI/Uvicorn dependencies.
+- Added eight pure-Python mock tests in `tests/test_meetings_service.py`; repository total is now **23 tests**, with the 8 new tests **not yet confirmed run on operator Windows workstation**. The previous 15 passed as reported by user.
+- Added Windows runbook [18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md). This is a **development proof only**, not secure public or production deployment; no secrets were placed in GitHub or chat; no external service was launched by the assistant.
+- Next operator action: `git pull`, run `python -m unittest discover -s tests -v` (expect 23), install dependencies in a development environment, run the localhost service with free sandbox credentials, verify via hidden-key client in separate terminal. Review failure results without sharing secrets. Four paid hosts and webinars remain deferred.
