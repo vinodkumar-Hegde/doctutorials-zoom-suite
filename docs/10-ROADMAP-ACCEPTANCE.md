@@ -92,7 +92,9 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] XcodeGen 2.46.0 installed, project generated, and **SwiftUI app visibly launched** in iPad (A16) iPadOS 27.2 simulator (operator screenshot 2026-11-15).
 - [x] **5/5 XCTest `ScreenSharePolicyTests` PASS**, no failures, iPad (A16) iPadOS 27.2 simulator (operator screenshot and raw test summary 2026-11-15). These are policy-unit tests, not real Zoom/ReplayKit integration.
 - [ ] Sign and run app on a physical iPad, then integrate Zoom Meeting SDK and ReplayKit for real sharing (not yet done).
-- [ ] Setup iOS General App + Meeting SDK, registered App Group and **server-side short-lived SDK JWT**; leave secrets off device.
+- [x] Operator reports separate **DocTutorials-iPad General App created**, **Meeting SDK enabled**, and **iOS SDK package downloaded to Mac Downloads** (2026-11-15). SDK version/content and auth flow not yet verified.
+- [ ] Inspect official downloaded SDK package (`version.txt`, `lib/MobileRTC.xcframework`, `lib/MobileRTCResources.bundle`, optionally `lib/MobileRTCScreenShare.xcframework`); keep SDK binary out of Git.
+- [ ] Configure correct Xcode iOS framework/resource linking and Apple signing; complete **server-side short-lived SDK JWT** and registered App Group later. No secrets in app.
 - [ ] Join one Basic sandbox Zoom **Meeting** as an authorized participant without Zoom host password; verify SDK callback and muted iPad microphone/camera.
 - [ ] Complete proper ReplayKit Broadcast Upload Extension + Zoom screen share framework; user confirms Apple's OS prompt.
 - [ ] Show live Goodnotes/Notability Apple Pencil content from iPad to another joined attendee; verify start/stop/reconnect and no unauthorized screen exposure.
