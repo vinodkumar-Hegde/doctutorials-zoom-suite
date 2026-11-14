@@ -59,3 +59,13 @@ Python standalone proof and nine offline unit tests were run; **no actual tenant
 - Permission/version mismatch/not-implemented error codes: https://developers.zoom.us/docs/plugin-sdk/windows/error-codes/
 
 **Verified from documentation:** An official Plugin SDK Windows demo includes local recording capability checks and start actions. **Not yet verified in customer's environment:** actual SDK IPC auth, local start/stop, pause/resume support, permissions, MP4 finalization, Windows VM scaling. **No Plugin SDK binary has been downloaded, compiled or executed by the assistant.**
+
+## Active Stage 4A iPad Meeting SDK full-device sharing — consulted 2026-11-14
+- Zoom Meeting SDK iOS getting started and compatibility: https://developers.zoom.us/docs/meeting-sdk/ios/get-started/
+- Meeting SDK iOS 7.0.0+ Xcode 26+ integration prerequisites: https://developers.zoom.us/docs/meeting-sdk/ios/integrate/
+- Full-device ReplayKit, App Groups, dedicated Broadcast Upload Extension and MobileRTCScreenShare forwarding/callbacks: https://developers.zoom.us/docs/meeting-sdk/ios/default-ui/basic-features/screen-share/
+- Mute iPad mic/camera when joining, plus real meeting state callbacks: https://developers.zoom.us/docs/meeting-sdk/ios/start-join-mtg-webinar/join-meeting/
+- Server-issued JWT and external account review/ZAK/OBF rules: https://developers.zoom.us/docs/meeting-sdk/auth/
+- Apple RPSystemBroadcastPickerView (deprecated, still documented in Zoom iOS share guide): https://developer.apple.com/documentation/replaykit/rpsystembroadcastpickerview
+
+**Documentation confirms API architecture, not an installed or tested app.** iPad Stage 4A UI-only source scaffold, XcodeGen spec, five XCTest cases and staged uncompiled ReplayKit SampleHandler template were committed 2026-11-14. No Mac Xcode build, Zoom SDK join, extension signing or iPad transmission test completed. External-paid-account app review and token requirements must be validated before cross-account joining. Meetings only; webinar and Windows recorder deferred.
