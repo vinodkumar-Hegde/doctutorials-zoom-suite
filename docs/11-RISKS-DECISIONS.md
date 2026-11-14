@@ -23,6 +23,9 @@ Date: 2026-11-13. Status terms: `ACCEPTED`, `PROPOSED`, `OPEN`, `REJECTED`.
 
 - **ADR-015 [PROPOSED — 2026-11-14]** One-channel Windows recorder feasibility must be proven using a separate **Plugin SDK General App OAuth connection** to a signed-in Zoom Workplace Windows client and Zoom's provided PSDKTest demo before implementing a native bridge. Keep Zoom S2S API credentials separate. Build no Start/Pause/Resume/Stop UI buttons until methods, permissions, callbacks and MP4 finalization are verified. A read-only artifact probe is not recording automation. Meetings-first ADR-014 continues; webinars deferred. Review after SDK demo evidence.
 
+
+- **ADR-016 [ACCEPTED — operator decision 2026-11-14]** Prioritize the **custom faculty iPad screen-sharing app now** and move **Windows central recording development to the LAST phase**. Gate 3 feasibility evidence (35 Windows unit tests and detected MSVC tools) remains archived but SDK connection and native recording are paused. Deliver **Meetings-first** SwiftUI/Zoom Meeting SDK/ReplayKit screen sharing in the separate Basic sandbox. Webinar-specific panelist flows remain deferred per ADR-014; do not modify production Zoom settings. iOS app requires a Mac/Xcode and real iPad, separate Meeting SDK General App, server-issued JWT and proper Apple App Group/Broadcast Upload Extension. UI must fail closed until SDK confirms joined meeting/participant sharing entitlements; iOS shell alone does not establish live screen sharing. See [Gate 4A runbook](20-IPAD-MEETINGS-SCREENSHARE-DEVELOPMENT.md).
+
 ## Top risks
 | Risk | Severity | Mitigation |
 |---|---|---|
