@@ -234,3 +234,9 @@
 - This supersedes earlier CommandLineTools-only and invalid developer-directory errors; Xcode activation prerequisite is now **PASSED**.
 - **Not yet established:** Git/Homebrew/XcodeGen availability on Mac, repository cloned on Mac, app compilation, iPad signing, Meeting SDK setup, ReplayKit extension and live sharing. No feature acceptance checked off merely from Xcode version.
 - Next Mac operator command checks `git --version`, `brew --version` and whether `~/doctutorials-zoom-suite` already exists. Do not clone blindly or overwrite an existing working tree.
+
+## 2026-11-15 — Mac Git and Homebrew verified, private repo not yet cloned
+- Operator's Mac Terminal output: `git version 2.54.0 (Apple Git-157)`; `Homebrew 7.0.13`; `~/doctutorials-zoom-suite` **not present** (same result on two checks).
+- Xcode previously confirmed **27.2 / 27B52** with correct full developer directory. No iPad build or Xcode tests have run.
+- Immediate setup step: clone private `vinodkumar-Hegde/doctutorials-zoom-suite` repo to Mac via HTTPS under the user's own GitHub authorization, verify clean `main` working tree. Do **not** paste GitHub access tokens in chat or commit them.
+- After clone, install XcodeGen with existing Homebrew and generate/open `ipad/DocTutorialsScreenShare/project.yml`, then compile UI shell and XCTest. Zoom SDK connection/ReplayKit live broadcasting still pending; Windows recorder remains postponed.
