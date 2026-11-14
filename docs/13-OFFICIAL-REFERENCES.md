@@ -69,3 +69,12 @@ Python standalone proof and nine offline unit tests were run; **no actual tenant
 - Apple RPSystemBroadcastPickerView (deprecated, still documented in Zoom iOS share guide): https://developer.apple.com/documentation/replaykit/rpsystembroadcastpickerview
 
 **Documentation confirms API architecture, not an installed or tested app.** iPad Stage 4A UI-only source scaffold, XcodeGen spec, five XCTest cases and staged uncompiled ReplayKit SampleHandler template were committed 2026-11-14. No Mac Xcode build, Zoom SDK join, extension signing or iPad transmission test completed. External-paid-account app review and token requirements must be validated before cross-account joining. Meetings only; webinar and Windows recorder deferred.
+
+## Stage 4B — Zoom iOS SDK initialization, join callbacks and signing (rechecked 2026-11-15)
+- Official iOS integration sample shows `MobileRTCSDKInitContext`, `MobileRTCAuthService.jwtToken`, `sdkAuth()`, and `onMobileRTCAuthReturn`: https://developers.zoom.us/docs/meeting-sdk/ios/build-an-app/implement-features/
+- Official non-host join has `MobileRTCMeetingJoinParam`, `noAudio`, `noVideo`, `MobileRTCMeetingService.joinMeeting(with:)`; connection status determined from `onMeetingStateChange` and `onMeetingError`: https://developers.zoom.us/docs/meeting-sdk/ios/start-join-mtg-webinar/join-meeting/
+- Official signing claims for native Meeting SDK (`appKey`, `iat`, `exp`, `tokenExp`) and HS256 backend recommendation; `mn` and `role` optional for native: https://developers.zoom.us/docs/meeting-sdk/auth/
+- iOS Meeting SDK `MobileRTCMeetingState_InMeeting` and waiting-room/connecting/failed states: https://marketplacefront.zoom.us/sdk/meeting/ios/_mobile_r_t_c_constants_8h.html
+- XcodeGen additive `include` merge for additional SDK-only source directory: https://yonaskolb.github.io/XcodeGen/Docs/ProjectSpec.html
+
+The code for SDK init/participation and signer is STAGED. Documentation is not a live Zoom Meeting SDK join test, secure faculty endpoint, physical-device test or functioning broadcast.
