@@ -3,7 +3,10 @@
 # Run scripts/prepare_zoom_sdk.sh to create an ignored symlink at vendor/ZoomMeetingSDK.
 # Then: xcodegen generate --spec project-sdk.yml
 #
-# This links the Meeting SDK but does NOT authenticate, join a meeting or broadcast.
+# Both MobileRTC and zoomcml are runtime dependencies for SDK 7.2.5.
+# The Zoom integration guide still describes zoomcml as optional, but the
+# simulator's dyld reports MobileRTC depends on it even before joining.
+# This spec does NOT authorize, join a meeting or broadcast on its own.
 # ReplayKit MobileRTCScreenShare.xcframework is intentionally NOT linked here:
 # Zoom requires that XCFramework in the dedicated Broadcast Upload Extension target.
 include:
@@ -18,6 +21,9 @@ targets:
         type: file
     dependencies:
       - framework: vendor/ZoomMeetingSDK/lib/MobileRTC.xcframework
+        embed: true
+        codeSign: true
+      - framework: vendor/ZoomMeetingSDK/lib/zoomcml.xcframework
         embed: true
         codeSign: true
     settings:
