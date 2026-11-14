@@ -25,5 +25,7 @@ This file is the persistent project instruction set. Read `README.md` and all re
 - Windows worker: C++ Zoom Plugin SDK adapter + Windows service/controller, with supervised interactive client session where required.
 - NAS sync: checksum verification, atomic copy/rename, retry and reconciliation.
 
-## Work order
-Cloud safety settings → OAuth/Webhooks read-only PoC → host + one Windows local recorder PoC → iPad SDK webinar panelist/share PoC → four-channel load test → archive/operations → production hardening.
+## Work order (updated by operator 2026-11-14)
+**Accepted priority override (ADR-016):** Backend Basic sandbox Meetings GET/auth PoC already PASSED → **custom iPad SwiftUI + Meeting SDK + ReplayKit full-screen sharing in a Basic sandbox Meeting (ACTIVE)** → faculty authorization/scheduling + validated iPad teaching experience → webinars only on separate approval after Meetings success → **Windows centralized local recording and four-channel scale LAST**, followed by integrated archive/production acceptance as applicable. Preserve the Windows Gate 3 evidence and keep its SDK claims unverified; do not resume Windows development until instructed.
+
+App code must distinguish a UI demo from actual SDK meeting join and full-device broadcasting. Keep the system broadcast picker unavailable until observed Zoom meeting state, Zoom share permission and user privacy acknowledgement, and require Apple OS-level user confirmation.
