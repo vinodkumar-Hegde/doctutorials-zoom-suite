@@ -130,3 +130,6 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 
 - [ ] **Stage 4B SDK Simulator runtime fix retest:** original SDK-linked Xcode build PASSED, but new adapter's first simulator launch/test ABORTED with `dyld: Library not loaded: @rpath/zoomcml.framework/zoomcml`. SDK 7.2.5 requires embedding/signing `zoomcml` alongside `MobileRTC`. Fix committed to `project-sdk.yml` and preflight script 2026-11-15; operator clean regenerate/build/tests/launch **PENDING**. Do not confuse this with actual Zoom join or unit-test assertion failures.
+
+
+- [ ] **Second SDK-enabled Simulator runtime attempt still FAILS** (`dyld @rpath/zoomcml.framework/zoomcml` absent). Confirm updated XcodeGen file was pulled/regenerated; verify `zoomcml` in generated `.pbxproj`, selected XCFramework slice, app target Embed Frameworks, and final `.app/Frameworks` before changing build configuration again. SDK runtime join and Stage 4B five-policy-test rerun remain blocked.
