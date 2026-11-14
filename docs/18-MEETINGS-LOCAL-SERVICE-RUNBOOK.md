@@ -100,3 +100,11 @@ Those capabilities remain separate acceptance gates.
 - Zoom Meetings API: https://developers.zoom.us/docs/api/meetings/
 - Zoom S2S OAuth: https://developers.zoom.us/docs/integrations/oauth/
 - FastAPI API-key header: https://fastapi.tiangolo.com/reference/security/
+
+## Operator startup report and security note — 2026-11-14
+
+The operator reported reaching the local server startup announcement and seeing a generated temporary API key on two launches. This strongly indicates initial Zoom Basic sandbox guard and meeting-list query succeeded, but **does not** prove an authenticated localhost client GET. The newest unit-test summary was not included in that report.
+
+Two ephemeral `X-DocTutorials-Key` values were inadvertently shared in the conversation. **Do not repeat, store or use them**. Stop the backend with `Ctrl+C`, restart it to generate a fresh local session key, keep the key inside the operator machine, and do not share console screenshots containing it. This is distinct from the Zoom Client Secret, which remained hidden.
+
+Keep the restarted server running in the first PowerShell window and run `\.venv\Scripts\python.exe -m backend.meetings_api_client` from a second PowerShell window. The client asks for the fresh key via hidden input. Report only `Local authenticated meetings GET: PASS`, detail GET result, and final `RESULT`. Do not show the key.
