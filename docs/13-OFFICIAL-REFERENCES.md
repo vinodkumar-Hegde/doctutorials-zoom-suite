@@ -49,3 +49,13 @@ Python standalone proof and nine offline unit tests were run; **no actual tenant
 | SDK iPad panelist screen sharing | Real iPad + webinar test | Unverified |
 | Apple ReplayKit whole-device sharing | Real iPad test | Documented, not implemented |
 | Backend cloud recording download scopes/webhook | OAuth + signed webhook test | Documented, not implemented |
+
+## Gate 3A — Windows Plugin SDK developer evidence (consulted 2026-11-14)
+- Windows plugin SDK minimum Zoom Workplace client **7.0.2**, SDK download path and Visual Studio prerequisite: https://developers.zoom.us/docs/plugin-sdk/windows/get-started/
+- Official `PSDKTest.exe` demo, Release x64 build, IPC connection and recording capability/start test panels: https://developers.zoom.us/docs/plugin-sdk/windows/get-started/try-demo-app/
+- General App Plugin SDK library integration and `plugin_sdk:read:connection_meta` scope: https://developers.zoom.us/docs/plugin-sdk/windows/integrate/
+- IPC OAuth auth context and asynchronous auth result callback: https://developers.zoom.us/docs/plugin-sdk/windows/start-join-mtg-webinar/authentication/
+- Plugin SDK Windows API reference (SDK-specific interfaces MUST be inspected; Meeting SDK recording methods are not proof of Plugin SDK parity): https://marketplacefront.zoom.us/sdk/plugin/windows/index.html
+- Permission/version mismatch/not-implemented error codes: https://developers.zoom.us/docs/plugin-sdk/windows/error-codes/
+
+**Verified from documentation:** An official Plugin SDK Windows demo includes local recording capability checks and start actions. **Not yet verified in customer's environment:** actual SDK IPC auth, local start/stop, pause/resume support, permissions, MP4 finalization, Windows VM scaling. **No Plugin SDK binary has been downloaded, compiled or executed by the assistant.**
