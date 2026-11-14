@@ -19,7 +19,7 @@ The test authenticates with the Account ID, Client ID and Client Secret for the 
 
 ## Operator workstation verification (2026-11-14)
 
-The operator confirmed Python 3.11.9 and Git 2.56.0 on Windows, successfully cloned the private repository and ran **all nine** offline tests with `python -m unittest discover -s tests -v` (`OK`). Git was made available in the current PowerShell session by adding `C:\Program Files\Git\cmd` to `$env:Path`; this adjustment is not persistent across new shells. The script can be launched using `python` without the optional `py` launcher.
+The operator confirmed working Python and Git on Windows, successfully cloned the private repository and ran the initial **nine** tests, later expanded to **13/13** tests passed. The latest **15-test** suite awaits execution. Git was made available in the current PowerShell session by adding `C:\Program Files\Git\cmd` to `$env:Path`; this adjustment is not persistent across new shells. The script can be launched using `python` without the optional `py` launcher.
 
 ## Run the test (PowerShell)
 
@@ -27,14 +27,14 @@ Clone the **private** repository and run the offline tests. If you already clone
 
     git clone https://github.com/vinodkumar-Hegde/doctutorials-zoom-suite.git
     cd doctutorials-zoom-suite
-    py -3 --version
-    py -3 -m unittest discover -s tests -v
+    python --version
+    python -m unittest discover -s tests -v
 
 You should see **15** offline mock tests passing after pulling the latest code (the initial 13 passed on the operator's Windows workstation; two newly added test cases await operator execution). Offline tests alone do not prove the live Zoom integration.
 
 To run the live read-only test:
 
-    py -3 backend\zoom_s2s_smoke_test.py
+    python backend\zoom_s2s_smoke_test.py
 
 The script prompts for these three values, with your input **hidden**: Zoom Account ID; S2S Client ID; S2S Client Secret. Get all three directly from Zoom Developer Portal → DocTutorials-Backend → App Credentials. Press Enter after each. No credentials or tokens are saved to disk.
 
