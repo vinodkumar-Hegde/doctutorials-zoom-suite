@@ -87,6 +87,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] Commit iPad-only SwiftUI **UI scaffold** (sample class card, Meeting disconnected state, disabled join/share and privacy acknowledgement).
 - [x] Commit `ScreenSharePolicy` fail-closed gate (observed Meeting SDK connection + privacy acknowledgement + Zoom share permission), five XCTest unit cases, and XcodeGen project spec. **Tests not yet run on Mac.**
 - [x] Stage an SDK-version-dependent ReplayKit SampleHandler template separately from the build; **not a working broadcast extension**.
+- [x] Mac full Xcode developer directory selected, `xcodebuild -version` PASS: **Xcode 27.2 (27B52)** (operator 2026-11-14).
 - [ ] Generate Xcode project and build/run the SwiftUI shell on Mac and real iPad; pass five Xcode tests.
 - [ ] Setup iOS General App + Meeting SDK, registered App Group and **server-side short-lived SDK JWT**; leave secrets off device.
 - [ ] Join one Basic sandbox Zoom **Meeting** as an authorized participant without Zoom host password; verify SDK callback and muted iPad microphone/camera.
