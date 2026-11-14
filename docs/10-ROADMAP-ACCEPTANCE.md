@@ -2,6 +2,14 @@
 
 Work proceeds gate by gate. Distinguish an operator report of implementation from objectively verified acceptance evidence.
 
+## 2026-11-14 delivery priority override — iPad screen sharing first (ACCEPTED)
+
+The operator explicitly instructed: **develop the Windows recording system LAST** and **move to the iPad screen-sharing app now**. This overrides the previous order of implementation, but **does not remove** Windows recording or change earlier evidence. The numbering of legacy gates records dependencies rather than execution order.
+
+**Active next:** Gate 4A **faculty iPad SwiftUI + Zoom Meeting SDK + ReplayKit** using a free Basic sandbox Meeting. Then faculty assignment/backend short-lived SDK authorization and real-iPad validation. Webinar integration is still deferred per ADR-014 until the operator reopens it after Meetings. **Windows recorder Gate 3 / four-channel scale is PAUSED** until the iPad and higher-priority application work is accepted. No paid production host changes.
+
+**Stage 4A repository status:** iPad SwiftUI source shell, XcodeGen project config, five XCTest safety cases, and a **staged/uncompiled** ReplayKit SDK extension handler template committed. No Mac/iPad build, Zoom SDK integration, joined meeting or live screen sharing has been verified. See [iPad screen-sharing development runbook](20-IPAD-MEETINGS-SCREENSHARE-DEVELOPMENT.md).
+
 ## Gate 0 — Private repo + documentation
 - [x] Architecture and product requirements baseline prepared locally.
 - [x] Created **private** GitHub repository `vinodkumar-Hegde/doctutorials-zoom-suite` and published documentation (2026-11-13).
@@ -59,7 +67,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [ ] Receive start/end and cloud recording completion events in test.
 **Pass criteria:** API correctly maps sessions to host user, and cloud archive can download verified recordings.
 
-## Gate 3 — Windows local native recorder feasibility (blocking)
+## Gate 3 — Windows local native recorder feasibility (PAUSED — develop LAST by operator decision)
 **Stage 3A update 2026-11-14:** Official Windows Plugin SDK requirements, separate OAuth/scope and bundled PSDKTest demo reviewed; read-only environment/SDK-folder/MP4 container probe plus **12** offline tests committed. **Operator ran all 35/35 tests PASS** and environment probe confirmed Windows + likely Zoom executable. Plugin SDK IPC/record commands NOT TESTED. The probe **does not invoke SDK commands or record meetings**. See [Stage 3A runbook](19-GATE3-WINDOWS-PLUGIN-SDK-RECORDER-SPIKE.md).
 - [x] Operator ran expanded **35/35 offline tests PASS**, and Windows probe printed `Windows workstation: YES` / `Zoom executable candidate: FOUND` (2026-11-14).
 - [ ] Confirm actual Zoom Workplace Windows version >=7.0.2 (not yet reported).
@@ -75,12 +83,22 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [ ] Prove remote Start/Pause/Resume/Stop **only where SDK actually supports them**.
 **Pass criteria:** One complete, independently confirmed local MP4 recording with correct media and permission model.
 
-## Gate 4 — iPad SDK feasibility
-- [ ] Setup iOS General App + Meeting SDK and short-lived backend signing.
-- [ ] Join account-hosted webinar as authorized panelist without Zoom host password.
-- [ ] Use ReplayKit extension to share Goodnotes/other app; confirm OS user consent.
-- [ ] Faculty laptop camera/audio + iPad share present and recorded.
-**Pass criteria:** iPad share + webinar join works on real faculty iPad, without distributing host credentials.
+## Gate 4A — Faculty iPad screen sharing with Zoom Meetings (ACTIVE)
+- [x] Commit iPad-only SwiftUI **UI scaffold** (sample class card, Meeting disconnected state, disabled join/share and privacy acknowledgement).
+- [x] Commit `ScreenSharePolicy` fail-closed gate (observed Meeting SDK connection + privacy acknowledgement + Zoom share permission), five XCTest unit cases, and XcodeGen project spec. **Tests not yet run on Mac.**
+- [x] Stage an SDK-version-dependent ReplayKit SampleHandler template separately from the build; **not a working broadcast extension**.
+- [ ] Generate Xcode project and build/run the SwiftUI shell on Mac and real iPad; pass five Xcode tests.
+- [ ] Setup iOS General App + Meeting SDK, registered App Group and **server-side short-lived SDK JWT**; leave secrets off device.
+- [ ] Join one Basic sandbox Zoom **Meeting** as an authorized participant without Zoom host password; verify SDK callback and muted iPad microphone/camera.
+- [ ] Complete proper ReplayKit Broadcast Upload Extension + Zoom screen share framework; user confirms Apple's OS prompt.
+- [ ] Show live Goodnotes/Notability Apple Pencil content from iPad to another joined attendee; verify start/stop/reconnect and no unauthorized screen exposure.
+- [ ] Reconcile faculty laptop camera/audio alongside iPad share in an authorized Meeting.
+**Gate 4A pass criteria:** On a real faculty iPad, one authorized **Zoom Meeting** receives complete Goodnotes/other-app broadcast, observed by another participant, without sharing host credentials. Not met by a SwiftUI shell alone.
+
+## Gate 4B — Webinar extension (DEFERRED)
+- [ ] Only after meetings-first acceptance and explicit operator approval, test SDK webinar panelist identity/join and share entitlements on authorized paid environment.
+- [ ] Validate laptop camera/audio + iPad screen sharing in an actual webinar.
+**Pass criteria:** Webinar panelist broadcast works under verified Zoom and Apple policy. Not part of active app sprint.
 
 ## Gate 5 — Four-channel load and reliability
 - [ ] Run four concurrent webinar/meeting host users for test duration representative of classes.
