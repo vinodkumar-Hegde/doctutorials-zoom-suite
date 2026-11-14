@@ -40,3 +40,9 @@ vendor/
 third_party/
 sdk_downloads/
 recorder_probe_output/
+
+# Xcode-generated iPad project and user-local Apple build artifacts
+ipad/DocTutorialsScreenShare/DocTutorialsScreenShare.xcodeproj/
+**/DerivedData/
+**/*.xcuserstate
+**/xcuserdata/
