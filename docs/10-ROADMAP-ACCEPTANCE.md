@@ -60,6 +60,12 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 **Pass criteria:** API correctly maps sessions to host user, and cloud archive can download verified recordings.
 
 ## Gate 3 — Windows local native recorder feasibility (blocking)
+**Stage 3A started 2026-11-14:** Official Windows Plugin SDK requirements, separate OAuth/scope and bundled PSDKTest demo reviewed; read-only environment/SDK-folder/MP4 container probe plus **12** offline tests committed (repository total **35**, new tests not yet operator-run). The probe **does not invoke SDK commands or record meetings**. See [Stage 3A runbook](19-GATE3-WINDOWS-PLUGIN-SDK-RECORDER-SPIKE.md).
+- [ ] Operator runs expanded **35** offline tests and Windows workstation readiness probe; confirms actual Zoom Workplace version.
+- [ ] Download compatible Windows Plugin SDK from a sandbox General App, following Zoom authorization rules; no production app changes.
+- [ ] Build Zoom's official PSDKTest Release x64 and validate IPC OAuth connection on one authorized sandbox Windows Zoom Workplace client.
+- [ ] Determine actual local recording permissions and supported start/stop/pause/resume controls (record every unavailable API explicitly).
+- [ ] Independently verify final local MP4 container, playback, voice and screen share; no recordings committed to GitHub.
 - [ ] Create Windows General App + Plugin SDK integration.
 - [ ] Authenticate on one signed-in Zoom Workplace client.
 - [ ] Prove authorized host session join, local start/stop and file confirmation.
