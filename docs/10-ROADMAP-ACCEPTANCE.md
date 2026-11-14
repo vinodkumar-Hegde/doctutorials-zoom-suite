@@ -32,10 +32,10 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 3. **LATER — webinar integration:** Only after meeting integration acceptance, test webinars, panelists, scopes, lifecycle and any relevant recording flows on an authorized paid environment. No webinar API GET or webhook subscription in current integration phase.
 4. **PRODUCTION ACCEPTANCE STILL REQUIRED:** Four licensed hosts, cloud backup, local recording and concurrency feasibility are not validated by the one-user Basic sandbox.
 
-The default four-host read-only smoke test has been changed to **meetings-only**; its webinar calls are disabled in the active code path. The one-user sandbox mode remains meetings-only. Two new offline test cases were committed (15 total, operator rerun pending).
+The default four-host read-only smoke test has been changed to **meetings-only**; its webinar calls are disabled in the active code path. The one-user sandbox mode remains meetings-only. Two new offline test cases were committed (15 total); the operator reran the suite and all **15/15 passed** (2026-11-14).
 
 ## Gate 2 — Developer backend
-**Status (2026-11-14):** IN PROGRESS — initial read-only scopes and S2S app activation operator-confirmed. One-user free sandbox live OAuth/users/meetings-list GET **PASS**; 13 Windows offline tests **PASS**. Four-host production, individual meeting detail, webhook, and production secret-vault acceptance remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No live app credentials or successful API/webhook tests have been confirmed.
+**Status (2026-11-14):** **SANDBOX READ-ONLY MEETINGS POC PASSED** — S2S token, users list, meetings list, and **individual meeting detail** all succeeded against one Basic sandbox user. The Windows operator also confirmed **15/15** offline tests passed. Full secure FastAPI backend, write APIs, four-host production, webhooks and production vault remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No real credentials have been shared with the assistant. The operator has verified live **sandbox meeting GET** APIs; webhook and production API tests have not been performed.
 - [x] Create Server-to-Server OAuth app `DocTutorials-Backend` (operator-confirmed; ownership/tenant verification pending).
 - [x] Complete app Information and add five least-privilege read-only admin scopes (operator-confirmed 2026-11-13; scope evidence pending).
 - [x] Activate `DocTutorials-Backend` (operator-confirmed 2026-11-13; token exchange not independently checked).
@@ -43,8 +43,9 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] Implement secure local Python S2S OAuth + four-host read-only API smoke test; nine isolated offline unit tests passed (2026-11-13).
 - [x] Operator cloned the private repo on Windows; confirmed Git 2.56.0, Python 3.11.9 and **9/9** offline unit tests passing (2026-11-14).
 - [x] First LIVE S2S token exchange, `GET /users`, and (sandbox mode) user meetings-list GET completed on Windows: PASS using the separate free Zoom sandbox (1 active user, 0 meetings).
-- [x] Added separate opt-in one-user Basic/sandbox smoke test mode with four additional unit tests; **13/13 offline tests passed on operator Windows PC** (2026-11-14); default four-host requirement retained.
-- [ ] Verify individual future meeting detail GET in sandbox (no scheduled meeting existed on first run).
+- [x] Added separate opt-in one-user Basic/sandbox smoke test mode; after meetings-only adjustments and two additional regressions, **15/15 offline tests passed** on operator Windows PC (2026-11-14).
+- [x] Verify individual future meeting detail GET in sandbox: **meetings=1, meeting detail=PASS** (operator evidence 2026-11-14).
+- [ ] Implement secure meetings-only local backend service using [Gate 2B acceptance plan](17-MEETINGS-BACKEND-IMPLEMENTATION.md); no production deployment yet.
 - [ ] Execute four-host live GET checks against the correct authorized four-host organization; record non-sensitive results only.
 - [ ] Read four intended paid users and their future **meetings** using least-privilege scopes (production tenant read-only verification pending). Webinar API acceptance deferred.
 - [ ] Validate HTTPS webhook and signed messages; dedupe events.
