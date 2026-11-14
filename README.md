@@ -103,3 +103,11 @@ Committed `backend/windows_recorder_probe.py` and `tests/test_windows_recorder_p
 ### Stage 3A operator preflight result (2026-11-14)
 
 Windows operator confirmed **35/35 offline tests PASS**, `Windows workstation: YES`, and `Zoom executable candidate: FOUND`. Plugin SDK IPC authentication and native recording commands remain **NOT TESTED**. Next verify actual Zoom Workplace version >=7.0.2 and Visual Studio C++ tools before downloading/building the official Windows Plugin SDK demo. The four-channel central recording application is still a planned product, not a working recorder.
+
+## CURRENT PRIORITY — iPad screen-sharing app; Windows recorder LAST (operator change 2026-11-14)
+
+The operator has explicitly moved the **Windows central recording system to the last implementation phase** and prioritized the **faculty iPad screen-sharing app now**. Earlier Stage 3A readiness checks (35/35 offline Python tests, MSVC discovered) remain valid historical results; **no Windows recording/Plugin SDK capability has been demonstrated**.
+
+Current work: `ipad/DocTutorialsScreenShare/` contains an iPad **SwiftUI UI-only scaffold**, a privacy/observed-connection permission gate, five unrun XCTest policy tests, an XcodeGen project spec, and a staged ReplayKit Broadcast Upload Extension template not included in the build until Zoom SDK and Apple entitlements are configured. **No app has been built or run on a Mac/iPad and no Zoom meeting has yet been joined or screen streamed by this app**. Start with the free Zoom Basic sandbox **Meeting**, then implement backend-signed Meeting SDK JWT, real meeting callbacks and ReplayKit full-device sharing of Goodnotes to another authorized participant. Webinar integration remains deferred until specifically reopened.
+
+See [active iPad development and Mac Xcode setup](docs/20-IPAD-MEETINGS-SCREENSHARE-DEVELOPMENT.md), [iPad requirements](docs/07-IPAD-APP.md), and [ADR-016](docs/11-RISKS-DECISIONS.md). Build the UI shell on a **Mac**, not Windows Visual Studio. No production Zoom settings changes.
