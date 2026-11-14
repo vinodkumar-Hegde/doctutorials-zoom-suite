@@ -26,6 +26,14 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 - [ ] Keep final four licensed-host mapping, webinar panelist, simultaneous recordings, and cloud safety backup tests on authorized paid staging or production account with explicit operator approval.
 - [ ] For iPad Meeting SDK joining meetings hosted outside SDK developer account, verify Zoom's current review and ZAK/OBF requirements before choosing cross-account test setup.
 
+## Current delivery sequence — operator-approved meetings first (2026-11-14)
+1. **NOW — Basic sandbox meetings:** Verify S2S authentication, user list, scheduled meeting list and individual meeting detail (the first live sandbox meetings list had zero items; detail GET still pending).
+2. **NEXT — meeting integration only:** Build securely configured read-only backend endpoints; validate meeting scheduling/updates and event handling only after separate authorization and nonproduction tests. Do not alter any live meeting/webinar settings.
+3. **LATER — webinar integration:** Only after meeting integration acceptance, test webinars, panelists, scopes, lifecycle and any relevant recording flows on an authorized paid environment. No webinar API GET or webhook subscription in current integration phase.
+4. **PRODUCTION ACCEPTANCE STILL REQUIRED:** Four licensed hosts, cloud backup, local recording and concurrency feasibility are not validated by the one-user Basic sandbox.
+
+The default four-host read-only smoke test has been changed to **meetings-only**; its webinar calls are disabled in the active code path. The one-user sandbox mode remains meetings-only. Two new offline test cases were committed (15 total, operator rerun pending).
+
 ## Gate 2 — Developer backend
 **Status (2026-11-14):** IN PROGRESS — initial read-only scopes and S2S app activation operator-confirmed. One-user free sandbox live OAuth/users/meetings-list GET **PASS**; 13 Windows offline tests **PASS**. Four-host production, individual meeting detail, webhook, and production secret-vault acceptance remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No live app credentials or successful API/webhook tests have been confirmed.
 - [x] Create Server-to-Server OAuth app `DocTutorials-Backend` (operator-confirmed; ownership/tenant verification pending).
@@ -38,7 +46,7 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 - [x] Added separate opt-in one-user Basic/sandbox smoke test mode with four additional unit tests; **13/13 offline tests passed on operator Windows PC** (2026-11-14); default four-host requirement retained.
 - [ ] Verify individual future meeting detail GET in sandbox (no scheduled meeting existed on first run).
 - [ ] Execute four-host live GET checks against the correct authorized four-host organization; record non-sensitive results only.
-- [ ] Read four users and future meetings/webinars using least-privilege scopes (actual live verification pending).
+- [ ] Read four intended paid users and their future **meetings** using least-privilege scopes (production tenant read-only verification pending). Webinar API acceptance deferred.
 - [ ] Validate HTTPS webhook and signed messages; dedupe events.
 - [ ] Receive start/end and cloud recording completion events in test.
 **Pass criteria:** API correctly maps sessions to host user, and cloud archive can download verified recordings.
