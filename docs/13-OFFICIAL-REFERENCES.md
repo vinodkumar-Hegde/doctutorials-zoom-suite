@@ -78,3 +78,9 @@ Python standalone proof and nine offline unit tests were run; **no actual tenant
 - XcodeGen additive `include` merge for additional SDK-only source directory: https://yonaskolb.github.io/XcodeGen/Docs/ProjectSpec.html
 
 The code for SDK init/participation and signer is STAGED. Documentation is not a live Zoom Meeting SDK join test, secure faculty endpoint, physical-device test or functioning broadcast.
+
+## Stage 4B — SDK 7.2.5 `zoomcml` runtime dependency, verified 2026-11-15
+- Zoom's iOS integration page lists `MobileRTC.xcframework`, `MobileRTCResources.bundle`, `MobileRTCScreenShare.xcframework`, and `zoomcml.xcframework`; the last is described as an optional feature framework in general: https://developers.zoom.us/docs/meeting-sdk/ios/integrate/
+- On October 15, 2026, Zoom staff stated `zoomcml` has been **mandatory for physical iPhones since SDK 6.4.5**, and promised documentation updates. Operator's SDK 7.2.5 launch on iPadOS 27.2 simulator empirically fails with `@rpath/zoomcml.framework/zoomcml` absent; thus it is a **required runtime dependency** for our current build too: https://devforum.zoom.us/t/is-the-ios-meeting-sdk-still-actively-supported/147169
+- Apple's dynamic linker missing-framework guidance (embed a linked runtime dependency in app bundle): https://developer.apple.com/documentation/xcode/addressing-missing-framework-crashes
+- Corrected XcodeGen `project-sdk.yml` to embed and sign `zoomcml` plus `MobileRTC`; simulator retest is pending.
