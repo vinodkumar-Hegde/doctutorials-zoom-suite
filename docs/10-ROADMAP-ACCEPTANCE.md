@@ -28,14 +28,14 @@ Work proceeds gate by gate. Distinguish an operator report of implementation fro
 
 ## Current delivery sequence — operator-approved meetings first (2026-11-14)
 1. **COMPLETED (read-only sandbox proof) — Basic sandbox meetings:** S2S authentication, user list, scheduled meeting list and individual meeting detail PASS for one sandbox meeting.
-2. **IN PROGRESS — meeting integration only:** Authenticated loopback-only FastAPI meeting list/detail GETs passed the operator's live sandbox client test (2026-11-14); local unit-test expansion, negative authentication checks, and production hardening remain pending. Any scheduling writes/event handling need separate authorization and nonproduction tests.
+2. **COMPLETED — Basic sandbox read-only local API proof:** Authenticated loopback-only FastAPI list/detail GET passed, 23 offline tests passed, and unauthenticated GET correctly returned HTTP 401 (operator reports 2026-11-14). Security hardening, meeting writes/events and production deployment remain separate pending work.
 3. **LATER — webinar integration:** Only after meeting integration acceptance, test webinars, panelists, scopes, lifecycle and any relevant recording flows on an authorized paid environment. No webinar API GET or webhook subscription in current integration phase.
 4. **PRODUCTION ACCEPTANCE STILL REQUIRED:** Four licensed hosts, cloud backup, local recording and concurrency feasibility are not validated by the one-user Basic sandbox.
 
 The default four-host read-only smoke test has been changed to **meetings-only**; its webinar calls are disabled in the active code path. The one-user sandbox mode remains meetings-only. Two new offline test cases were committed (15 total); the operator reran the suite and all **15/15 passed** (2026-11-14).
 
 ## Gate 2 — Developer backend
-**Status (2026-11-14):** **SANDBOX READ-ONLY MEETINGS POC PASSED**, including the authenticated local FastAPI client path: local meetings GET PASS (count 1), detail GET PASS. The Windows operator confirmed **23/23 offline tests PASS** (2026-11-14, operator report). Production backend, write APIs, four-host production, webhooks and secret vault remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No real credentials have been shared with the assistant. The operator has verified live **sandbox meeting GET** APIs; webhook and production API tests have not been performed.
+**Status (2026-11-14):** **BASIC SANDBOX LOCAL READ-ONLY MEETINGS POC PASSED**, including unauthenticated HTTP 401 and authenticated local FastAPI client path: local meetings GET PASS (count 1), detail GET PASS. The Windows operator confirmed **23/23 offline tests PASS** (2026-11-14, operator report). Production backend, write APIs, four-host production, webhooks and secret vault remain pending. Guides: [`15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md`](15-MILESTONE-2-S2S-OAUTH-RUNBOOK.md) and [`16-MILESTONE-2-SECURE-API-SMOKE.md`](16-MILESTONE-2-SECURE-API-SMOKE.md). No real credentials have been shared with the assistant. The operator has verified live **sandbox meeting GET** APIs; webhook and production API tests have not been performed.
 - [x] Create Server-to-Server OAuth app `DocTutorials-Backend` (operator-confirmed; ownership/tenant verification pending).
 - [x] Complete app Information and add five least-privilege read-only admin scopes (operator-confirmed 2026-11-13; scope evidence pending).
 - [x] Activate `DocTutorials-Backend` (operator-confirmed 2026-11-13; token exchange not independently checked).
@@ -49,7 +49,9 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] Operator launched sandbox-local FastAPI server at `http://127.0.0.1:8765` and then **successfully tested authenticated localhost GET /v1/meetings (count=1) and GET /v1/meetings/1** with the client (2026-11-14).
 - [x] Authenticated localhost Meetings API client PASS (meetings=1, detail PASS, no webinar APIs), operator evidence 2026-11-14.
 - [x] Operator reports all 23 expanded offline unit tests PASS (2026-11-14; summary not pasted, no independent CI verification).
-- [ ] Confirm live localhost API rejects a request without the X-DocTutorials-Key (expect HTTP 401); this and remaining hardening checks must pass before closing Gate 2B security acceptance.
+- [x] Live localhost GET without `X-DocTutorials-Key` rejected with **HTTP 401** (operator-confirmed 2026-11-14).
+- [x] Close **Gate 2B Basic-sandbox local read-only Meetings PoC** as passed (authentication, list/detail, 23 offline tests, unauthenticated 401). **Not a production security certification.**
+- [ ] Formal production hardening, tenant-specific role controls, secret management, authorization abuse tests and deployment review remain pending.
 - [ ] Rotate ephemeral localhost API session key by stopping/restarting local backend after sharing the two temporary keys in chat; do not share replacement key or place it in GitHub.
 - [ ] Execute four-host live GET checks against the correct authorized four-host organization; record non-sensitive results only.
 - [ ] Read four intended paid users and their future **meetings** using least-privilege scopes (production tenant read-only verification pending). Webinar API acceptance deferred.
