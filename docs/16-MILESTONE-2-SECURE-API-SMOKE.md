@@ -2,11 +2,11 @@
 
 **Updated:** 2026-11-14
 **App:** DocTutorials-Backend — Server-to-Server OAuth
-**State:** Operator Windows **13/13 offline tests PASS**. One-user Basic sandbox live S2S OAuth token exchange, active users GET (1), and meetings-list GET (0) **PASS** on 2026-11-14. Meeting detail GET skipped (none scheduled); webinar and four-host production verification **PENDING**.
+**State:** Operator Windows **13/13 offline tests PASS** before meetings-first change. Two additional meetings-only regression tests have been committed (15 total; operator re-run pending). One-user Basic sandbox live OAuth, active-users GET (1), and meetings-list GET (0) PASS; meeting detail still SKIPPED. **Webinar work explicitly deferred by operator.**
 
 ## Purpose
 
-Prove that one activated DocTutorials Backend S2S OAuth app can read the four selected Zoom meeting/webinar host users without distributing their Zoom passwords to faculty.
+Prove S2S read-only access to Zoom Meetings only, first on the separate Basic sandbox, then to four paid host users when separately authorized. Webinar integration is deferred by operator decision.
 
 The test authenticates with the Account ID, Client ID and Client Secret for the **same** S2S app and makes read-only Zoom API resource calls. It does not change Zoom configuration, start/stop a webinar, or control local recording.
 
@@ -30,7 +30,7 @@ Clone the **private** repository and run the offline tests. If you already clone
     py -3 --version
     py -3 -m unittest discover -s tests -v
 
-You should see **13** offline mock tests passing. Offline tests alone do not prove the live Zoom integration.
+You should see **15** offline mock tests passing after pulling the latest code (the initial 13 passed on the operator's Windows workstation; two newly added test cases await operator execution). Offline tests alone do not prove the live Zoom integration.
 
 To run the live read-only test:
 
@@ -47,10 +47,10 @@ The script uses the standard S2S account-credentials grant with **POST https://z
 All Zoom resource requests are **GET**:
 - GET https://api.zoom.us/v2/users?status=active
 - GET https://api.zoom.us/v2/users/{userId}/meetings
-- GET https://api.zoom.us/v2/users/{userId}/webinars
-- When scheduled items exist: GET /v2/meetings/{meetingId} and GET /v2/webinars/{webinarId}.
+- When scheduled meetings exist: GET /v2/meetings/{meetingId}.
+- **No Zoom Webinar endpoints are called in either active test mode.** Webinar methods remain unused in source for later scope-approved work.
 
-Only unexpired scheduled meetings/webinars are returned by the list endpoints. A category with no scheduled items will have its detail check marked **SKIPPED**, not PASS. Successful list access alone does not prove missing detail permissions.
+Only unexpired scheduled meetings are returned by the meetings list endpoint. A category with no scheduled items will have its detail check marked **SKIPPED**, not PASS. Successful list access alone does not prove missing detail permissions.
 
 The tool reads pagination tokens, validates response structure, and on HTTP failures displays only a sanitized code and generic troubleshooting hint. It does not write tokens, user details, webinar links, API responses, or report files.
 
@@ -59,11 +59,11 @@ The tool reads pagination tokens, validates response structure, and on HTTP fail
     OAuth token request: PASS
     List active users: PASS (5 total)
     Eligible paid/on-prem host candidates: 5
-    Host A: meetings=2, webinars=1, meeting detail=PASS, webinar detail=PASS
-    Host B: meetings=1, webinars=0, meeting detail=PASS, webinar detail=SKIPPED (no scheduled webinar)
-    Host C: meetings=0, webinars=2, meeting detail=SKIPPED (no scheduled meeting), webinar detail=PASS
-    Host D: meetings=2, webinars=1, meeting detail=PASS, webinar detail=PASS
-    RESULT: PASS — four separate licensed host users were read successfully. No Zoom records modified.
+    Host A: meetings=2, meeting detail=PASS, webinars=DEFERRED
+    Host B: meetings=1, meeting detail=PASS, webinars=DEFERRED
+    Host C: meetings=0, meeting detail=SKIPPED (no scheduled meeting), webinars=DEFERRED
+    Host D: meetings=2, meeting detail=PASS, webinars=DEFERRED
+    RESULT: PASS — meetings-only read test for four separate licensed host users. Webinar tests deferred. No Zoom records modified.
 
 **Safe information to share here:** the final RESULT line, host A–D counts, and a sanitized HTTP code if the test fails. Do not send host names, emails, IDs, screenshots of the host picker, app credentials, access tokens, meeting IDs, join links, or recording content.
 
@@ -96,6 +96,10 @@ This mode:
 **Operator validation (2026-11-14):** All **13** offline tests passed. The live one-user Basic sandbox run reported OAuth PASS, list active users PASS (1), sandbox meetings list GET succeeded (0), and overall RESULT PASS. Meeting-detail GET was SKIPPED for lack of a scheduled future meeting; webinar not tested. Four-host production acceptance is still pending.
 
 If the one-user result was unexpected and the operator intended to reach an organization with four licensed hosts, **do not switch on sandbox mode to mask the issue**. Instead check the Zoom signed-in organization and the Account ID, Client ID and Client Secret associated with the intended activated S2S app. Do not mix credentials from two apps or paste them into chat.
+
+## Meetings-first scope decision (2026-11-14)
+
+Operator explicitly directed **meetings only until meeting integration/testing is complete**. The active default four-host code path was changed to skip webinar list/detail calls, consistent with the existing one-user sandbox mode. This reduces accidental access to webinar endpoints while building meeting integration. The webinar requirements and any previously configured scopes remain deferred, not discarded. Do not enable webhook event subscriptions or modify production developer apps as part of this decision.
 
 ## Common issues
 
