@@ -1,0 +1,41 @@
+name: DocTutorialsScreenShare
+options:
+  bundleIdPrefix: com.doctutorials
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  DocTutorialsScreenShare:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.doctutorials.facultyscreen
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "2"
+        SWIFT_VERSION: "5.9"
+        CODE_SIGN_STYLE: Automatic
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        SUPPORTS_MACCATALYST: NO
+  DocTutorialsScreenShareTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: DocTutorialsScreenShare
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.doctutorials.facultyscreen.tests
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "5.9"
+schemes:
+  DocTutorialsScreenShare:
+    build:
+      targets:
+        DocTutorialsScreenShare: all
+    test:
+      targets:
+        - DocTutorialsScreenShareTests
