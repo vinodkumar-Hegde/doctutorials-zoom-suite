@@ -103,3 +103,9 @@ Operator directly supplied the offline test summary `Ran 35 tests in 0.026s / OK
 - Use the official [Microsoft Modify Visual Studio workloads](https://learn.microsoft.com/en-us/visualstudio/install/modify-visual-studio) instructions: open **Visual Studio Installer**, find the installed edition, select **Modify**, enable **Desktop development with C++**, MSVC x64/x86 build tools and Windows SDK, and wait for installation to complete.
 - Query registered editions separately via `vswhere -all -products * -property installationPath` and query C++ component via `vswhere -all -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`. If the first has a path but the second does not, inspect the components in the installer. If neither finds an instance, check whether only VS Code or installer was installed.
 - Do not repeat the 35 Python unit tests for this toolchain prerequisite; no SDK connection or recording controls have been tested.
+
+## 2026-11-14 — Visual Studio C++ tools now detected
+- Operator reran `vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`; it returned `C:\Program Files\Microsoft Visual Studio\18\Community`.
+- **MSVC C++ component detection PASSED**; earlier `NOT FOUND` results are superseded. This verifies VS 2026 Community with MSVC tool component is registered, not yet a successful C++ build. Windows SDK installation and Zoom Workplace version remain unverified.
+- Next operator check: Zoom Workplace Windows desktop actual version >=7.0.2 (About Zoom Workplace). Then create/select a dedicated free-sandbox General App with Plugin SDK authorization and download SDK, without touching paid production org or using S2S client credentials.
+- UI design/scaffold can be advanced in parallel, but all native recording buttons must remain disabled until SDK bridge capabilities are demonstrated.
