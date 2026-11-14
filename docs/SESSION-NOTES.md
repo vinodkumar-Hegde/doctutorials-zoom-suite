@@ -132,3 +132,10 @@
 - Existing single-user Basic sandbox smoke mode already made no webinar calls. Changed four-host default smoke path to read meeting lists/details only, with `webinars=DEFERRED` output; Zoom Webinar client helper methods remain dormant and no webhook changes or production actions occurred.
 - Added two regression tests that fail if default four-host mode calls webinar APIs; **15 offline tests in repository**. Only the prior 13 tests were operator-confirmed passed; the expanded suite is **pending execution**.
 - Current next step: from Windows repo directory run `git pull` and `python -m unittest discover -s tests -v` (expect 15), then use `python backend\zoom_s2s_smoke_test.py --sandbox-single-user` for meeting details if a future sandbox meeting has been scheduled. Avoid production operations until explicitly approved.
+
+## 2026-11-14 — Live sandbox meeting details and 15 offline tests PASSED
+- Operator reported **Ran 15 tests in 0.003s; OK** on Windows after the meetings-only four-host regression change.
+- Live one-user free Zoom sandbox command `python backend\zoom_s2s_smoke_test.py --sandbox-single-user` reported OAuth token PASS, active users list PASS (1), **meetings=1, meeting detail=PASS, webinars=NOT TESTED**, and final **RESULT: PASS**.
+- This closes the first **sandbox S2S read-only Zoom Meetings POC**, confirming actual future meeting listing AND individual meeting detail. It does **not** verify write operations, lifecycle/webhooks, recording, production vault, or paid four-host operations.
+- Added [17-MEETINGS-BACKEND-IMPLEMENTATION.md](17-MEETINGS-BACKEND-IMPLEMENTATION.md), which specifies local authenticated read-only FastAPI service scope, fail-closed sandbox restrictions, security controls, test plan and further production gates. This is an acceptance plan only; no backend service deployed or production Zoom settings changed.
+- Continue ADR-014: **meetings only**; webinar API calls remain deferred until separately authorized.
