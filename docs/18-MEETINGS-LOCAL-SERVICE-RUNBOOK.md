@@ -132,3 +132,7 @@ With the sandbox-only local server running in PowerShell window A, open window B
     }
 
 Expected: **HTTP 401** (rejected as unauthorized). An HTTP 200 is a security failure; stop the server and report the issue. A network failure is not a passing authorization test. Do not include any API key in this request. Keep the key from the currently running instance private; two earlier session keys were exposed and rotation is recommended. This check does not modify Zoom meetings.
+
+## Operator result — unauthenticated GET correctly rejected (2026-11-14)
+
+The operator reports receiving **HTTP 401** from the local test without `X-DocTutorials-Key`. The scoped sandbox read-only service test suite now has all three operator-confirmed elements: authenticated local meeting list/detail GET PASS, 23/23 offline tests PASS, and unauthenticated local GET rejected. This closes **sandbox-only local read-only proof**, not production readiness. Key hygiene: stop the local server with Ctrl+C when not testing; any keys previously shared in chat should no longer be used. Next milestone is one Windows Zoom Meetings local recording feasibility test; no automated native recording controls or four-worker operation are yet validated.
