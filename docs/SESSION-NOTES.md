@@ -253,3 +253,10 @@
 - Operator ran `xcodegen generate` in `~/doctutorials-zoom-suite/ipad/DocTutorialsScreenShare`; output: `Created project at /Users/vinod/doctutorials-zoom-suite/ipad/DocTutorialsScreenShare/DocTutorialsScreenShare.xcodeproj`.
 - **Project generation PASSED**, but iOS SwiftUI app compilation, simulator launch, five XCTest tests, real-device signing, Zoom Meeting SDK join, and ReplayKit Goodnotes sharing **have not yet been run/verified**.
 - Next action: open the generated `.xcodeproj`, select `DocTutorialsScreenShare` scheme and available iPad Simulator, press Cmd+R; if successful run Cmd+U for five policy tests. The UI shell's join/share actions remain intentionally disabled. Do not provide secrets or Zoom host credentials.
+
+## 2026-11-15 — First DocTutorials iPad SwiftUI app launch visually verified in Simulator
+- Operator supplied screenshot of **DocTutorialsScreenShare** running visibly inside **iPad (A16), iPadOS 27.2 simulator** after Xcode project generation.
+- Screen visibly presents faculty screen-share heading, sample assigned class placeholder, Zoom Meeting *Not connected*, disabled *Join assigned meeting*, disabled screen broadcast, and a working privacy toggle (ON in screenshot), as designed.
+- **Stage 4A UI shell simulator launch: PASS (operator screenshot).** No crash/build error visible on the screenshot, but detailed Xcode build log not provided.
+- **Five XCTest tests have NOT YET been reported**, and the screenshot does **not** establish Zoom Meeting SDK connectivity, faculty authorization, ReplayKit extension build, real iPad device test or media sharing.
+- Next operator task: run `Cmd+U` in Xcode with the iPad simulator selected; report test summary. After policy tests, move into real Zoom Meeting SDK iOS integration against the separate Basic sandbox, and eventually broadcast extension and real-device proof. Windows recording remains last.
