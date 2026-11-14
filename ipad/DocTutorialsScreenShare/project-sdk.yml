@@ -1,0 +1,29 @@
+# Opt-in integration of the proprietary Zoom iOS Meeting SDK.
+# Keep project.yml as the known-good UI-only build that passes five tests.
+# Run scripts/prepare_zoom_sdk.sh to create an ignored symlink at vendor/ZoomMeetingSDK.
+# Then: xcodegen generate --spec project-sdk.yml
+#
+# This links the Meeting SDK but does NOT authenticate, join a meeting or broadcast.
+# ReplayKit MobileRTCScreenShare.xcframework is intentionally NOT linked here:
+# Zoom requires that XCFramework in the dedicated Broadcast Upload Extension target.
+include:
+  - project.yml
+
+targets:
+  DocTutorialsScreenShare:
+    sources:
+      - path: vendor/ZoomMeetingSDK/lib/MobileRTCResources.bundle
+        buildPhase: resources
+        type: file
+    dependencies:
+      - framework: vendor/ZoomMeetingSDK/lib/MobileRTC.xcframework
+        embed: true
+        codeSign: true
+    settings:
+      base:
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+        OTHER_LDFLAGS: "$(inherited) -ObjC"
+        INFOPLIST_KEY_NSCameraUsageDescription: "Zoom Meetings may request the camera when authorized by the faculty member."
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "Zoom Meetings may request the microphone when authorized by the faculty member."
+        INFOPLIST_KEY_NSPhotoLibraryUsageDescription: "Zoom Meetings can use selected photos when the faculty member chooses to share."
+        INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription: "Zoom Meetings may use connected Bluetooth audio devices."
