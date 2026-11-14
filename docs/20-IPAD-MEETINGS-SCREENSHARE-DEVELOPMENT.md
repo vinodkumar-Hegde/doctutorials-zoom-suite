@@ -76,3 +76,6 @@ Run the scheme's **Test** action (Cmd+U) in Xcode; expect **five** policy tests.
 - iOS Meeting SDK join code and callbacks: https://developers.zoom.us/docs/meeting-sdk/ios/start-join-mtg-webinar/join-meeting/
 - Zoom Meeting SDK authentication/JWT and external-account review: https://developers.zoom.us/docs/meeting-sdk/auth/
 - Apple ReplayKit picker user confirmation: https://developer.apple.com/documentation/replaykit/rpsystembroadcastpickerview
+
+## Mac Xcode prerequisite now confirmed (operator report 2026-11-14)
+The operator successfully ran `xcode-select -p` and `xcodebuild -version`: `/Applications/Xcode.app/Contents/Developer`, **Xcode 27.2 (27B52)**. Full Xcode is installed and the active command-line developer directory is correct. Earlier errors are superseded. Git/Homebrew/XcodeGen/repository presence on Mac, Xcode project generation, compilation, signing and real iPad tests still await verification. Do not claim an app was built.
