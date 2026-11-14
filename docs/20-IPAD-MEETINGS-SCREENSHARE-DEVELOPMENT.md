@@ -140,3 +140,15 @@ The preparation script checks files including `version.txt`, reports its first l
 In Xcode, inspect the app target → General → Frameworks, Libraries and Embedded Content: **MobileRTC = Embed & Sign**. Under Build Phases → Copy Bundle Resources: **MobileRTCResources.bundle**. No `MobileRTCScreenShare` in the main app target. Next verify build only on simulator before adding SDK authentication. Current official Zoom documentation supports up to iOS 26; operator simulator is iPadOS 27.2, so compatibility must be determined empirically or from updated Zoom release notes before declaring SDK runtime support.
 
 Official: https://developers.zoom.us/docs/meeting-sdk/ios/integrate/ and https://developers.zoom.us/docs/meeting-sdk/ios/default-ui/basic-features/ios-screen-share-trouble-tips/; XcodeGen spec https://yonaskolb.github.io/XcodeGen/Docs/ProjectSpec.html
+
+## 2026-11-15 — SDK framework linking configuration generated successfully
+Operator Terminal result:
+- `SDK framework paths: VERIFIED`
+- `SDK version.txt: v7.2.5.40220`
+- `Optional zoomcml XCFramework: FOUND`
+- `Local vendor symlink: READY (ignored by Git)`
+- `xcodegen generate --spec project-sdk.yml` → `Created project at .../DocTutorialsScreenShare.xcodeproj`
+
+**Passed:** vendor SDK local file check, opt-in XcodeGen project generation. **Pending:** actual Xcode compile/link to iPad Simulator, app launch with SDK-linked build, real JWT authentication, meeting join/callbacks, and ReplayKit Broadcast Upload Extension. The Xcode project generation alone does not establish SDK binary compatibility.
+
+Next operator step: open the generated Xcode project, select **DocTutorialsScreenShare / iPad (A16) Simulator**, press **Cmd+B**. Collect the first red error if compilation fails; otherwise confirm Build Succeeded. Do not need Zoom OAuth credentials for the SDK framework-only build.
