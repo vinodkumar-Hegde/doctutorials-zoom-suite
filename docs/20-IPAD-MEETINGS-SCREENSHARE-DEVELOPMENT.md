@@ -96,3 +96,10 @@ The operator successfully ran `xcode-select -p` and `xcodebuild -version`: `/App
 - Observed UI: faculty screen-sharing header; no real class loaded, optional sample class; disconnected Zoom Meeting state and disabled Join button; disabled screen broadcast; privacy acknowledgement toggle ON; explicit "Development preview — no meeting is joined or broadcast" label.
 - This passes **UI-only simulator launch**, not Zoom join, actual ReplayKit sharing, physical iPad or end-to-end integration.
 - Next: select `DocTutorialsScreenShare` scheme in Xcode and run `Cmd+U` to execute five screen-share policy XCTest cases. **5/5 not yet confirmed**.
+
+## 2026-11-15 — 5/5 SwiftUI policy tests PASSED
+- Operator screenshot and raw XCTest log confirm all **five `ScreenSharePolicyTests` passed with zero failures**, Test Suite 'All tests' PASSED on iPad (A16) simulator / iPadOS 27.2.
+- Tests cover fail-closed disconnected/absent privacy acknowledgment/absent Zoom share permission and valid all-three-gate case; this is UI-policy evidence only.
+- Simulator emitted **non-blocking** launch measurements, pointer UI telemetry and advisory that Info.plist should support all orientations; include orientation key review before release. These warnings do not demonstrate an SDK crash or test failure.
+- Next Zoom Developer prerequisite (meeting-only Basic sandbox): sign in to [Zoom Marketplace](https://marketplace.zoom.us/), open developer **Created Apps → Build App → General App**, go to **Features → Embed** and enable **Meeting SDK**, then download the iOS SDK from app setup. Keep distinct from the existing Server-to-Server OAuth backend app and any Windows Plugin SDK app. **Do not disclose or commit Client ID/Secret/JWT**. Confirmation needed: app created, Meeting SDK feature ON, iOS package available, with no credentials provided.
+- Continue to require backend-generated short-lived Meeting SDK JWT and real meeting-join/permission callbacks before enabling Share. No webinar or production host changes.
