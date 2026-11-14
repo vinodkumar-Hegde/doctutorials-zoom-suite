@@ -2,7 +2,7 @@
 
 **Updated:** 2026-11-14
 **App:** DocTutorials-Backend — Server-to-Server OAuth
-**State:** Operator Windows **13/13 offline tests PASS** before meetings-first change. Two additional meetings-only regression tests have been committed (15 total; operator re-run pending). One-user Basic sandbox live OAuth, active-users GET (1), and meetings-list GET (0) PASS; meeting detail still SKIPPED. **Webinar work explicitly deferred by operator.**
+**State:** **PASS for sandbox read-only Meetings API proof** (2026-11-14). Operator Windows **15/15 offline tests PASS**. Free Basic sandbox live OAuth PASS, users GET PASS (1), meetings-list GET PASS (1), and individual meeting-detail GET **PASS**. Webinars intentionally NOT TESTED; paid four-host production remains pending.
 
 ## Purpose
 
@@ -30,7 +30,7 @@ Clone the **private** repository and run the offline tests. If you already clone
     python --version
     python -m unittest discover -s tests -v
 
-You should see **15** offline mock tests passing after pulling the latest code (the initial 13 passed on the operator's Windows workstation; two newly added test cases await operator execution). Offline tests alone do not prove the live Zoom integration.
+The operator confirmed **15/15** offline mock tests passing on the Windows workstation. Offline tests alone do not establish a live tenant connection. Offline tests alone do not prove the live Zoom integration.
 
 To run the live read-only test:
 
@@ -127,7 +127,7 @@ Webhook event subscriptions and cloud recording download scopes are separate wor
 - [x] Local mock-based tests — nine tests pass
 - [x] Live OAuth token request with **sandbox** tenant credentials (no secrets shared)
 - [x] Basic sandbox active user GET and scheduled meetings list GET; zero future meetings, detail GET skipped
-- [ ] Sandbox meeting detail GET after scheduling a throwaway future test meeting
+- [x] Sandbox meeting detail GET after scheduling a future test meeting — 1 meeting, detail PASS (operator evidence 2026-11-14)
 - [ ] Four intended licensed production hosts selected and read
 - [ ] Meetings/webinars and available individual details read
 - [ ] Production secret manager provisioned
@@ -146,3 +146,7 @@ Official sources:
 The operator reran the single-user sandbox test twice: OAuth PASS, active users GET PASS (1), meetings-list GET PASS (0), and detail SKIPPED both times. This is **not** an API authentication or permissions failure. Per [Zoom's List Meetings API](https://developers.zoom.us/docs/api/meetings/), `GET /users/{userId}/meetings` defaults to `type=scheduled` and returns a host's unexpired scheduled meetings, not instant meetings. The script's existing query uses that default. No API code change is needed.
 
 **Operator action:** In the same free Zoom account associated with the sandbox app's credentials, schedule and **save** one ordinary future meeting (not instant, PMI-only or an invite to someone else's meeting), confirm it appears in the account's scheduled-meetings list, and rerun `python backend\zoom_s2s_smoke_test.py --sandbox-single-user`. Expected: `meetings>=1` and `meeting detail=PASS`. If the Zoom UI lists a future meeting but the API still shows zero, investigate account identity, meeting host and filter without sharing meeting details or account IDs. Production four-host test remains pending.
+
+## Verified meeting detail completion — 2026-11-14
+
+The operator reported: **Ran 15 tests in 0.003s — OK**, then live OAuth PASS, active users GET PASS (1), and **Sandbox user: meetings=1, meeting detail=PASS, webinars=NOT TESTED**, ending with **RESULT: PASS**. These checks validate read access to one Basic sandbox meeting, not a full deployed backend, lifecycle control, recording, or production four-host setup. Next implementation acceptance plan: [17-MEETINGS-BACKEND-IMPLEMENTATION.md](17-MEETINGS-BACKEND-IMPLEMENTATION.md).
