@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-14
 **Decision:** ADR-014 — Implement and accept Zoom Meetings integration before starting webinar integration.
-**Scope status:** Increment A local prototype **operator-tested (authenticated list/detail GET PASS)** on 2026-11-14. Full acceptance remains pending because 23-test expanded suite and explicit negative authentication tests are not yet reported. Not a production deployment.
+**Scope status:** Increment A local prototype **operator-tested (authenticated list/detail GET PASS)** on 2026-11-14. Operator reports all 23 offline tests PASS; full acceptance remains pending on explicit negative-authentication validation and security review. Not a production deployment.
 
 ## Evidence establishing readiness
 
@@ -61,10 +61,14 @@ No webinar GET/POST requests or webinar-specific webhook subscriptions during th
 
 ## Immediate operator step
 
-Nothing needs to be changed in the Zoom portal now. The initial FastAPI sandbox-local prototype is at `backend/meetings_api.py`, with implementation and eight new offline tests. Refer to [18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md) to install dependencies, run the expanded 23-test suite and launch an explicitly localhost-only service. The operator has confirmed successful authenticated HTTP list and detail GETs on Windows; the expanded 23-test suite and negative authorization check remain pending. The operator's latest `meetings=1, meeting detail=PASS` result establishes the meeting API baseline. The implementation team should build/test Increment A in the repository, then provide a simple Windows command sequence for running the local service.
+Nothing needs to be changed in the Zoom portal now. The initial FastAPI sandbox-local prototype is at `backend/meetings_api.py`, with implementation and eight new offline tests. Refer to [18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md) to install dependencies, run the expanded 23-test suite and launch an explicitly localhost-only service. The operator has confirmed successful authenticated HTTP list and detail GETs on Windows; the operator reports all 23 offline tests PASS; the negative authorization check remains pending. The operator's latest `meetings=1, meeting detail=PASS` result establishes the meeting API baseline. The implementation team should build/test Increment A in the repository, then provide a simple Windows command sequence for running the local service.
 
 **Official references**
 
 - S2S OAuth grant and token lifetime: https://developers.zoom.us/docs/integrations/oauth/
 - List and get meeting endpoints/scopes: https://developers.zoom.us/docs/api/meetings/
 - FastAPI header-auth options: https://fastapi.tiangolo.com/reference/security/
+
+## Operator testing update — 2026-11-14
+
+The operator confirmed that **all 23 currently committed offline unit tests passed** on Windows after the local authenticated Meetings API client had already reported list count=1 and meeting detail PASS. This is operator-reported test execution, not CI attestation. Live negative authentication/unauthorized access behavior and production hardening remain pending. Do not treat the sandbox localhost PoC as production ready.
