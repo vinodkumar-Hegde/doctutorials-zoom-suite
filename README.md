@@ -93,3 +93,9 @@ The Windows operator reports local authenticated `GET /v1/meetings` PASS (count 
 ## Basic sandbox local Meetings API PoC completed (2026-11-14)
 
 Operator reports **23/23 offline unit tests PASS**, authenticated local GET meeting list PASS (one meeting) and individual detail PASS, plus unauthenticated local GET properly denied with **HTTP 401**. The scoped local read-only Meetings proof is complete; this is **not** a production backend security review or Windows recording engine acceptance. Next feasibility gate: one actual native Zoom Meeting recording on Windows, confirm the generated local video file, and then separately prove any available supported automation. Production four-host, cloud backup evidence and webinar integration remain pending.
+
+## Stage 3A — One Windows native recording channel feasibility (2026-11-14)
+
+Now active: **Windows Zoom Workplace + Plugin SDK** proof against **one free Basic sandbox Zoom Meeting**, before the branded central recording dashboard or four workers. A separate Plugin SDK General App authorization flow is required; **do not reuse the existing S2S API app token as if it were a Plugin SDK connection**. The official Zoom Windows PSDKTest demo will establish whether supported local start/stop and possibly pause/resume can operate with permissions on the Windows client. These controls have **not** been tested.
+
+Committed `backend/windows_recorder_probe.py` and `tests/test_windows_recorder_probe.py` for safe read-only workstation hints, local vendor SDK folder checks and finalized MP4 container verification. **12 new offline tests** make the expected suite **35 tests**, pending operator rerun. The probe is **not** a recording engine or Plugin SDK bridge. See [Gate 3A Windows runbook](docs/19-GATE3-WINDOWS-PLUGIN-SDK-RECORDER-SPIKE.md). No production tenant or webinar changes.
