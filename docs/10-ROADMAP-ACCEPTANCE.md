@@ -63,7 +63,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 **Stage 3A update 2026-11-14:** Official Windows Plugin SDK requirements, separate OAuth/scope and bundled PSDKTest demo reviewed; read-only environment/SDK-folder/MP4 container probe plus **12** offline tests committed. **Operator ran all 35/35 tests PASS** and environment probe confirmed Windows + likely Zoom executable. Plugin SDK IPC/record commands NOT TESTED. The probe **does not invoke SDK commands or record meetings**. See [Stage 3A runbook](19-GATE3-WINDOWS-PLUGIN-SDK-RECORDER-SPIKE.md).
 - [x] Operator ran expanded **35/35 offline tests PASS**, and Windows probe printed `Windows workstation: YES` / `Zoom executable candidate: FOUND` (2026-11-14).
 - [ ] Confirm actual Zoom Workplace Windows version >=7.0.2 (not yet reported).
-- [ ] Install Visual Studio 2019+ with Desktop development with C++ (operator's PowerShell C++ tool discovery returned **NOT FOUND** on 2026-11-14); rerun detection after installation.
+- [x] **Visual Studio Community 2026 C++ MSVC toolset detected** by `vswhere -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64`; path `C:\Program Files\Microsoft Visual Studio\18\Community` (operator report 2026-11-14). Windows SDK component and actual compiler build have not yet been separately checked.
 - [ ] Download compatible Windows Plugin SDK from a sandbox General App, following Zoom authorization rules; no production app changes.
 - [ ] Build Zoom's official PSDKTest Release x64 and validate IPC OAuth connection on one authorized sandbox Windows Zoom Workplace client.
 - [ ] Determine actual local recording permissions and supported start/stop/pause/resume controls (record every unavailable API explicitly).
