@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-14
 **Decision:** ADR-014 — Implement and accept Zoom Meetings integration before starting webinar integration.
-**Scope status:** Planned. This document is an implementation/acceptance plan, **not** a deployed or completed backend.
+**Scope status:** Increment A *local prototype code committed* 2026-11-14 (not yet operator-tested or deployed). Acceptance remains pending. The production backend is not completed.
 
 ## Evidence establishing readiness
 
@@ -20,7 +20,7 @@ These results close the initial **sandbox meetings read-only API proof**. The pr
 
 ## Proposed implementation increments
 
-### Increment A — Local read-only service (next)
+### Increment A — Local read-only service (initial code committed; acceptance pending)
 
 Build a FastAPI service consuming Zoom Server-to-Server OAuth credentials **only on the server**. For the first local demonstration:
 - Bind to **127.0.0.1 only** (never expose to LAN/public internet).
@@ -61,7 +61,7 @@ No webinar GET/POST requests or webinar-specific webhook subscriptions during th
 
 ## Immediate operator step
 
-Nothing needs to be changed in the Zoom portal now. The operator's latest `meetings=1, meeting detail=PASS` result establishes the meeting API baseline. The implementation team should build/test Increment A in the repository, then provide a simple Windows command sequence for running the local service.
+Nothing needs to be changed in the Zoom portal now. The initial FastAPI sandbox-local prototype is at `backend/meetings_api.py`, with implementation and eight new offline tests. Refer to [18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md](18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md) to install dependencies, run the expanded 23-test suite and launch an explicitly localhost-only service. This code has not been confirmed running on the operator Windows workstation yet. The operator's latest `meetings=1, meeting detail=PASS` result establishes the meeting API baseline. The implementation team should build/test Increment A in the repository, then provide a simple Windows command sequence for running the local service.
 
 **Official references**
 
