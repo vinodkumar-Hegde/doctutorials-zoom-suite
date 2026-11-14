@@ -148,5 +148,43 @@ class ZoomSmokeTestTests(unittest.TestCase):
             with self.assertRaisesRegex(z.SmokeTestError, "expected at least 4"):
                 z.run(SandboxClient())
 
+
+    def test_four_host_default_reads_meetings_only_and_skips_all_webinars(self):
+        class FourHostClient:
+            def __init__(self): self.meeting_hosts = []
+            def authenticate(self): pass
+            def list_users(self):
+                return [{"id": str(i), "type": 2} for i in range(4)]
+            def list_meetings(self, user_id):
+                self.meeting_hosts.append(user_id)
+                return []
+            def list_webinars(self, user_id):
+                raise AssertionError("Meetings-first phase must not call webinar APIs")
+            def check_webinar_detail(self, webinar_id):
+                raise AssertionError("Meetings-first phase must not fetch webinar details")
+        client = FourHostClient()
+        with patch("sys.stdout", io.StringIO()) as output:
+            self.assertEqual(z.run(client), 0)
+            self.assertEqual(client.meeting_hosts, ["0", "1", "2", "3"])
+            self.assertIn("webinars=DEFERRED", output.getvalue())
+            self.assertIn("meetings-only read test", output.getvalue())
+
+    def test_four_host_meeting_details_read_without_webinars(self):
+        class FourHostClient:
+            def __init__(self): self.detail_ids = []
+            def authenticate(self): pass
+            def list_users(self): return [{"id": str(i), "type": 2} for i in range(4)]
+            def list_meetings(self, user_id):
+                return [{"id": int(user_id) + 100}]
+            def check_meeting_detail(self, meeting_id):
+                self.detail_ids.append(meeting_id)
+            def list_webinars(self, user_id):
+                raise AssertionError("Webinar calls forbidden in meetings-first phase")
+        client = FourHostClient()
+        with patch("sys.stdout", io.StringIO()) as output:
+            self.assertEqual(z.run(client), 0)
+            self.assertEqual(client.detail_ids, [100, 101, 102, 103])
+            self.assertEqual(output.getvalue().count("meeting detail=PASS"), 4)
+
 if __name__=='__main__':
     unittest.main()
