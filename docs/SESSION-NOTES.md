@@ -166,3 +166,9 @@
 - Operator reports **all tests passed** after instructions to run `python -m unittest discover -s tests -v` on the expanded local Meetings backend suite (23 expected tests). Interpreted as **23/23 operator-confirmed PASS**; precise console summary not pasted and no CI attestation.
 - Previous authenticated local sandbox API proof remains `meetings GET PASS (count=1)`, `meeting detail GET PASS`; Zoom Basic sandbox only, no webinar or production four-host API calls.
 - Remaining near-term security check: send a GET to local `http://127.0.0.1:8765/v1/meetings` **without** `X-DocTutorials-Key` and expect **HTTP 401**; a connection error does not count. Production vault/RBAC, recordings and Windows four-channel control remain unresolved. No Zoom settings changed or secrets committed.
+
+## 2026-11-14 — Live localhost API unauthenticated request rejected (HTTP 401)
+- Operator confirmed the PowerShell unauthenticated GET test against the local `/v1/meetings` endpoint returned **HTTP 401**, the expected denial for a request with no `X-DocTutorials-Key`.
+- Previous operator reports: **23/23 offline unit tests PASS**, authenticated localhost meeting list PASS (`count=1`), and individual meeting detail PASS.
+- **Milestone decision:** close the narrowly scoped **Zoom Basic sandbox, localhost-only read-only Meetings API PoC**. Do **not** close full production Gate 2 security, webhook, recording or four paid-host acceptance; proof of 401 without a key does not assess all authorization attacks.
+- Next: Gate 3 Windows recorder feasibility, starting with a single standard Zoom Meeting in the free sandbox and a verified native local recording MP4. Remote record start/stop/pause and 4-way isolation must remain explicit unknowns until tested; webinars deferred. No Zoom account changes were made by assistant.
