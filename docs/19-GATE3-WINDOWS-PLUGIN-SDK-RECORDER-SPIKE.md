@@ -7,7 +7,7 @@
 
 - Gate 2B local Basic sandbox read-only Meetings backend: **operator-confirmed PASS**, including 23/23 offline tests, authenticated list/detail, and unauthenticated HTTP 401.
 - Gate 3A: Zoom Windows Plugin SDK **native IPC connection and recording controls NOT YET TESTED**. No custom recording executable is claimed to exist.
-- A **read-only** Windows environment / SDK folder / finalized MP4 artifact probe has been committed in `backend/windows_recorder_probe.py` with 12 new mock/file tests. The repository now has **35** offline tests; the new 12 have **not** yet been run on operator Windows.
+- A **read-only** Windows environment / SDK folder / finalized MP4 artifact probe has been committed in `backend/windows_recorder_probe.py` with 12 new mock/file tests. The repository now has **35** offline tests; operator confirms **35/35 PASS on Windows** (2026-11-14).
 - **Do not infer** that a previously successful Zoom S2S OAuth token is sufficient for Plugin SDK authentication. This is a different app/authorization path.
 
 ## Source-verified Zoom prerequisites
@@ -40,7 +40,7 @@ From Windows PowerShell in the existing project directory:
     python -m unittest discover -s tests -v
     python -m backend.windows_recorder_probe --environment
 
-Expected offline summary: **Ran 35 tests / OK** (23 previously operator-confirmed plus 12 new tests). **Not yet confirmed.**
+**Operator-confirmed 2026-11-14:** `Ran 35 tests in 0.026s` / `OK`, then `Windows workstation: YES`, `Zoom executable candidate: FOUND`, `Plugin SDK IPC connection: NOT TESTED`, `Native recording command support: NOT TESTED`.
 
 The environment check only detects a likely Zoom executable in common installation locations; it does not extract credentials, inspect meetings, launch Zoom, or claim IPC is connected. A NOT FOUND result can occur with other Zoom installation layouts and does not establish Zoom is absent.
 
@@ -71,7 +71,7 @@ The probe never records, starts/joins meetings, connects IPC, or guarantees medi
 
 ## Safety and acceptance gates
 
-- [ ] 35/35 offline tests PASS (operator confirmation pending).
+- [x] **35/35 offline tests PASS** and Windows Zoom executable candidate FOUND (operator evidence 2026-11-14).
 - [ ] Workstation actual Zoom Workplace version confirmed and compatible with vendor SDK.
 - [ ] Dedicated sandbox Plugin SDK General App and correct OAuth authorization configured without changing production.
 - [ ] Official PSDKTest demo built and IPC authorization callback PASS to the sandbox Windows Zoom Workplace client.
@@ -87,3 +87,7 @@ The probe never records, starts/joins meetings, connects IPC, or guarantees medi
 ## Future after Gate 3A proof
 
 Write a native Windows SDK bridge (C++ adapter) using confirmed vendor header signatures, then add supervised one-channel command/state transport to the DocTutorials backend. Only enable each UI control if SDK permissions and callbacks substantiate it. Test two, then four isolated Windows recorder workers; implement NAS archival after verified conversion and checksum policy. If SDK recording controls prove insufficient, document the limitation and evaluate supported alternatives **before** choosing another recording architecture.
+
+## Operator checkpoint — Windows probe and 35 tests PASS (2026-11-14)
+
+Operator directly supplied the offline test summary `Ran 35 tests in 0.026s / OK` and workstation probe results `Windows workstation: YES; Zoom executable candidate: FOUND; Plugin SDK IPC connection: NOT TESTED; Native recording command support: NOT TESTED`. This is readiness evidence only, **not** a functioning Zoom recording worker. Next verify actual Windows Zoom Workplace version and Visual Studio C++ availability, then obtain the authorized SDK General App and vendor demo. Zoom's August 2026 developer announcement also notes the Plugin SDK's signed-in account must match the Zoom Workplace user for connection (https://developers.zoom.us/blog/new-sdks-expand-possibilities-for-direct-integration-with-zoom-workplace/).
