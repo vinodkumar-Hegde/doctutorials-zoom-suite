@@ -185,3 +185,26 @@ python3 -m unittest discover -s tests -p 'test_ipad_sdk_jwt.py' -v
 **Next integration blocker after compile:** a backend HTTPS endpoint `POST /api/sessions/{id}/join/ipad` must authenticate a DocTutorials faculty identity, verify the assignment and authorized meeting, securely retrieve the sandbox Meeting SDK Client ID/Secret, generate JWT server-side, and respond with the ephemeral join ticket. The current Windows localhost-only FastAPI read service is NOT a safe/sufficient faculty HTTPS server and MUST NOT be exposed publicly or mistaken for this endpoint. No production Zoom settings or tokens altered.
 
 References: https://developers.zoom.us/docs/meeting-sdk/ios/build-an-app/implement-features/ ; https://developers.zoom.us/docs/meeting-sdk/ios/start-join-mtg-webinar/join-meeting/ ; https://developers.zoom.us/docs/meeting-sdk/auth/ .
+
+## 2026-11-15 — Fix staged for `dyld: Library not loaded: @rpath/zoomcml.framework/zoomcml`
+First launch/test of newly generated SDK-enabled Stage 4B adapter hit an **Xcode Simulator dyld launch abort** because `MobileRTC.framework` dynamically references `zoomcml.framework`, which was not embedded in the app. This does **not** demonstrate a bug in the join adapter or failure in its policy tests; XCTest could not launch. Earlier SDK-linked **Cmd+B** success remains a compile/link result, not a runtime test.
+
+**Committed fix, awaiting Mac retest:**
+- `project-sdk.yml`: add `vendor/ZoomMeetingSDK/lib/zoomcml.xcframework` to the app's dependencies with `embed: true`, `codeSign: true`. Keep existing `MobileRTC.xcframework` Embed & Sign and `MobileRTCResources.bundle` Copy Bundle Resources. The future `MobileRTCScreenShare.xcframework` still belongs **only** to the ReplayKit Broadcast Upload Extension and is not needed here.
+- `scripts/prepare_zoom_sdk.sh`: fail closed unless the local Zoom distribution includes `lib/zoomcml.xcframework` (operator previously confirmed it does).
+- No changes to `project.yml` (UI-only known-good app) or host credentials.
+
+Mac commands:
+
+```bash
+cd ~/doctutorials-zoom-suite
+git pull
+cd ipad/DocTutorialsScreenShare
+bash scripts/prepare_zoom_sdk.sh
+xcodegen generate --spec project-sdk.yml
+open DocTutorialsScreenShare.xcodeproj
+```
+
+Then select **DocTutorialsScreenShare → iPad (A16)**. Inspect app target → **General → Frameworks, Libraries, and Embedded Content**: `MobileRTC` = **Embed & Sign**, `zoomcml` = **Embed & Sign**. Perform **Product → Clean Build Folder (Shift+Cmd+K)** followed by **Cmd+U** and **Cmd+R**. If green tests and actual simulator launch both succeed, record separately. No real Zoom authentication, backend issuance, meeting join, or ReplayKit broadcast yet.
+
+Sources: https://developers.zoom.us/docs/meeting-sdk/ios/integrate/ ; https://devforum.zoom.us/t/is-the-ios-meeting-sdk-still-actively-supported/147169 ; https://developer.apple.com/documentation/xcode/addressing-missing-framework-crashes .
