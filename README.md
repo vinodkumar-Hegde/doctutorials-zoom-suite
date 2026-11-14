@@ -89,3 +89,7 @@ The original 15 tests passed on operator Windows; **8 additional service tests w
 ## Latest Meetings backend verification (2026-11-14)
 
 The Windows operator reports local authenticated `GET /v1/meetings` PASS (count 1) and `GET /v1/meetings/1` PASS using the loopback-only FastAPI sandbox service. This closes the first authenticated **local read-only Meetings API** functional proof, **not** full secure backend or recording-system acceptance. The newest **23/23 offline suite is operator-confirmed passed**; the unauthenticated-request negative security check remains pending; production four-host operation, webhooks, cloud archive, Windows native recording automation and webinar integration remain pending. See [docs/18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md](docs/18-MEETINGS-LOCAL-SERVICE-RUNBOOK.md).
+
+## Basic sandbox local Meetings API PoC completed (2026-11-14)
+
+Operator reports **23/23 offline unit tests PASS**, authenticated local GET meeting list PASS (one meeting) and individual detail PASS, plus unauthenticated local GET properly denied with **HTTP 401**. The scoped local read-only Meetings proof is complete; this is **not** a production backend security review or Windows recording engine acceptance. Next feasibility gate: one actual native Zoom Meeting recording on Windows, confirm the generated local video file, and then separately prove any available supported automation. Production four-host, cloud backup evidence and webinar integration remain pending.
