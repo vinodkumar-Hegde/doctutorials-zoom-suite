@@ -79,3 +79,8 @@ Run the scheme's **Test** action (Cmd+U) in Xcode; expect **five** policy tests.
 
 ## Mac Xcode prerequisite now confirmed (operator report 2026-11-14)
 The operator successfully ran `xcode-select -p` and `xcodebuild -version`: `/Applications/Xcode.app/Contents/Developer`, **Xcode 27.2 (27B52)**. Full Xcode is installed and the active command-line developer directory is correct. Earlier errors are superseded. Git/Homebrew/XcodeGen/repository presence on Mac, Xcode project generation, compilation, signing and real iPad tests still await verification. Do not claim an app was built.
+
+## 2026-11-15 — Mac GitHub clone verified (operator report)
+- The private repository was cloned successfully at `~/doctutorials-zoom-suite` on Mac. `git status` showed branch `main`, up to date with `origin/main`, clean working tree.
+- Git 2.54.0, Homebrew 7.0.13 and Xcode 27.2 were already confirmed. Next step is installing/checking XcodeGen via `brew install xcodegen`, generating `ipad/DocTutorialsScreenShare/project.yml` with `xcodegen generate`, and opening the generated project.
+- The SwiftUI shell has **not been compiled or tested yet**. The join and broadcast controls remain intentionally inactive and real Zoom/ReplayKit SDK integration is a later milestone.
