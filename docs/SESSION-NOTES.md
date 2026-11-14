@@ -240,3 +240,10 @@
 - Xcode previously confirmed **27.2 / 27B52** with correct full developer directory. No iPad build or Xcode tests have run.
 - Immediate setup step: clone private `vinodkumar-Hegde/doctutorials-zoom-suite` repo to Mac via HTTPS under the user's own GitHub authorization, verify clean `main` working tree. Do **not** paste GitHub access tokens in chat or commit them.
 - After clone, install XcodeGen with existing Homebrew and generate/open `ipad/DocTutorialsScreenShare/project.yml`, then compile UI shell and XCTest. Zoom SDK connection/ReplayKit live broadcasting still pending; Windows recorder remains postponed.
+
+## 2026-11-15 — Private repo successfully cloned onto Mac for iPad app
+- Operator ran `git clone https://github.com/vinodkumar-Hegde/doctutorials-zoom-suite.git` from Mac home directory, then `cd doctutorials-zoom-suite` and `git status`.
+- Output confirmed `On branch main`, `Your branch is up to date with 'origin/main'`, and `nothing to commit, working tree clean`. Repository now resides at `~/doctutorials-zoom-suite` on Mac.
+- Full Xcode 27.2, Apple Git 2.54.0 and Homebrew 7.0.13 were previously verified; **XcodeGen not yet verified/installed**, and no Xcode project generation/build/test or device run performed.
+- Next action: `brew install xcodegen` (if not already installed), then `cd ~/doctutorials-zoom-suite/ipad/DocTutorialsScreenShare && xcodegen generate && open DocTutorialsScreenShare.xcodeproj`. After generation, select iPad simulator and build UI-only shell without requiring SDK secrets. If there is a build error, record exact error before modifying code.
+- Active priority remains meetings-first iPad screen-sharing app; Windows recording deferred to last and webinars still deferred. No production settings modified.
