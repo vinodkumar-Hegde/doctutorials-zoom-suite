@@ -208,3 +208,20 @@ open DocTutorialsScreenShare.xcodeproj
 Then select **DocTutorialsScreenShare → iPad (A16)**. Inspect app target → **General → Frameworks, Libraries, and Embedded Content**: `MobileRTC` = **Embed & Sign**, `zoomcml` = **Embed & Sign**. Perform **Product → Clean Build Folder (Shift+Cmd+K)** followed by **Cmd+U** and **Cmd+R**. If green tests and actual simulator launch both succeed, record separately. No real Zoom authentication, backend issuance, meeting join, or ReplayKit broadcast yet.
 
 Sources: https://developers.zoom.us/docs/meeting-sdk/ios/integrate/ ; https://devforum.zoom.us/t/is-the-ios-meeting-sdk-still-actively-supported/147169 ; https://developer.apple.com/documentation/xcode/addressing-missing-framework-crashes .
+
+## 2026-11-15 — Same dyld runtime error repeats; verify generated Xcode project
+The operator again reported `@rpath/zoomcml.framework/zoomcml` missing, referenced by `MobileRTC.framework` in simulator products, following the previous commit to embed `zoomcml`. No command output was included to confirm that the updated `project-sdk.yml` was pulled and regenerated, or that the app target actually embeds `zoomcml.framework`. Treat the fix as **NOT VERIFIED**, not as a successful SDK runtime integration.
+
+Do not add more blind build-setting changes until local state is known. Focused Mac diagnostics:
+
+```bash
+cd ~/doctutorials-zoom-suite
+git pull
+cd ipad/DocTutorialsScreenShare
+bash scripts/prepare_zoom_sdk.sh
+xcodegen generate --spec project-sdk.yml
+grep -n "zoomcml" DocTutorialsScreenShare.xcodeproj/project.pbxproj
+find vendor/ZoomMeetingSDK/lib/zoomcml.xcframework -name "zoomcml.framework" -print
+```
+
+Next, open generated Xcode project; select **the app target**, not the top-level project or test target; inspect General → Frameworks, Libraries and Embedded Content and Build Phases → Embed Frameworks. **MobileRTC** and **zoomcml** must appear as embedded-and-signed dependencies. After a fresh clean/build/run, inspect `.../Build/Products/Debug-iphonesimulator/DocTutorialsScreenShare.app/Frameworks/zoomcml.framework`. If project references exist but build output is still missing, investigate Xcode target copy phase/build failures and XCFramework selected platform slice; if no project references, investigate XcodeGen generation/spec usage. A simulator code-sign/restriction warning would be a *different* error. Keep credentials out of logs.
