@@ -152,3 +152,36 @@ Operator Terminal result:
 **Passed:** vendor SDK local file check, opt-in XcodeGen project generation. **Pending:** actual Xcode compile/link to iPad Simulator, app launch with SDK-linked build, real JWT authentication, meeting join/callbacks, and ReplayKit Broadcast Upload Extension. The Xcode project generation alone does not establish SDK binary compatibility.
 
 Next operator step: open the generated Xcode project, select **DocTutorialsScreenShare / iPad (A16) Simulator**, press **Cmd+B**. Collect the first red error if compilation fails; otherwise confirm Build Succeeded. Do not need Zoom OAuth credentials for the SDK framework-only build.
+
+## 2026-11-15 — Stage 4B: backend JWT signer and iOS meeting-join adapter staged
+Operator reports `Cmd+B` for the **SDK-linked 7.2.5.40220 app PASSED** before the Stage 4B source changes below. **This does NOT prove a Zoom meeting was joined.**
+
+New commits:
+- `SDKApp/ZoomMeetingJoinAdapter.swift`: Stage 4B SDK adapter using official SDK init/auth and meeting join APIs; receives a transient, backend-authorized meeting ticket containing a participant display name, meeting number/passcode and short-lived Meeting SDK JWT. Audio and video are OFF by default. `.inMeeting` only comes from `onMeetingStateChange`; a return value of `.success` from the join call alone is not treated as connected. Waiting room and reconnecting are not joined. ReplayKit sharing remains **disabled**, because permission has not been observed. This source is intentionally **NOT connected to the SwiftUI Join button**: authenticated faculty login, verified assigned session and a secure HTTPS API must exist first.
+- `project-sdk.yml` now includes `SDKApp` as a source directory only in the SDK configuration; original `project.yml` UI shell preserved.
+- `backend/ipad_sdk_jwt.py`: **backend-only** Meeting SDK participant JWT HS256 signer, with App Client ID/Secret from backend secret store (NOT the Server-to-Server OAuth app). `appKey`, `iat`, `exp`, `tokenExp` are Zoom native requirements; also includes `mn`, `role=0`. TTL bounds 1800–7200 seconds.
+- `tests/test_ipad_sdk_jwt.py`: 8 offline JWT correctness and invalid-input tests; **8/8 PASS in assistant's local Python environment**. These are not a live Zoom authorization or Mac SDK test.
+- Swift syntax was parsed using the assistant's Linux Swift compiler. **Actual Xcode compilation against SDK 7.2.5 is pending operator run.**
+
+**Next Mac validation:**
+
+```bash
+cd ~/doctutorials-zoom-suite
+git pull
+cd ipad/DocTutorialsScreenShare
+xcodegen generate --spec project-sdk.yml
+open DocTutorialsScreenShare.xcodeproj
+```
+
+Select DocTutorialsScreenShare and iPad (A16), then **Cmd+B** for the first compilation of the adapter; **Cmd+U** to ensure existing five policy tests still pass.
+
+Run newly added backend JWT tests separately (no Zoom credentials):
+
+```bash
+cd ~/doctutorials-zoom-suite
+python3 -m unittest discover -s tests -p 'test_ipad_sdk_jwt.py' -v
+```
+
+**Next integration blocker after compile:** a backend HTTPS endpoint `POST /api/sessions/{id}/join/ipad` must authenticate a DocTutorials faculty identity, verify the assignment and authorized meeting, securely retrieve the sandbox Meeting SDK Client ID/Secret, generate JWT server-side, and respond with the ephemeral join ticket. The current Windows localhost-only FastAPI read service is NOT a safe/sufficient faculty HTTPS server and MUST NOT be exposed publicly or mistaken for this endpoint. No production Zoom settings or tokens altered.
+
+References: https://developers.zoom.us/docs/meeting-sdk/ios/build-an-app/implement-features/ ; https://developers.zoom.us/docs/meeting-sdk/ios/start-join-mtg-webinar/join-meeting/ ; https://developers.zoom.us/docs/meeting-sdk/auth/ .
