@@ -247,3 +247,9 @@
 - Full Xcode 27.2, Apple Git 2.54.0 and Homebrew 7.0.13 were previously verified; **XcodeGen not yet verified/installed**, and no Xcode project generation/build/test or device run performed.
 - Next action: `brew install xcodegen` (if not already installed), then `cd ~/doctutorials-zoom-suite/ipad/DocTutorialsScreenShare && xcodegen generate && open DocTutorialsScreenShare.xcodeproj`. After generation, select iPad simulator and build UI-only shell without requiring SDK secrets. If there is a build error, record exact error before modifying code.
 - Active priority remains meetings-first iPad screen-sharing app; Windows recording deferred to last and webinars still deferred. No production settings modified.
+
+## 2026-11-15 — XcodeGen 2.46.0 installed and iPad Xcode project generated on Mac
+- Operator ran Homebrew `brew install xcodegen`. Output: xcodegen **2.46.0** successfully installed at `/opt/homebrew/Cellar/xcodegen/2.46.0`.
+- Operator ran `xcodegen generate` in `~/doctutorials-zoom-suite/ipad/DocTutorialsScreenShare`; output: `Created project at /Users/vinod/doctutorials-zoom-suite/ipad/DocTutorialsScreenShare/DocTutorialsScreenShare.xcodeproj`.
+- **Project generation PASSED**, but iOS SwiftUI app compilation, simulator launch, five XCTest tests, real-device signing, Zoom Meeting SDK join, and ReplayKit Goodnotes sharing **have not yet been run/verified**.
+- Next action: open the generated `.xcodeproj`, select `DocTutorialsScreenShare` scheme and available iPad Simulator, press Cmd+R; if successful run Cmd+U for five policy tests. The UI shell's join/share actions remain intentionally disabled. Do not provide secrets or Zoom host credentials.
