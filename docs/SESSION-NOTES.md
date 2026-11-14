@@ -120,3 +120,9 @@
 - Verified Zoom's official Meetings API describes `GET /users/{userId}/meetings` with default query `type=scheduled`, returning hosted unexpired scheduled meetings, not instant meetings; our script's omitted `type` is therefore already appropriate. No code change necessary for the empty response.
 - Whether a test meeting was successfully created/saved under the sandbox host was NOT confirmed by the operator. Advised scheduling a future ordinary meeting in the same **free** Zoom account, confirming it appears in the Zoom scheduled-meetings page, then rerunning the existing read-only script to exercise meeting detail GET.
 - Do not infer four-host readiness or webinar access from the free sandbox results. No Zoom configuration or meetings altered by our script.
+
+## 2026-11-14 — Windows PowerShell started outside Git repository
+- Operator opened a new Windows PowerShell 5.1 session at `C:\Users\PC` rather than `C:\Users\PC\doctutorials-zoom-suite`, then invoked relative backend script and test paths and `git pull`. Python reported missing `C:\Users\PC\backend\zoom_s2s_smoke_test.py`, Git reported `not a git repository`, and unittest could not import `tests`. These are **working-directory errors**, not Zoom OAuth failures.
+- New shell currently resolves `python` to Python 3.13 executable, compatible with the smoke test. Git command itself resolved.
+- Advised `cd "$HOME\doctutorials-zoom-suite"` then `git pull`, `python -m unittest discover -s tests -v`, and `python backend\zoom_s2s_smoke_test.py --sandbox-single-user`. Prior evidence of 13/13 passing offline tests and successful sandbox OAuth/users/empty-meetings GET remains valid; no new test outcome has been received.
+- No production Zoom settings or existing developer apps changed. The four-host production test and sandbox meeting-detail GET remain pending.
