@@ -14,7 +14,7 @@ if [[ ! -d "$source_dir" ]]; then
 fi
 source_dir="$(cd "$source_dir" && pwd -P)"
 
-for item in version.txt lib/MobileRTC.xcframework lib/MobileRTCResources.bundle lib/MobileRTCScreenShare.xcframework; do
+for item in version.txt lib/MobileRTC.xcframework lib/MobileRTCResources.bundle lib/MobileRTCScreenShare.xcframework lib/zoomcml.xcframework; do
   if [[ ! -e "$source_dir/$item" ]]; then
     printf 'ERROR: Required SDK component missing: %s\n' "$item" >&2
     exit 1
@@ -39,11 +39,7 @@ fi
 echo "SDK framework paths: VERIFIED"
 printf 'SDK version.txt: '
 head -n 1 "$source_dir/version.txt"
-if [[ -d "$source_dir/lib/zoomcml.xcframework" ]]; then
-  echo "Optional zoomcml XCFramework: FOUND (physical-device use to be verified)"
-else
-  echo "Optional zoomcml XCFramework: NOT FOUND"
-fi
+echo "zoomcml XCFramework: VERIFIED (required at SDK 7.2.5 runtime)"
 echo "Local vendor symlink: READY (ignored by Git)"
 echo "No Zoom binaries or secrets were copied to Git."
 echo "Next: xcodegen generate --spec project-sdk.yml"
