@@ -225,3 +225,12 @@ find vendor/ZoomMeetingSDK/lib/zoomcml.xcframework -name "zoomcml.framework" -pr
 ```
 
 Next, open generated Xcode project; select **the app target**, not the top-level project or test target; inspect General → Frameworks, Libraries and Embedded Content and Build Phases → Embed Frameworks. **MobileRTC** and **zoomcml** must appear as embedded-and-signed dependencies. After a fresh clean/build/run, inspect `.../Build/Products/Debug-iphonesimulator/DocTutorialsScreenShare.app/Frameworks/zoomcml.framework`. If project references exist but build output is still missing, investigate Xcode target copy phase/build failures and XCFramework selected platform slice; if no project references, investigate XcodeGen generation/spec usage. A simulator code-sign/restriction warning would be a *different* error. Keep credentials out of logs.
+
+
+## 2026-11-15 — Generated Xcode project DOES link and embed zoomcml (operator verified)
+Operator's `grep -n zoomcml DocTutorialsScreenShare.xcodeproj/project.pbxproj` shows:
+- `zoomcml.xcframework in Embed Frameworks` with `CodeSignOnCopy, RemoveHeadersOnCopy`
+- `zoomcml.xcframework in Frameworks`
+- `PBXFileReference` to `vendor/ZoomMeetingSDK/lib/zoomcml.xcframework`
+
+This closes the question whether the current generated project has an XcodeGen reference. **It does**. It does **not** demonstrate that a fresh app build packaged the framework into `.app/Frameworks` or that the simulator loads successfully. Next operator: Xcode → Product → Clean Build Folder, run iPad (A16) simulator. If `dyld` still reports missing `zoomcml.framework`, list the vendor xcframework subframeworks and exact built app's Frameworks directory to diagnose embed phase/file output. No additional project changes justified from grep alone.
