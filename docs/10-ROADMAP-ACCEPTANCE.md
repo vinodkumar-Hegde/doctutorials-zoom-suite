@@ -223,3 +223,8 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **2026-11-15 11:00: first real HTTPS faculty login AND scoped server-authorized sandbox join ticket PASS** in iPad Simulator (operator screenshot); `ipad-sandbox-class` assignment accepted.
 - [ ] **SDK core initialization blocking actual Zoom Meeting join:** `MobileRTC.shared().initialize` failed on iPadOS 27.2 Simulator. Zoom officially supports up to iOS 26 currently; MobileRTCResources.bundle copy/runtime path unverified. Explicit resource-path init + precise status code committed; next operator rebuild/runtime proof pending. Do not mark Zoom join/auth/ReplayKit pass.
+
+
+- [x] **SDK runtime asset audit PASS:** operator inspected iPadOS 27.2 installed app and verified MobileRTCResources.bundle + MobileRTC.framework + zoomcml.framework all present. Missing resource assumption ruled out for existing bundle; new explicit resource-path code not yet runtime-tested.
+- [x] **iOS 26.5 Simulator runtime installed**, no OS download needed; current SDK initialization failed on iPadOS 27.2. Next direct check is new iPad (A16) iOS 26.5 simulator, restart private localhost HTTPS (last run ended with Ctrl+C), launch current SDK app and verify an observed Zoom SDK meeting callback.
+- [ ] Root cause of MobileRTC.initialize failure / actual Zoom meeting join remains **unconfirmed**. iOS supported-range mismatch is a hypothesis; avoid conflating SDK initialization, SDK JWT authorization, and live Meeting joining.
