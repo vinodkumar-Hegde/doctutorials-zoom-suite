@@ -219,3 +219,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **2026-11-15 10:56: actual static faculty password sign-in over local HTTPS succeeds in iPad Simulator** (green `Signed in to DocTutorials (sandbox)` screenshot). Login is now runtime-proven.
 - [ ] Actual SDK Meeting join: first authorized-join attempt used numeric Zoom meeting number as the internal class ID; backend correctly denied it. Operator should retry with `ipad-sandbox-class`. No live connected SDK callback yet.
+
+
+- [x] **2026-11-15 11:00: first real HTTPS faculty login AND scoped server-authorized sandbox join ticket PASS** in iPad Simulator (operator screenshot); `ipad-sandbox-class` assignment accepted.
+- [ ] **SDK core initialization blocking actual Zoom Meeting join:** `MobileRTC.shared().initialize` failed on iPadOS 27.2 Simulator. Zoom officially supports up to iOS 26 currently; MobileRTCResources.bundle copy/runtime path unverified. Explicit resource-path init + precise status code committed; next operator rebuild/runtime proof pending. Do not mark Zoom join/auth/ReplayKit pass.
