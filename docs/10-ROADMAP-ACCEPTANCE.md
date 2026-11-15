@@ -232,3 +232,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **iOS 26.5 iPad (A16) Simulator SDK-only faculty screen launches and five XCTest policy cases PASS** (operator Xcode screenshot log, 2026-11-15 11:06).
 - [ ] **Real HTTPS static faculty login on new 26.5 Simulator:** UI reports `Login unavailable`. Verify `127.0.0.1:8443` listener (last run Ctrl+C) and new simulator TLS trust. Do not interpret as incorrect password or new Zoom SDK init result; no join attempted on 26.5 yet.
+
+
+- [x] **2026-11-15 11:13: Mac-origin HTTPS TLS/backend reachability PASS**: curl with local CA to `https://localhost:8443/docs` returns expected HTTP 404 (docs intentionally disabled).
+- [ ] **New iOS 26.5 Simulator localhost TLS trust/reachability** not yet confirmed. Next iPad Simulator Safari visit to `https://localhost:8443/docs`; distinguish cert privacy warning vs cannot-connect vs 404. Password reset and unit tests not indicated.
