@@ -285,3 +285,11 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [ ] Prove four isolated real Zoom recordings and validated NAS archival on operator Windows system.
 
 See docs/28-WINDOWS-SESSION-AUTO-RESERVATION.md. The 59 passing local tests **do not** prove live Zoom capture.
+
+## Stage RTMS receiver spike (2026-11-15)
+- [x] Implement optional Zoom RTMS Event WebSocket + raw H.264/PCM track receiver source (no Mac/OBS/Cloud Recording).
+- [x] Offline tests: 66/66 local (including RTMS-style synthetic packet composition, verified MP4 and Storage Center import).
+- [ ] Verify separately eligible RTMS app, Developer Pack credits and event subscription — **NOT YET DONE**.
+- [ ] Capture one real authorized Zoom Meeting with shared screen, faculty camera and mixed audio; inspect timing, video identity, local MP4, and branding — **NOT YET DONE**.
+- [ ] Build authoritative Zoom-meeting-to-class mapping before two-to-four concurrent real meetings. No inference for overlapping sessions.
+- [ ] Test long-duration A/V drift, reconnection, blank/silent intervals, NAS, and production security before deployment.

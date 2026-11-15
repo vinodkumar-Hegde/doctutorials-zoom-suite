@@ -68,3 +68,6 @@ Change this register as soon as a test invalidates an assumption.
 
 ## 2026-11-15 — ADR-026: Windows-local Admin schedule replaces Mac bridge
 The operator rejected Mac-to-Windows pairing as an operational requirement. The Windows Central Controller now owns the development Admin schedule in a local SQLite database, independently of the Mac. This fixes only the schedule/UI dependency; Zoom raw media acquisition, four live Meetings, faculty-device connectivity and production hardening remain unverified blockers. See `docs/26-WINDOWS-LOCAL-ADMIN.md`.
+
+### 2026-11-15 — RTMS production prerequisites
+Zoom Meeting SDK for Windows has a human-use policy and does not support unattended bots. Zoom RTMS is the documented automated media pipeline, but requires Zoom Developer Pack credits and a separately authorized app; the RTMS SDK binary platform support differs from the standard direct WebSocket protocol. This stage implements the WebSocket protocol in Windows Python but cannot infer faculty identity from active speaker or safely route multiple meeting streams with a schedule-only export. Live capture remains gated until observed permission, real media, and session identity verification. See ADR-029.

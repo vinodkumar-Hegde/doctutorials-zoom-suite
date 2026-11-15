@@ -87,3 +87,7 @@ because it appears on the dashboard. See `README-WINDOWS.md`.
 ## Original DocTutorials Admin schedule reader (2026-11-15)
 
 The duplicate Windows Assign Class form has been removed. The default controller now reads the original Admin database format through `existing_admin_sessions.py`, after a **one-time secure schedule-only transfer**; see `README-WINDOWS.md`. This read-only adapter does not make Zoom recording functional, and a transferred snapshot is not continuously synchronized with Mac edits. The future authoritative Admin backend must be deployed on Windows.
+
+## Zoom RTMS native media capture spike (development-only)
+
+`zoom_rtms_ingest.py` adds outbound Zoom Event WebSocket signaling and H.264/PCM RTMS media collection for a single unambiguous active Admin assignment, and `Engine.import_verified_mp4` ingests a composed video into Storage Center after FFprobe validation. The SDK-less RTMS protocol is documented in Zoom's official samples. Offline synthetic packet tests passed, but **NO authenticated real Zoom RTMS media has been connected or validated on the operator's Windows PC**. The existing Windows demo command remains synthetic. See [README-RTMS.md](README-RTMS.md) for required credits, app authorization, session identity limitations, A/V synchronization gaps, and safety gates.

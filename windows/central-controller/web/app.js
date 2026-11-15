@@ -29,7 +29,11 @@ function renderChannels(data){currentChannels=data;feedIsDemo=data.some(ch=>Stri
     }else{
       actions.append(control('Await assigned class',()=>{},'',true));
     }
-    actions.append(control('Stop & save MP4',()=>stop(ch.channel),'stop',!['recording','starting'].includes(ch.state)));
+    if(ch.sourceMode.startsWith('ZOOM RTMS')) {
+      actions.append(node('span','Zoom RTMS session controls stop; MP4 is finalized afterward.','note'));
+    } else {
+      actions.append(control('Stop & save MP4',()=>stop(ch.channel),'stop',!['recording','starting'].includes(ch.state)));
+    }
     card.append(actions);root.append(card);
   });el('health').textContent=active+' of 4 channels active';
 }
@@ -62,7 +66,7 @@ function renderSessions(result){
     card.append(node('div','Assigned faculty: '+item.facultyId,'source'));
     card.append(node('div',new Date(item.startsAt*1000).toLocaleString()+' — '+new Date(item.endsAt*1000).toLocaleTimeString(),'source'));
     card.append(node('div',item.plannedChannel?'Automatically reserved Channel '+item.plannedChannel:'NO CHANNEL CAPACITY — more than four overlapping classes',item.plannedChannel?'reservation':'warning'));
-    card.append(node('div',window+' · Zoom media NOT connected · No automatic recording','note'));
+    card.append(node('div',window+' · Zoom media '+(result.mediaState==='rtms_media_observed' && item.plannedChannel?'PACKETS OBSERVED':'NOT connected')+' · Live source requires RTMS approval','note'));
     root.append(card);
   });
 }

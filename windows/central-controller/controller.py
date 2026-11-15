@@ -43,6 +43,7 @@ class ControlState:
     def __init__(self,engine,password,sessions=None):
         self.engine=engine
         self.sessions=sessions
+        self.rtms=None
         self.password=password
         self.tokens={}
         self.media_tickets={}
@@ -50,7 +51,17 @@ class ControlState:
     def plan(self):
         snap=self.sessions.snapshot() if self.sessions else {'state':'local_windows','sessions':[]}
         if isinstance(self.sessions, ExistingAdminSessions):
-            return enrich_admin_schedule(snap, self.engine.status())
+            result=enrich_admin_schedule(snap, self.engine.status())
+            if self.rtms:
+                observed=self.rtms.state()['observedMediaChannels']
+                for c in result['channels']:
+                    if c['channel'] in observed:
+                        c['zoomMediaConnected']=True
+                        c['captureReady']=True
+                        c['sourceMode']='ZOOM RTMS — actual media packets observed'
+                        c['state']='recording'
+                result['mediaState']='rtms_media_observed' if observed else 'rtms_waiting_for_real_media'
+            return result
         return {**snap, 'channels': self.engine.status()}
     def login(self,password):
         if not hmac.compare_digest(password.encode('utf8'),self.password.encode('utf8')):
@@ -258,6 +269,7 @@ def main(argv=None):
     group.add_argument('--config',type=Path,help='Production input and NAS paths config (not Zoom SDK)')
     group.add_argument('--demo',action='store_true',help='Synthetic-media demonstration, NEVER Zoom capture')
     ap.add_argument('--port',type=int,default=8780)
+    ap.add_argument('--rtms',action='store_true',help='Explicitly connect authorized Zoom RTMS outbound WebSockets (requires separate app + credits)')
     ap.add_argument('--storage-root',type=Path,default=Path.home()/'.config'/'doctutorials'/'central-demo-storage')
     args=ap.parse_args(argv)
     if args.demo:
@@ -266,10 +278,20 @@ def main(argv=None):
         config=json.loads(args.config.read_text(encoding='utf8'))
         if not Path(config['storage_root']).is_absolute():
             raise SystemExit('storage_root must be an absolute Windows path in production config.')
+    if args.rtms and args.demo:
+        raise SystemExit('Zoom RTMS cannot be enabled with TEST MEDIA demo inputs; use --config.')
     engine=Engine(config)
     password=os.getenv('DOCTUTORIALS_CONTROLLER_PASSWORD') or getpass.getpass('Choose central controller admin password (hidden, 12+ chars): ')
     if len(password)<12:raise SystemExit('Choose a password of at least 12 characters.')
     state=ControlState(engine,password,ExistingAdminSessions())
+    if args.rtms:
+        from zoom_rtms_ingest import ZoomRtmsReceiver
+        client_id=os.environ.get('ZOOM_RTMS_CLIENT_ID','')
+        client_secret=os.environ.get('ZOOM_RTMS_CLIENT_SECRET','')
+        event_base=os.environ.get('ZOOM_RTMS_EVENT_WSS','')
+        state.rtms=ZoomRtmsReceiver(engine,lambda:state.plan(),
+                         client_id=client_id,client_secret=client_secret,event_base=event_base)
+        state.rtms.start()
     server=ThreadingHTTPServer(('127.0.0.1',args.port),handler_factory(state))
     print(f'DocTutorials Central Controller: http://127.0.0.1:{args.port}')
     print('Original Admin session reader + four independent worker slots. Storage: '+str(engine.root))
@@ -281,6 +303,7 @@ def main(argv=None):
     except KeyboardInterrupt:pass
     finally:
         server.server_close()
+        if state.rtms:state.rtms.close()
         print('Stopping active recorders and finalizing their files...')
         engine.close()
         print('Controller stopped. Check Storage Center for finalized recordings.')

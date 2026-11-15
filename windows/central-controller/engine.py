@@ -573,6 +573,60 @@ class Engine:
             if worker is not threading.current_thread():worker.join(timeout=35)
         for loopback in list(self.loopbacks.values()):loopback.stop()
 
+    def import_verified_mp4(self,channel: str,meta: dict,temporary: Path,*,source: str='zoom_rtms'):
+        """Commit independently received REAL encoded media into Storage Center.
+
+        This is invoked only by the RTMS receiver after FFmpeg has completed;
+        no remote request can upload media or choose arbitrary paths. The raw
+        RTMS track files remain in staging for verification/recovery.
+        """
+        if source!='zoom_rtms':
+            raise RecorderError('External recording source not authorized.')
+        if channel not in self.channels:
+            raise RecorderError('Invalid recorder channel.')
+        session=ensure_id(meta.get('sessionId'))
+        for key in ('facultyId','course','subject','topic'):
+            if not isinstance(meta.get(key),str) or not meta[key].strip() or len(meta[key])>140:
+                raise RecorderError('Invalid class metadata field: '+key)
+        path=Path(temporary).resolve()
+        if not path.is_file() or path.is_symlink() or path.parent.parent != (self.root/'staging').resolve():
+            raise RecorderError('External media must originate in a recorder staging subfolder.')
+        if path.stat().st_size < 4096:
+            raise RecorderError('External recorded MP4 is unexpectedly small.')
+        duration=self._verify_mp4(path)
+        digest=sha256_file(path)
+        rid=uuid.uuid4().hex
+        target=self.root/'library'/session/(rid+'.mp4')
+        target.parent.mkdir(parents=True,exist_ok=True)
+        with self.lock:
+            with self._db() as db:
+                exists=db.execute("SELECT id FROM controller_jobs WHERE channel=? AND state IN ('recording','starting','stopping','finalizing') LIMIT 1",(channel,)).fetchone()
+                if exists or (channel in self.processes and self.processes[channel].poll() is None):
+                    raise RecorderError('Recorder channel is busy; external media preserved.')
+            if target.exists():
+                raise RecorderError('Recording destination collision.')
+            os.replace(path,target)
+            epoch=int(time.time())
+            try:
+                with self._db() as db:
+                    db.execute("""INSERT INTO recordings
+                        (recording_id,session_id,faculty_id,course,subject,topic,state,
+                         byte_size,sha256,created_epoch,finished_epoch,source)
+                        VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",(
+                        rid,session,meta['facultyId'],meta['course'],meta['subject'],
+                        meta['topic'],'ready',target.stat().st_size,digest,epoch,epoch,source))
+                    db.execute("""INSERT INTO controller_jobs
+                        (id,channel,session_id,state,archive_state,started,finished,detail,duration)
+                        VALUES(?,?,?,?,?,?,?,?,?)""",(
+                        rid,channel,session,'ready','pending' if self.nas else 'not_configured',
+                        epoch,epoch,'RTMS tracks composed to verified local MP4; timing acceptance pending',duration))
+            except Exception:
+                os.replace(target,path)
+                raise
+        if self.nas:
+            threading.Thread(target=self.archive,args=(rid,),daemon=True).start()
+        return self._job(rid)
+
     def media_path(self,rid):
         job=self._job(rid)
         if job['state']!='ready':raise RecorderError('This recording is not finalized.')

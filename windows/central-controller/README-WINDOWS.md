@@ -53,3 +53,7 @@ Run tests in Windows with `py -3 -m unittest discover -s tests -v`.
 ## Updated: automatic session-to-channel reservations
 
 Existing Admin session metadata now appears **on its automatically reserved recording channel** without a manual class form or any new export. This is a *schedule reservation*, not proof that a Zoom class is live or being captured. The demo still outputs only test media. See [README-AUTO-CHANNELS.md](README-AUTO-CHANNELS.md) for exact status, source checks and remaining Zoom RTMS integration requirements.
+
+## Native outbound Zoom RTMS media spike — NOT live Zoom verified
+
+The new optional `--rtms` mode has a first-pass direct Zoom Event WebSocket/RTMS media transport and track-to-branded-MP4 compositor. It does not use Mac, OBS, Zoom Cloud Recording, or Zoom Workplace local recording. **It has only been tested with offline generated packet fixtures, not with an authorized Zoom RTMS meeting.** It is not enabled by `start-demo-windows.bat`. See [README-RTMS.md](README-RTMS.md) before any account changes. It requires a separate enabled RTMS app, credits, scopes, participant notice, and an outbound Event WebSocket subscription. With the exported schedule alone, it can safely match **one** active class; multiple active meetings are blocked until the Admin backend stores a secure Zoom meeting identity mapping.
