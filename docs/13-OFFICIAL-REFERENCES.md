@@ -116,3 +116,10 @@ The code for SDK init/participation and signer is STAGED. Documentation is not a
 - `xcrun simctl keychain booted add-root-cert <root-ca.pem>` installs a temporary **root CA in the booted iOS Simulator only**, not on a real iPad or Mac-wide system root store. Third-party verified usage guide: https://mikolajwilczek.dev/blog/add-root-cert-ios-simulator/ (2026-07-06).
 - Zoom Meeting SDK iOS actual meeting join/callback remains the SDK runtime source of truth: https://developers.zoom.us/docs/meeting-sdk/ios/start-join-mtg-webinar/join-meeting/
 - This localhost TLS pilot must not be exposed publicly or reused to claim safe production deployment.
+
+
+## 2026-11-15 — Zoom SDK core initialization failure on iPadOS 27.2 Simulator
+- Official Zoom **Get started iOS** currently documents Meeting SDK supported iOS range **15 through 26**; iPadOS 27.2 Simulator may be outside supported range even though app launches: https://developers.zoom.us/docs/meeting-sdk/ios/get-started/
+- Zoom requires `MobileRTCResources.bundle` in Xcode's **Copy Bundle Resources**: https://developers.zoom.us/docs/meeting-sdk/ios/integrate/
+- `MobileRTCSDKInitContext.bundleResPath` is documented as optional explicit resource bundle path: https://marketplacefront.zoom.us/sdk/meeting/ios/interface_mobile_r_t_c_s_d_k_init_context.html
+- No claim that OS mismatch or resource absence is definitive until operator checks actual app bundle/retests; backend HTTPS ticket verified, SDK initialization still fails.
