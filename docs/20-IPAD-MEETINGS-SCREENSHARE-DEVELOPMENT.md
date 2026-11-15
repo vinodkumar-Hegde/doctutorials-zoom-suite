@@ -438,3 +438,17 @@ Operator provided iPad (A16) Simulator screenshot of the new **Faculty iPad Meet
 The iPad Simulator now shows **Signed in to DocTutorials (sandbox)** after real HTTPS login. **This end-to-end faculty password login is PASS**, separate from earlier mock tests. The attempted Join request was denied because the operator entered the numeric Zoom Meeting ID into the *internal DocTutorials class/session ID* field; the private server-owned Basic sandbox assignment is keyed by **`ipad-sandbox-class`**. A 403 is the expected policy result and occurs before invoking Zoom SDK participant join.
 
 Next: enter **`ipad-sandbox-class`** in that field and tap Join; if denied inspect the private assignment's expiry. App UI source now pre-fills this internal session ID (requires a future pull/build, but is not needed for immediate retry). **Zoom `.inMeeting` callback remains NOT VERIFIED**; ReplayKit remains disabled.
+
+
+## 2026-11-15 11:00 — Real backend authorized join ticket; Zoom SDK INIT fails before auth/join
+Cropped operator Simulator screenshot: **faculty signed in**, internal `ipad-sandbox-class` matches server assignment and **backend authorized the session**, but Zoom status is **`Zoom Meeting SDK initialization failed.`**. This is an **SDK core initialization** failure, not a faculty login, meeting ID, meeting passcode or authorization policy failure. No SDK auth callback or observed `.inMeeting`.
+
+Official Zoom docs currently list maximum supported iOS **26** for iOS Meeting SDK; operator's iPad Simulator is **iPadOS 27.2**, beyond documented support: https://developers.zoom.us/docs/meeting-sdk/ios/get-started/ . Zoom also requires copying `MobileRTCResources.bundle` into app resources (https://developers.zoom.us/docs/meeting-sdk/ios/integrate/) and the SDK init context exposes `bundleResPath` (https://marketplacefront.zoom.us/sdk/meeting/ios/interface_mobile_r_t_c_s_d_k_init_context.html).
+
+**Corrective code committed (not yet built):** `ZoomMeetingJoinAdapter` checks the bundle exists and passes its path explicitly to `MobileRTCSDKInitContext.bundleResPath`, giving distinct missing-resource/core-init/auth-service status messages. UI `FacultySandboxMeetingView` now reflects immediate SDK initialization failure instead of continuing to claim it waits for a callback. **Next fastest check:** app bundle contains resources and iOS 26 simulator runtime availability. Mac Terminal:
+```bash
+APP="$(xcrun simctl get_app_container booted com.doctutorials.facultyscreen app)"
+ls -ld "$APP/MobileRTCResources.bundle" "$APP/Frameworks/MobileRTC.framework" "$APP/Frameworks/zoomcml.framework"
+xcrun simctl list runtimes
+```
+Then `git pull`, regenerate `project-sdk.yml`, build/run; use iOS 26 Simulator (or compatible physical iPad) if available. No unrelated unit tests required. ReplayKit still locked; webinar and Windows tasks deferred.
