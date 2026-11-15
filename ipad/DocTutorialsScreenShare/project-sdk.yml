@@ -28,6 +28,10 @@ targets:
         codeSign: true
     settings:
       base:
+        # Zoom Meeting SDK 6.7.5+ ships arm64-only Simulator XCFramework slices.
+        # Generic simulator builds must not request an unsupported x86_64 link.
+        # Restrict only the Simulator SDK; physical iPad (arm64) remains supported.
+        "EXCLUDED_ARCHS[sdk=iphonesimulator*]": x86_64
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
         OTHER_LDFLAGS: "$(inherited) -ObjC"
         INFOPLIST_KEY_NSCameraUsageDescription: "Zoom Meetings may request the camera when authorized by the faculty member."
