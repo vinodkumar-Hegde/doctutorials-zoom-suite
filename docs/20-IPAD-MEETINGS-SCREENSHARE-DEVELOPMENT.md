@@ -460,3 +460,9 @@ The Mac `xcrun simctl get_app_container booted com.doctutorials.facultyscreen ap
 **Installed iOS simulator runtimes:** 18.4, **26.3**, **26.5**, 27.2. Zoom's published max documented iOS version is 26, so switch Xcode to a newly created **iPad (A16), iOS 26.5 Simulator**, and shut down iOS 27.2. This is an evidence-driven OS compatibility trial, not confirmation that 27.2 is the cause.
 
 The operator stopped the localhost HTTPS backend with `^C`. With iOS 26.5 booted, rerun the **existing** `bash ipad/DocTutorialsScreenShare/scripts/run_local_sandbox_demo.sh` to add TLS trust to this simulator, regenerate XcodeGen SDK project, and start loopback HTTPS. In Xcode choose iOS 26.5 iPad, Cmd+R, sign in with private faculty password, and join assigned internal ID `ipad-sandbox-class`. No security unit-test reruns or credentials in chat. **Actual Zoom SDK initialized / SDK auth / inMeeting are pending**.
+
+
+## 2026-11-15 11:08 — iOS 26.5 UI/test regression passes; HTTP login unavailable
+Operator booted **iPad (A16), iPadOS 26.5** and supplied Xcode suite output: **5 tests, 0 failures** at 11:06. Screen shows correct local backend origin `https://localhost:8443`, static faculty ID and `ipad-sandbox-class`, but the iPad status says **`Login unavailable. Check your private HTTPS backend and network.`**. This is not a confirmed password rejection; the app clears the password field immediately after attempting login.
+
+**Next shortest diagnostic:** verify Mac localhost service is listening using `lsof -nP -iTCP:8443 -sTCP:LISTEN`. Earlier local server was stopped with Ctrl+C. If no listener, rerun `bash ipad/DocTutorialsScreenShare/scripts/run_local_sandbox_demo.sh` and leave Terminal serving. If listener exists but login remains unavailable, verify certificate trust was installed in **the new iOS 26.5 booted Simulator**, not the old 27.2 one. No more unrelated unit tests. SDK authorization/participant join on 26.5 still not proven.
