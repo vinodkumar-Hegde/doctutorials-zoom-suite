@@ -248,3 +248,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 
 - [ ] **2026-11-15 11:28: exact iOS 26.5 TLS-trust fix pending**: operator revealed **two booted iPad A16 simulators**; `simctl keychain booted` did not reliably target the intended 26.5 device. Safari still warns `This Connection Is Not Private` for local IPv4 endpoint. Shut down old 27.2 device, explicitly add CA to 26.5 UDID, verify trusted `/docs` without Safari exception. Native login and Zoom join still pending.
+
+
+- [x] **2026-11-15 11:32: Only correct iOS 26.5 iPad A16 Simulator booted and simulator CA installed by explicit UDID**; Safari displays expected local API 404 JSON with no visible warning. Native URLSession HTTPS faculty login still needs one confirmation; prior -1202 not yet independently cleared.
+- [ ] **Retry native first-party static-password sign-in at `https://127.0.0.1:8443`**, then first Zoom Meeting SDK participant join on supported iOS 26.5. No repeated unit tests.
