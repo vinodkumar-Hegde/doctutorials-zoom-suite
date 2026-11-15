@@ -52,6 +52,13 @@ EOF
   rm -f "$CERT_DIR/ca.cnf" "$CERT_DIR/leaf.ext" "$CERT_DIR/localhost.csr"
 fi
 
+# Present both leaf and issuing CA in the TLS handshake for Apple's
+# native URLSession trust-chain evaluation. The CA certificate is public;
+# only the leaf and root private keys must remain confidential.
+FULLCHAIN="$CERT_DIR/localhost-fullchain.pem"
+cat "$LEAF_CERT" "$ROOT_CERT" > "$FULLCHAIN"
+chmod 600 "$FULLCHAIN"
+
 echo "Trusting the temporary root CA in the currently BOOTED iPad Simulator only."
 xcrun simctl keychain booted add-root-cert "$ROOT_CERT"
 
