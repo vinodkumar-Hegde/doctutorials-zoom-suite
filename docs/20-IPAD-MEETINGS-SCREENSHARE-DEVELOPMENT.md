@@ -487,3 +487,15 @@ Operator's Xcode logs from iOS 26.5 app specify **`NSURLErrorDomain Code=-1202` 
 - Immediate operator remedy without Swift rebuild: ensure sole **booted iPadOS 26.5**, run `xcrun simctl list devices booted` and `xcrun simctl keychain booted add-root-cert "$HOME/.config/doctutorials/localhost-tls/sandbox-root-ca.pem"`; manually set the running app backend URL to `https://127.0.0.1:8443` (leaf SAN has IPv4 address). Retry sign in. Check Simulator Settings > General > About > Certificate Trust Settings for full trust if still -1202.
 - Code staged: `FacultySandboxMeetingView.swift` now defaults to IPv4 localhost; `setup_local_simulator_https.sh` creates `localhost-fullchain.pem` (leaf + root CA public cert) and `run_local_sandbox_demo.sh` points uvicorn to fullchain for better native client chain verification. Changes require `git pull` + backend restart/SDK build to apply automatically; **NOT yet operator tested**. Existing localhost TLS private keys and Zoom credentials remain outside GitHub.
 - Apple TLS documentation: https://developer.apple.com/library/archive/technotes/tn2232/ ; https://support.apple.com/en-us/103769 . Next milestone still real Basic Meeting Zoom SDK initialization and participant callback after login; no repeated unit-test gate.
+
+
+## 2026-11-15 11:28 — Certificate trust fix: explicitly target iOS 26.5 UDID, not `booted` with two simulators active
+Mac output confirms **two simultaneously booted iPad A16 simulators**: iOS 26.5 `7E489CA4-7F02-4749-A8D7-DA9036527652`, iOS 27.2 `4266857F-35AC-4405-B4D6-7DDC28F6B7E8`. Earlier temporary localhost root CA was added using ambiguous `simctl keychain booted`. The new iOS 26.5 Simulator Safari now displays **This Connection Is Not Private**, consistent with Xcode `NSURLErrorDomain Code=-1202`, SecureTransport `-9807`. **Do not accept the unsafe Safari exception**, which would not resolve native app URLSession validation.
+
+Operator next step:
+```bash
+xcrun simctl shutdown 4266857F-35AC-4405-B4D6-7DDC28F6B7E8
+xcrun simctl keychain 7E489CA4-7F02-4749-A8D7-DA9036527652 add-root-cert "$HOME/.config/doctutorials/localhost-tls/sandbox-root-ca.pem"
+xcrun simctl list devices booted
+```
+Confirm only 26.5 booted. Load **`https://127.0.0.1:8443/docs`** in Safari with **no privacy warning**; JSON `{"detail":"Not Found"}` is expected. Only then retry existing app login, no rebuild/tests/password reset. If native trust still fails, next inspect fullchain backend and iOS 26.5 Certificate Trust Settings; do not weaken TLS verification or expose localhost server.
