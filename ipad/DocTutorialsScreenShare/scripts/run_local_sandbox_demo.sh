@@ -7,7 +7,7 @@
 # NO webinar, production Zoom tenant, third-party login or public endpoint.
 set -euo pipefail
 
-REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 cd "$REPO"
 PY="$HOME/.venvs/doctutorials-ipad-api/bin/python"
 ASSIGNMENT="$HOME/.config/doctutorials/ipad-basic-assignment.json"
