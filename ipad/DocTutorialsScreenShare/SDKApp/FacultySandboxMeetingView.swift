@@ -271,6 +271,9 @@ struct FacultySandboxMeetingView: View {
             }
             notice = "The backend authorized this session. Waiting for Zoom's meeting callback."
             meeting.joinAssignedMeeting(ticket)
+            if meeting.connection == .failed {
+                notice = meeting.statusMessage
+            }
         } catch FacultyJoinTicketError.authenticationRequired {
             self.accessSession = nil
             notice = "Your login expired. Please sign in again."
