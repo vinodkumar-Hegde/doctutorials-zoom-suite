@@ -391,3 +391,9 @@ Operator decision: **use one stable DocTutorials-managed faculty password for th
 - `docs/22-FIRST-PARTY-STATIC-PASSWORD-AUTH.md`: setup, API flow, caveats and test commands
 
 **Next operator action:** `git pull`, run the **28-test suite** under existing `~/.venvs/doctutorials-ipad-api` with no real password. Then create a private static sandbox faculty password via CLI (never copy into chat or GitHub) and regenerate the SDK-only Xcode project, Cmd+B/Cmd+U. This account is intentionally a one-faculty sandbox bootstrap, not identity integration for real DocTutorials staff. Trustworthy HTTPS ingress, assignment storage, server SDK credentials and real SDK Meeting join remain unimplemented/unverified. Webinar and Windows work remain deferred.
+
+
+## 2026-11-15 10:10 — 28/28 first-party password security suite PASS; static password provisioning retry
+Operator Mac result: **`Ran 28 tests in 7.639s`, `OK`** for `tests/test_faculty_password_auth.py`. This is an offline test suite with fake credentials; it validates one-faculty Basic sandbox password hash/lockout/login and HTTPS contract logic, not live server credentials or Zoom join.
+
+Operator attempted private `python3 -m backend.faculty_password_auth setup --faculty-id sandbox-faculty --display-name "Sandbox Faculty"` but input was rejected with **`A static faculty password must be 16-128 characters`**. Successful config creation **NOT confirmed**. Have operator retry using an independently chosen 16–128-character password (no newline/CR/NUL), confirm input twice, never show password in chat or source. Expect success message `Created PRIVATE salted-password-hash config at: ...`. New SDK-enabled Swift password client compilation and five-XCTest rerun still pending. Trusted HTTPS API, server-owned assignment, sandbox SDK secret provisioning, observed participant meeting callback and iPad ReplayKit remain separate future gates.
