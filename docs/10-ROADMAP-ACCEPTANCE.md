@@ -182,3 +182,9 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **2026-11-15 09:54 — Latest Xcode SDK-enabled iPad Simulator 5/5 policy XCTest tests PASS** after adding staged Swift HTTPS join-ticket client source; all individual tests PASS, zero failures. Network and UIKit warnings did not fail suite.
 - [ ] Latest Swift HTTPS join-ticket client is compiled but **NOT runtime exercised** with a genuine authenticated faculty API; real faculty login / assignment + trusted HTTPS and live Zoom Meeting SDK participant joining remain outstanding.
+
+
+- [x] **Operator chose first-party static faculty password (no external identity platform) for Basic sandbox** on 2026-11-15. Committed backend salted scrypt password verifier, account lockout, 15-minute opaque session tokens, private operator setup CLI and default-disabled HTTPS login/logout integrated with the preexisting sandbox join-ticket route.
+- [x] **28 offline first-party faculty password / login-to-join tests committed**, plus HTTPS-only Swift login client and `docs/22-FIRST-PARTY-STATIC-PASSWORD-AUTH.md`. No secret/password committed.
+- [ ] **Operator Mac 28/28 password+HTTP tests PASS and SDK-app Xcode Cmd+B/Cmd+U after new Swift login source**: pending.
+- [ ] Real secure TLS/host/ingress deployment and operator-created static faculty password hash on trusted backend; real server-owned Basic sandbox meeting assignment and Meeting SDK signing secret provisioning. One account per operator sandbox only; no multi-faculty production identity yet.
