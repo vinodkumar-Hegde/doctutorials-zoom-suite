@@ -27,7 +27,7 @@ A trusted DocTutorials backend will, only after faculty authentication:
 - Sign a backend-only 30-minute Meeting SDK JWT with the **separate DocTutorials-iPad General App's Meeting SDK Client ID/Secret** from a backend secret manager. No S2S OAuth secret, no Zoom host credentials, no production Zoom details.
 - On 200, return only this ephemeral response (exact key names, all values placeholders):
 
-\`\`\`json
+```json
 {
   "meetingNumber": "12345678901",
   "meetingPasscode": "<server-managed sandbox meeting passcode>",
@@ -35,7 +35,7 @@ A trusted DocTutorials backend will, only after faculty authentication:
   "meetingSDKJWT": "<sensitive short-lived SDK JWT>",
   "expiresAtEpoch": 1800001800
 }
-\`\`\`
+```
 
 - Return generic **401** for absent/invalid faculty token; **403** for unknown/unauthorized meeting; **400** for any body; **426** for plaintext HTTP; **503** when feature disabled. Every response is marked Cache-Control: no-store, private. OpenAPI docs disabled. No CORS allowance. Do not log a ticket, raw Authorization header or Zoom credentials.
 - Apply ingress-level **rate limits, request-size limits, TLS, WAF as needed, and verified auth session policies** before enabling. Ensure any reverse-proxy request logging never includes credentials.
@@ -47,23 +47,23 @@ A trusted DocTutorials backend will, only after faculty authentication:
 
 From Mac Terminal:
 
-\`\`\`bash
+```bash
 cd ~/doctutorials-zoom-suite
 git pull
 python3 -m venv "$HOME/.venvs/doctutorials-ipad-api"
 "$HOME/.venvs/doctutorials-ipad-api/bin/python" -m pip install -r backend/requirements-ipad-dev.txt
 "$HOME/.venvs/doctutorials-ipad-api/bin/python" -m unittest discover -s tests -p 'test_ipad_join_http.py' -v
-\`\`\`
+```
 
 Expected **19 tests / OK** if all succeed; **NOT YET VERIFIED on Mac or by a live server**. They use FastAPI TestClient with fake faculty verifier and fake meeting assignment. No Zoom credentials or public server.
 
 To compile the newly committed Swift ticket client as part of the SDK-enabled app:
 
-\`\`\`bash
+```bash
 cd ~/doctutorials-zoom-suite/ipad/DocTutorialsScreenShare
 xcodegen generate --spec project-sdk.yml
 open DocTutorialsScreenShare.xcodeproj
-\`\`\`
+```
 
 Choose iPad (A16) and press Cmd+B, then Cmd+U. **Compilation and five existing tests against the newly added Swift source are still pending operator confirmation.** Do NOT enable Join on a sample lecture. The client accepts only HTTPS base URL and a validated faculty token, with an ephemeral URLSession and no plaintext file storage.
 
