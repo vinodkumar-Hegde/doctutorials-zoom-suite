@@ -104,3 +104,9 @@ The code for SDK init/participation and signer is STAGED. Documentation is not a
 - Starlette HTTPS/TrustedHost middleware: https://www.starlette.io/middleware/
 - Apple's network App Transport Security HTTPS policy: https://developer.apple.com/documentation/bundleresources/information-property-list/nsapptransportsecurity
 - No claim that library examples substitute for real DocTutorials faculty auth, deployment protections or live Zoom testing. The HTTPS join API scaffold is committed but OFF by default.
+
+
+## 2026-11-15 — First-party password handling (Basic sandbox pilot)
+- OWASP Password Storage Cheat Sheet: salted slow password KDF, scrypt N=2^17, r=8, p=1 fallback when Argon2id unavailable: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+- OWASP Authentication Cheat Sheet: generic error messages, login throttling and avoiding username enumeration: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
+- DocTutorials' static faculty password is a separate first-party security principal; it is neither a Zoom Meeting password nor an SDK signing credential. Basic sandbox login routes remain OFF until security gates and operator testing pass.
