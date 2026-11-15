@@ -108,7 +108,7 @@ class SandboxIPadJoinService:
         """
         if (
             not isinstance(faculty, AuthenticatedFaculty)
-            or not faculty.is_active
+            or faculty.is_active is not True
             or not isinstance(faculty.faculty_id, str)
             or not faculty.faculty_id
             or not isinstance(faculty.display_name, str)
@@ -125,7 +125,8 @@ class SandboxIPadJoinService:
             or assignment.session_id != session_id
             or assignment.faculty_id != faculty.faculty_id
             or assignment.environment != "zoom_basic_sandbox"
-            or not assignment.join_enabled
+            or assignment.join_enabled is not True
+            or not isinstance(assignment.meeting_number, str)
             or _MEETING_NUMBER.fullmatch(assignment.meeting_number) is None
             or not isinstance(assignment.meeting_passcode, str)
             or len(assignment.meeting_passcode) > 64
