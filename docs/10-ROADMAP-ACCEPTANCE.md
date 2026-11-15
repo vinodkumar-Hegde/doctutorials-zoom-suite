@@ -193,3 +193,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] **2026-11-15 10:10 IST: first-party fixed sandbox faculty password 28/28 offline Python security tests PASS** on operator Mac (`Ran 28 tests in 7.639s`, `OK`).
 - [ ] **Actual private password provisioning:** first hidden-prompt attempt rejected by 16–128 character validation; no successful hash file creation reported. Rerun CLI privately using compliant unique password, do NOT share password/hash.
 - [ ] **New Swift HTTPS password client SDK-linked compile + 5 policy XCTest regression** after commit; operator test pending. Neither validated static password creation nor offline tests constitute real HTTPS deployment or Zoom Meeting join.
+
+
+- [x] **Static sandbox faculty password provisioned locally on operator Mac** — hidden-prompt CLI confirmed private salted scrypt hash file at `~/.config/doctutorials/faculty-basic-sandbox.json` on 2026-11-15. No password disclosed or committed, no server/Zoom join started. Supersedes earlier two length-validation failures.
+- [ ] **Compile new Swift first-party HTTPS faculty login client and rerun five SDK-enabled policy XCTest tests** on iPad (A16) Simulator after pulling code. HTTPS deployment, server-owned meeting assignment and actual Zoom Meeting join remain pending.
