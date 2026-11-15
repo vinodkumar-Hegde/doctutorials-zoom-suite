@@ -19,12 +19,18 @@ function renderChannels(data){currentChannels=data;feedIsDemo=data.some(ch=>Stri
     if(last)card.append(node('div','Last session '+last.session_id+' · '+(last.detail||'')+' · NAS: '+last.archive_state,'note'));
     else card.append(node('div','Each channel is an independent FFmpeg recorder.','note'));
     const actions=node('div',undefined,'controls');
-    actions.append(control(feedIsDemo?'Run TEST MEDIA':'Start configured source',()=>openDialog(ch.channel),'',!ch.configured||activeState(ch.state)));
+    actions.append(control(String(ch.sourceMode).includes('TEST MEDIA')?'Run TEST MEDIA':'Start configured source',()=>String(ch.sourceMode).includes('TEST MEDIA')?runTest(ch.channel):openDialog(ch.channel),'',!ch.configured||activeState(ch.state)));
     actions.append(control('Stop & save MP4',()=>stop(ch.channel),'stop',!['recording','starting'].includes(ch.state)));
     card.append(actions);root.append(card);
   });el('health').textContent=active+' of 4 channels active';
 }
 function activeState(s){return ['starting','recording','stopping','finalizing'].includes(s)}
+async function runTest(channel){
+  if(busy)return;busy=true;
+  const meta={channel,sessionId:'test-'+Date.now(),course:'TEST MEDIA',subject:'Synthetic input',topic:'Not a Zoom class',faculty:'Test pattern',facultyId:'test-media'};
+  try{await api('start','POST',meta);toast('Synthetic recording started, not Zoom.');await refresh()}
+  catch(e){toast('Test recording failed: '+e.message)}finally{busy=false}
+}
 const dialog=el('startdialog');
 function openDialog(channel, session=null){
   el('channel').value=channel;el('dialogchannel').textContent=channel;
@@ -36,49 +42,21 @@ function openDialog(channel, session=null){
   dialog.showModal();
 }
 function renderSessions(result){
-  el('feedstate').textContent='Windows local schedule';
+  el('feedstate').textContent=result.state==='existing_admin'?'Original Admin database':'Admin data not connected';
   el('feedmessage').textContent=result.message||'';
   const root=el('sessions');root.replaceChildren();
-  if(!result.sessions.length){root.append(node('div','No assigned classes yet. Select “Assign Class” to create a schedule on this Windows PC.','empty'));return}
+  if(!result.sessions.length){root.append(node('div',result.state==='existing_admin'?'No sessions in the existing Admin database.':'No assignments imported. Do not create duplicate classes here.','empty'));return}
   result.sessions.forEach(item=>{
     const card=node('article',undefined,'session-card');
     const now=Date.now()/1000;
-    const scheduled=(now>=item.startsAt&&now<item.endsAt)?'In scheduled time window':(now<item.startsAt?'Upcoming':'Past');
+    const window=(now>=item.startsAt&&now<item.endsAt)?'Scheduled time window':(now<item.startsAt?'Upcoming':'Past');
     card.append(node('strong',item.course+' · '+item.subject));
     card.append(node('div',item.topic,'topic'));
-    card.append(node('div',item.faculty+' ('+item.facultyId+')','source'));
+    card.append(node('div','Assigned faculty: '+item.facultyId,'source'));
     card.append(node('div',new Date(item.startsAt*1000).toLocaleString()+' — '+new Date(item.endsAt*1000).toLocaleTimeString(),'source'));
-    card.append(node('div',item.state==='cancelled'?'Cancelled':scheduled+' · NOT Zoom live status','note'));
-    card.append(node('div',item.channel?'Reserved channel '+item.channel:'No recording channel reserved','source'));
-    const actions=node('div',undefined,'controls');
-    if(item.state==='scheduled'){
-      const selected=currentChannels.find(ch=>ch.channel===item.channel);
-      const canPrepare=!!selected&&selected.configured&&!activeState(selected.state)&&!String(selected.sourceMode).includes('TEST MEDIA');
-      actions.append(control('Prepare assigned source',()=>openDialog(item.channel,item),'ghost',!canPrepare));
-      actions.append(control('Cancel class',()=>cancelSession(item.sessionId),'ghost'));
-    }
-    card.append(actions);root.append(card);
+    card.append(node('div',window+' · Zoom live/recording status NOT connected','note'));
+    root.append(card);
   });
-}
-const scheduleDialog=el('scheduledialog');
-el('newsession').addEventListener('click',()=>scheduleDialog.showModal());
-el('schedulecancel').addEventListener('click',()=>scheduleDialog.close());
-el('scheduleform').addEventListener('submit',async ev=>{
-  ev.preventDefault();if(busy)return;
-  const field=name=>el('sch-'+name).value.trim();
-  const startsAt=Math.floor(new Date(field('startsAt')).getTime()/1000);
-  const endsAt=Math.floor(new Date(field('endsAt')).getTime()/1000);
-  if(!Number.isFinite(startsAt)||!Number.isFinite(endsAt)||startsAt>=endsAt){toast('Check the start and end times.');return}
-  busy=true;
-  try{
-    const body={};for(const name of ['facultyId','faculty','course','subject','topic','channel'])body[name]=field(name);
-    body.startsAt=startsAt;body.endsAt=endsAt;
-    await api('sessions/create','POST',body);scheduleDialog.close();el('scheduleform').reset();toast('Class saved to this Windows PC. No Mac connection required.');await refresh();
-  }catch(e){toast('Cannot save class: '+e.message)}finally{busy=false}
-});
-async function cancelSession(sessionId){
-  if(!confirm('Cancel this scheduled class? Existing recordings will not be deleted.'))return;
-  try{await api('sessions/cancel','POST',{sessionId});toast('Class cancelled; existing recordings retained.');await refresh()}catch(e){toast(e.message)}
 }
 el('cancel').addEventListener('click',()=>dialog.close());
 el('startform').addEventListener('submit',async ev=>{

@@ -271,3 +271,5 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] Stage Windows-native Admin assigned-session scheduler with SQLite persistence, channel reservation conflict checks, authenticated HTTP API and local dashboard (assistant-side 40/40 offline tests PASS). `windows/central-controller` no longer depends on a Mac session feed; old Mac bridge is obsolete.
 - [ ] Operator Windows `git pull`, unit tests and dashboard creation/cancellation/persistence validation.
 - [ ] **Still blocked:** independently capture one authorized actual Zoom Meeting's screen, faculty camera and class audio through a verified permitted media connector; then test four isolated meetings, automatic storage and NAS. Neither test media nor scheduled time equals Zoom recording.
+
+- 2026-11-15: Removed duplicate Windows Assign Class form. Existing Admin SQLite schedule adapter and secret-free export tested locally; production Admin migration, Zoom live capture, four-meeting acceptance still pending.

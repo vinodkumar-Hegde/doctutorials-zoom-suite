@@ -22,6 +22,7 @@ from urllib.parse import urlsplit, parse_qs
 
 from engine import Engine, RecorderError
 from local_sessions import LocalSessions, ScheduleError
+from existing_admin_sessions import ExistingAdminSessions
 
 STATIC=Path(__file__).parent/'web'
 MAX_BODY=16384
@@ -187,8 +188,12 @@ def handler_factory(state):
                     return
                 if not self.require():return
                 if path=='/api/sessions/create':
+                    if not isinstance(state.sessions, LocalSessions):
+                        self.send(405,{'error':'Use the existing DocTutorials Admin portal; duplicate Windows session entry is disabled.'});return
                     self.send(201,{'session':state.sessions.create(payload)})
                 elif path=='/api/sessions/cancel':
+                    if not isinstance(state.sessions, LocalSessions):
+                        self.send(405,{'error':'Use the existing DocTutorials Admin portal to manage class assignments.'});return
                     self.send(200,{'session':state.sessions.cancel(payload.get('sessionId'))})
                 elif path=='/api/start':
                     channel=str(payload.get('channel',''))
@@ -236,11 +241,10 @@ def main(argv=None):
     engine=Engine(config)
     password=os.getenv('DOCTUTORIALS_CONTROLLER_PASSWORD') or getpass.getpass('Choose central controller admin password (hidden, 12+ chars): ')
     if len(password)<12:raise SystemExit('Choose a password of at least 12 characters.')
-    sessions_path=engine.root/'windows-admin-sessions.sqlite3'
-    state=ControlState(engine,password,LocalSessions(sessions_path))
+    state=ControlState(engine,password,ExistingAdminSessions())
     server=ThreadingHTTPServer(('127.0.0.1',args.port),handler_factory(state))
     print(f'DocTutorials Central Controller: http://127.0.0.1:{args.port}')
-    print('Windows-local Admin scheduling + four independent worker slots. Storage: '+str(engine.root))
+    print('Original Admin session reader + four independent worker slots. Storage: '+str(engine.root))
     print('No Mac session bridge or pairing required. Zoom media connection remains pending.')
     print('Mode: '+('SYNTHETIC TEST MEDIA (not Zoom)' if args.demo else 'OPERATOR-CONFIGURED NATIVE INPUTS'))
     print('No OBS, Zoom Cloud Recording, or Zoom standard local recording used.')

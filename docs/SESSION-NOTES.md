@@ -543,3 +543,5 @@
 
 ## 2026-11-15 — Windows-only Central Controller session scheduling
 Implemented `LocalSessions` SQLite persistence in Windows controller; authenticated create/list/cancel, course/subject/topic/faculty/time/channel, collision rejection, and Windows Admin schedule UI. Removed active Mac pairing from the controller path; previously prepared Mac bridge files are historical only. All 40 offline Python tests passed in the assistant test environment plus JS syntax check; Windows operator retest pending. Test-pattern recording remains separate from Zoom live capture, which is unimplemented. ADR-026 documents the change.
+
+2026-11-15: Corrected duplicate Windows scheduler. Default dashboard reads original Admin DB schema read-only after secure schedule-only transfer. Removed new Assign Class UI; TEST MEDIA now starts without manually entered class data. 48 local unit tests pass; operator Windows and Zoom integration unverified.

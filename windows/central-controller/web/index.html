@@ -4,7 +4,7 @@
 <header><div class="brand"><img src="/logo.png" alt="DocTutorials"/><div><h1>DocTutorials Central Controller</h1><p>Faculty schedule · Recording channels · Verified local storage → NAS</p></div></div><div class="header-right"><span id="mode" class="muted"></span><button class="ghost" id="logout" hidden>Sign out</button></div></header>
 <section id="signin" class="signin"><h2>Controller login</h2><p>For the office recording operator. No screen sharing or browser recording permissions are required.</p><form id="loginform"><label>Admin password<input id="pw" type="password" autocomplete="current-password" required/></label><button type="submit">Unlock controller</button></form><p id="loginerror" role="alert"></p></section>
 <section id="dashboard" hidden>
-<section class="sessions-panel"><div class="section-heading"><div><h2>Windows Admin · Scheduled Sessions</h2><p>Create and assign classes here. No Mac, cross-device pairing, or extra server required. A scheduled class is NOT an active Zoom meeting.</p></div><div class="controls"><span id="feedstate" class="indicator">Local schedule</span><button id="newsession">+ Assign Class</button></div></div><div id="feedmessage" class="muted"></div><div id="sessions" class="sessions"></div></section>
+<section class="sessions-panel"><div class="section-heading"><div><h2>DocTutorials Admin · Assigned Sessions</h2><p>Class assignments are loaded from your existing DocTutorials Admin database. No duplicate class entry.</p></div><span id="feedstate" class="indicator">Checking Admin data</span></div><div id="feedmessage" class="muted"></div><div id="sessions" class="sessions"></div></section>
 <div class="summary"><div><h2>Independent recording channels</h2><p>Start/stop controls operate FFmpeg processes on the recording workstation. <strong>Recording</strong> appears only after actual media reaches disk.</p></div><div class="indicator" id="health">Checking channels…</div></div>
 <div class="channels" id="channels"></div>
 <section class="library"><div class="section-heading"><div><h2>Local Storage Center</h2><p>H.264/AAC MP4 · Verified checksum · Local copy retained when NAS is unavailable</p></div><button id="refresh" class="ghost">Refresh</button></div><div id="records" class="records"></div></section>
@@ -12,15 +12,5 @@
 <footer>Recording permission and participant notice are required. The Zoom raw-media SDK adapter is a separate integration; synthetic demo sources are never labeled as live Zoom.</footer>
 </main>
 <dialog id="startdialog"><form id="startform" method="dialog"><h2>Configure recording · Channel <span id="dialogchannel"></span></h2><p id="recordingwarning" class="muted">The configured recorder input determines what is recorded. No Zoom SDK feed is connected.</p><input type="hidden" id="channel"/><label>Assigned session ID<input id="sessionId" required maxlength="64" pattern="[A-Za-z0-9_-]+" placeholder="session-2026-001"/></label><label>Course<input id="course" required placeholder="Medicine"/></label><label>Subject<input id="subject" required placeholder="Cardiology"/></label><label>Topic<input id="topic" required placeholder="Heart physiology"/></label><label>Faculty name<input id="faculty" required placeholder="Dr. Faculty"/></label><label>Faculty ID<input id="facultyId" required placeholder="faculty-01"/></label><div class="dialogactions"><button type="button" class="ghost" id="cancel">Cancel</button><button type="submit" id="recordsubmit">Start configured input</button></div></form></dialog>
-<dialog id="scheduledialog"><form id="scheduleform" method="dialog"><h2>Admin · Assign a class</h2><p class="muted">This creates a Windows-local session assignment, not a Zoom meeting or live recorder connection.</p>
-<label>Course<input id="sch-course" required maxlength="120" placeholder="Medicine" /></label>
-<label>Subject<input id="sch-subject" required maxlength="120" placeholder="Cardiology" /></label>
-<label>Topic<input id="sch-topic" required maxlength="120" placeholder="Heart physiology" /></label>
-<label>Faculty name<input id="sch-faculty" required maxlength="120" placeholder="Dr. Faculty" /></label>
-<label>Faculty ID<input id="sch-facultyId" required maxlength="64" pattern="[A-Za-z0-9_-]+" placeholder="faculty-01" /></label>
-<label>Start date/time<input id="sch-startsAt" type="datetime-local" required /></label>
-<label>End date/time<input id="sch-endsAt" type="datetime-local" required /></label>
-<label>Reserve recording channel (optional)<select id="sch-channel"><option value="">No channel yet</option><option value="1">Channel 1</option><option value="2">Channel 2</option><option value="3">Channel 3</option><option value="4">Channel 4</option></select></label>
-<div class="dialogactions"><button type="button" id="schedulecancel" class="ghost">Cancel</button><button type="submit">Save class</button></div></form></dialog>
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="/app.js"></script></body></html>

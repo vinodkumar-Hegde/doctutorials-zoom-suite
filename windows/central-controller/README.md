@@ -83,3 +83,7 @@ Only public scheduling metadata crosses the LAN; meeting credentials do not.
 This synchronization does not implement automatic Zoom joins, recording permission
 or raw media capture. A scheduled class must never be labeled as recorded merely
 because it appears on the dashboard. See `README-WINDOWS.md`.
+
+## Original DocTutorials Admin schedule reader (2026-11-15)
+
+The duplicate Windows Assign Class form has been removed. The default controller now reads the original Admin database format through `existing_admin_sessions.py`, after a **one-time secure schedule-only transfer**; see `README-WINDOWS.md`. This read-only adapter does not make Zoom recording functional, and a transferred snapshot is not continuously synchronized with Mac edits. The future authoritative Admin backend must be deployed on Windows.

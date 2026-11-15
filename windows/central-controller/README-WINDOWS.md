@@ -1,33 +1,51 @@
-# DocTutorials Central Controller — Windows only
+# DocTutorials Windows Central Controller — use existing Admin assignments
 
-**This version runs the Admin session schedule, four recorder channels and local Storage Center on ONE Windows computer. No Mac session bridge, Mac IP, certificate fingerprint, or pairing password is required.**
+This build **removes the duplicate Windows 'Assign Class' form**. The recorder dashboard reads the existing DocTutorials Admin/Faculty SQLite session format, without inventing new assignments or requiring the user to type class data again. It is **read-only** and displays only course, subject, topic, faculty ID, and start/end times. It does not transmit Zoom meeting IDs, passwords or meeting passcodes to the UI.
 
-The Admin schedule is a local SQLite database saved beside the recorder's data, so it survives restarts. You can create a class, enter course/subject/topic/faculty, schedule a time, optionally reserve a channel, and cancel a scheduled class. Channel conflicts are rejected. The scheduling UI does NOT create Zoom meetings and it does NOT detect whether a meeting is currently live.
+## Already installed on Windows
 
-## Update the existing Windows installation
-
-Use **Windows PowerShell** on the recording computer (the one already running Python, FFmpeg and Visual Studio):
+Stop the running controller with Ctrl+C. In Windows PowerShell:
 
 ```powershell
 cd "$HOME\doctutorials-zoom-suite"
-git pull
+git pull --ff-only
 cd .\windows\central-controller
-py -3 -m unittest discover -s tests -v
 .\start-demo-windows.bat
 ```
 
-First press Ctrl+C to stop the old Central Controller process if it is already running. Open **http://127.0.0.1:8780** on that same Windows PC, sign in with the password you create in the controller window, then choose **Assign Class**. No additional installation or downloads needed for the scheduler. It does not depend on port 8443 or 8444.
+Open `http://127.0.0.1:8780` on the same Windows machine, then hard-refresh the browser and log in. **No reinstallation of Visual Studio, Python, FFmpeg or the Mac pairing bridge.** The existing four independent test channels and Storage Center remain.
 
-If you want to use the ZIP rather than Git, the updated GitHub source ZIP is at `windows/central-controller/DocTutorials-Central-Controller-Windows.zip` and extracts to a `DocTutorials-Central-Controller` directory. It is not needed for an existing Git checkout.
+## Where existing class assignments are
 
-## Recorder status — read this before testing with a class
+The original Mac Admin demo stores all sessions in `~/.config/doctutorials/demo-live-sessions.sqlite3` on **that Mac**. The Windows controller cannot see Mac files by itself. **One secure transfer** of schedule data is required; no permanent Mac/Windows connection. A snapshot is not automatically updated when classes change on the Mac.
 
-- **Demo mode** (`start-demo-windows.bat`) uses FFmpeg test-pattern media. Its channel buttons say **Run TEST MEDIA**. Those MP4s are real files but NOT Zoom class recordings.
-- **Configured-input mode** (`start-recorder-windows.bat`) can record real Windows sources set in local, private `config.json`, subject to permissions, independent screen/audio sources and verification. It has NOT been proven to record a complete Zoom class or four parallel Zoom meetings.
-- **Zoom raw-media connector and automatic Zoom joining are not included**. Installing Visual Studio does not supply either the Zoom SDK or working media integration.
-- **Faculty iPad and laptop access to the Windows schedule is not yet wired**. This locally available Admin scheduler is the next working foundation, not an end-to-end teaching solution.
-- The controller is currently loopback-only (`127.0.0.1:8780`). Do not port-forward it to faculty devices, the LAN, or the internet.
+A small script exports only the seven scheduling fields; **no Zoom meeting number, passcode or credentials**:
 
-The system does not rely on OBS or Zoom Cloud Recording, and its storage library retains verified local MP4s when NAS archive attempts fail.
+On the **Mac**, run from the downloaded Mac Terminal:
 
-Only authorized classes should be recorded, with required participant notice and Zoom permissions. Keep credentials, actual meeting invitations, private configuration and recordings out of GitHub.
+```bash
+curl -fsSL "https://raw.githubusercontent.com/vinodkumar-Hegde/doctutorials-zoom-suite/main/windows/central-controller/export_existing_admin_schedule.py" -o "$HOME/Downloads/export_existing_admin_schedule.py"
+python3 "$HOME/Downloads/export_existing_admin_schedule.py"
+```
+
+This creates `~/Downloads/DocTutorialsAdminSchedule.sqlite3`. Transfer that file to the **Windows** computer by an approved secure file transfer/USB (do not upload to public GitHub or ChatGPT). Assuming it is then in Windows **Downloads**, stop the running controller, and run in **Windows PowerShell**:
+
+```powershell
+New-Item -Type Directory -Force "$HOME\.config\doctutorials" | Out-Null
+Copy-Item "$HOME\Downloads\DocTutorialsAdminSchedule.sqlite3" "$HOME\.config\doctutorials\demo-live-sessions.sqlite3" -Force
+cd "$HOME\doctutorials-zoom-suite\windows\central-controller"
+.\start-demo-windows.bat
+```
+
+This does **not** overwrite your original Mac database. The Windows controller reads that Windows-local file fresh each time the dashboard polls; changes made to this Windows file appear without restarting. For now, new changes saved only in the Mac Admin portal require another schedule-only export. The proper production solution will move the authoritative Admin and faculty service onto Windows, with the recorder reading its database directly. That move is not yet implemented.
+
+## Accurate status and restrictions
+
+- The schedule list is NOT live Zoom meeting presence or recording status.
+- `start-demo-windows.bat` uses synthetic FFmpeg test media. The test button needs no manual class metadata.
+- Real Zoom screen/faculty/audio capture, automatic joins, Zoom SDK/RTMS integration, four concurrent meetings, iPad-to-Windows faculty orchestration and production NAS verification are **not implemented/verified** in this build.
+- The controller binds to `127.0.0.1:8780`. Do not expose it directly on the LAN or internet.
+- The schedule-only export still contains faculty/class information; secure or delete the transfer copy according to your office policy.
+- The obsolete `windows-admin-sessions.sqlite3` created by a previous prototype is **not deleted** and is **not used as a source for the dashboard**; no existing recordings are deleted.
+
+Run tests in Windows with `py -3 -m unittest discover -s tests -v`.
