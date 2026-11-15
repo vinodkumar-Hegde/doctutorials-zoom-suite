@@ -236,3 +236,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **2026-11-15 11:13: Mac-origin HTTPS TLS/backend reachability PASS**: curl with local CA to `https://localhost:8443/docs` returns expected HTTP 404 (docs intentionally disabled).
 - [ ] **New iOS 26.5 Simulator localhost TLS trust/reachability** not yet confirmed. Next iPad Simulator Safari visit to `https://localhost:8443/docs`; distinguish cert privacy warning vs cannot-connect vs 404. Password reset and unit tests not indicated.
+
+
+- [x] **2026-11-15 11:14: iOS 26.5 Simulator Safari successfully reaches local HTTPS FastAPI**; `https://localhost:8443/docs` shows expected `{"detail":"Not Found"}` with no TLS warning. Simulator certificate trust/reachability PASSED.
+- [ ] **Native password login still reports generic unavailable; root cause unknown**. Swift diagnostics improved to expose only safe HTTP status or URLSession error category/code, plus sandbox URL default. Pull/rebuild iPad SDK app and retry login once; new code not yet operator compiled or tested. No password reset.
