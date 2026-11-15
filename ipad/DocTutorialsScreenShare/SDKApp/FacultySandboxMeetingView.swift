@@ -10,7 +10,7 @@ struct FacultySandboxMeetingView: View {
     @StateObject private var meeting = ZoomMeetingJoinAdapter()
 
     // Mac loopback address for the one-device Basic sandbox Simulator pilot.
-    @State private var httpsOrigin = "https://localhost:8443"
+    @State private var httpsOrigin = "https://127.0.0.1:8443"
     @State private var facultyID = "sandbox-faculty"
     @State private var password = ""
     // One assigned internal session in this Basic sandbox pilot. This is NOT the Zoom Meeting number.
