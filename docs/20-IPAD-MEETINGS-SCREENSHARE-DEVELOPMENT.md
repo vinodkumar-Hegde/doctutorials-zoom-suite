@@ -452,3 +452,11 @@ ls -ld "$APP/MobileRTCResources.bundle" "$APP/Frameworks/MobileRTC.framework" "$
 xcrun simctl list runtimes
 ```
 Then `git pull`, regenerate `project-sdk.yml`, build/run; use iOS 26 Simulator (or compatible physical iPad) if available. No unrelated unit tests required. ReplayKit still locked; webinar and Windows tasks deferred.
+
+
+## 2026-11-15 — Follow-up actual app inspection: resource bundle, MobileRTC, zoomcml ALL PRESENT
+The Mac `xcrun simctl get_app_container booted com.doctutorials.facultyscreen app` + `ls -ld` confirms `MobileRTCResources.bundle`, `MobileRTC.framework`, `zoomcml.framework` all installed in **iPadOS 27.2** app. The prior Zoom core `initialize` failure therefore cannot be assumed due to missing resource packaging; explicit `context.bundleResPath` code was pulled but not yet rebuilt/tested.
+
+**Installed iOS simulator runtimes:** 18.4, **26.3**, **26.5**, 27.2. Zoom's published max documented iOS version is 26, so switch Xcode to a newly created **iPad (A16), iOS 26.5 Simulator**, and shut down iOS 27.2. This is an evidence-driven OS compatibility trial, not confirmation that 27.2 is the cause.
+
+The operator stopped the localhost HTTPS backend with `^C`. With iOS 26.5 booted, rerun the **existing** `bash ipad/DocTutorialsScreenShare/scripts/run_local_sandbox_demo.sh` to add TLS trust to this simulator, regenerate XcodeGen SDK project, and start loopback HTTPS. In Xcode choose iOS 26.5 iPad, Cmd+R, sign in with private faculty password, and join assigned internal ID `ipad-sandbox-class`. No security unit-test reruns or credentials in chat. **Actual Zoom SDK initialized / SDK auth / inMeeting are pending**.
