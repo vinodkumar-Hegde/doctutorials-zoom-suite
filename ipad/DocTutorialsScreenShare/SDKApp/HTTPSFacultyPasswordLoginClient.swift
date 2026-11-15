@@ -24,7 +24,7 @@ enum FacultyPasswordLoginError: Error {
     case invalidConfiguration
     case invalidInput
     case rejectedCredentials
-    case serviceUnavailable
+    case serviceUnavailable(httpStatus: Int)
     case invalidServerResponse
 }
 
@@ -93,7 +93,7 @@ struct HTTPSFacultyPasswordLoginClient {
         switch http.statusCode {
         case 200: break
         case 401: throw FacultyPasswordLoginError.rejectedCredentials
-        default: throw FacultyPasswordLoginError.serviceUnavailable
+        default: throw FacultyPasswordLoginError.serviceUnavailable(httpStatus: http.statusCode)
         }
         guard data.count <= 2048,
               let payload = try? JSONDecoder().decode(FacultyLoginResponse.self, from: data),
@@ -124,7 +124,7 @@ struct HTTPSFacultyPasswordLoginClient {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         let (_, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse, http.statusCode == 204 else {
-            throw FacultyPasswordLoginError.serviceUnavailable
+            throw FacultyPasswordLoginError.serviceUnavailable(httpStatus: (response as? HTTPURLResponse)?.statusCode ?? 0)
         }
     }
 }
