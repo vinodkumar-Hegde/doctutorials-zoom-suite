@@ -51,12 +51,26 @@ final class ZoomMeetingJoinAdapter: NSObject, ObservableObject, MobileRTCAuthDel
         zoomSharePermissionConfirmed = false
         pendingTicket = ticket
 
+        // Zoom requires MobileRTCResources.bundle in the app's Copy Bundle
+        // Resources phase. Supply the actual path rather than relying on
+        // SDK default discovery (which differs across framework packages).
+        guard let resourcesPath = Bundle.main.path(
+            forResource: "MobileRTCResources", ofType: "bundle"
+        ) else {
+            fail("Zoom SDK resources are missing from the app bundle.")
+            return
+        }
+
         let context = MobileRTCSDKInitContext()
         context.domain = "zoom.us"
-        context.enableLog = false
-        guard MobileRTC.shared().initialize(context),
-              let auth = MobileRTC.shared().getAuthService() else {
-            fail("Zoom Meeting SDK initialization failed.")
+        context.enableLog = false // Never log Meeting SDK JWTs, passcodes or secrets.
+        context.bundleResPath = resourcesPath
+        guard MobileRTC.shared().initialize(context) else {
+            fail("Zoom SDK core could not initialize. Check supported iPadOS and bundled frameworks.")
+            return
+        }
+        guard let auth = MobileRTC.shared().getAuthService() else {
+            fail("Zoom SDK initialized but authentication service is unavailable.")
             return
         }
 
