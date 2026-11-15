@@ -250,3 +250,39 @@ ls -la "$HOME/Downloads/DocTutorialsIpadBuildCheck/Build/Products/Debug-iphonesi
 ```
 
 This is a throwaway **unsigned Simulator packaging diagnosis**; a succeeding build does not prove Apple signing or Zoom auth. If zoomcml appears in the new bundle, Xcode's prior DerivedData was stale; return to fresh Xcode build/test. If it is still absent, inspect complete clean build output for `zoomcml` copy phase and exact generated `PBXCopyFilesBuildPhase` / target phase ordering; do not guess. Source: https://developer.apple.com/documentation/xcode/addressing-missing-framework-crashes .
+
+
+## 2026-11-15 — Arm64-only Zoom SDK: x86_64 Simulator linker failure fixed in spec, retest pending
+The first *fresh isolated* `xcodebuild` produced **exit code 65**, with:
+- `MobileRTC.xcframework` and `zoomcml.xcframework`: missing architecture `x86_64`
+- failing `Ld .../Objects-normal/x86_64/.../DocTutorialsScreenShare.debug.dylib`
+- resulting empty fresh `.app/Frameworks` (build aborted before the embed phase)
+
+Root cause of this **build attempt** is verified: official Zoom docs say Meeting SDK **6.7.5 and later omit x86 iOS Simulator**, whereas our extracted 7.2.5 package includes **ARM64 simulator and ARM64 iPad** slices. Using a generic Simulator destination led Xcode to try compiling x86_64 as well. This is **not evidence** that the old missing-zoomcml runtime issue is resolved or still occurs after a successful clean build.
+
+A minimal fix is now committed to the SDK-specific `project-sdk.yml`:
+
+```yaml
+settings:
+  base:
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": x86_64
+```
+
+This SDK-app-only setting excludes Intel simulator, not ARM64 simulator nor physical iPad. The prior `MobileRTC` + `zoomcml` Embed & Sign settings remain. UI-only project stays unchanged.
+
+**Rerun on Mac, keeping the diagnostic directory separate from Xcode's standard DerivedData:**
+
+```bash
+cd ~/doctutorials-zoom-suite
+git pull
+cd ipad/DocTutorialsScreenShare
+xcodegen generate --spec project-sdk.yml
+xcodebuild -project DocTutorialsScreenShare.xcodeproj -scheme DocTutorialsScreenShare -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath "$HOME/Downloads/DocTutorialsIpadBuildCheck" CODE_SIGNING_ALLOWED=NO clean build > "$HOME/Downloads/DocTutorialsIpadBuildCheck.log" 2>&1
+echo "Build exit status: $?"
+tail -n 18 "$HOME/Downloads/DocTutorialsIpadBuildCheck.log"
+ls -la "$HOME/Downloads/DocTutorialsIpadBuildCheck/Build/Products/Debug-iphonesimulator/DocTutorialsScreenShare.app/Frameworks"
+```
+
+Expected fresh build architecture is `arm64` only. Expected embedded frameworks after link: `MobileRTC.framework` and `zoomcml.framework`. If exit status remains 65, collect `grep -n 'error:' ~/Downloads/DocTutorialsIpadBuildCheck.log | head -n 15` and the `xcodebuild` architecture lines. If build passes but `zoomcml.framework` is absent, investigate XcodeGen copy phase packaging separately; do not conflate issues or claim SDK runtime success.
+
+Sources: https://developers.zoom.us/docs/meeting-sdk/ios/get-started/ ; https://developer.apple.com/documentation/technotes/tn3117-resolving-build-errors-for-apple-silicon .
