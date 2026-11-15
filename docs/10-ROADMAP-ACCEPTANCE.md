@@ -188,3 +188,8 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] **28 offline first-party faculty password / login-to-join tests committed**, plus HTTPS-only Swift login client and `docs/22-FIRST-PARTY-STATIC-PASSWORD-AUTH.md`. No secret/password committed.
 - [ ] **Operator Mac 28/28 password+HTTP tests PASS and SDK-app Xcode Cmd+B/Cmd+U after new Swift login source**: pending.
 - [ ] Real secure TLS/host/ingress deployment and operator-created static faculty password hash on trusted backend; real server-owned Basic sandbox meeting assignment and Meeting SDK signing secret provisioning. One account per operator sandbox only; no multi-faculty production identity yet.
+
+
+- [x] **2026-11-15 10:10 IST: first-party fixed sandbox faculty password 28/28 offline Python security tests PASS** on operator Mac (`Ran 28 tests in 7.639s`, `OK`).
+- [ ] **Actual private password provisioning:** first hidden-prompt attempt rejected by 16–128 character validation; no successful hash file creation reported. Rerun CLI privately using compliant unique password, do NOT share password/hash.
+- [ ] **New Swift HTTPS password client SDK-linked compile + 5 policy XCTest regression** after commit; operator test pending. Neither validated static password creation nor offline tests constitute real HTTPS deployment or Zoom Meeting join.
