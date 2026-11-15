@@ -141,3 +141,6 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] Vendor `zoomcml.xcframework` ARM64 Simulator and device slices confirmed on Mac; inspected existing app builds contain only `MobileRTC.framework` or no frameworks (operator output 2026-11-15). Timestamps suggest stale DerivedData.
 - [ ] New clean isolated SDK Simulator build with fresh `-derivedDataPath` and compare actual `.app/Frameworks` contents; operator diagnostic PENDING. Do not accept Stage 4B runtime until `zoomcml.framework` is present and app launches.
+
+
+- [ ] **ARM64-only SDK Simulator clean-build retest:** first isolated build FAILED (exit 65) while trying to link unsupported `x86_64` architecture; Zoom SDK 7.2.5 vendor XCFrameworks are `ios-arm64-simulator` only. SDK-specific XcodeGen spec committed `EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64`; operator must pull, regenerate and rerun isolated build. Prior missing zoomcml runtime packaging still **unverified** until a successful ARM64 Simulator build and launch.
