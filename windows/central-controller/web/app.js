@@ -19,7 +19,7 @@ function renderChannels(data){currentChannels=data;feedIsDemo=data.some(ch=>Stri
     if(last)card.append(node('div','Last session '+last.session_id+' · '+(last.detail||'')+' · NAS: '+last.archive_state,'note'));
     else card.append(node('div','Each channel is an independent FFmpeg recorder.','note'));
     const actions=node('div',undefined,'controls');
-    actions.append(control('Start recording',()=>openDialog(ch.channel),'',!ch.configured||activeState(ch.state)));
+    actions.append(control(feedIsDemo?'Run TEST MEDIA':'Start configured source',()=>openDialog(ch.channel),'',!ch.configured||activeState(ch.state)));
     actions.append(control('Stop & save MP4',()=>stop(ch.channel),'stop',!['recording','starting'].includes(ch.state)));
     card.append(actions);root.append(card);
   });el('health').textContent=active+' of 4 channels active';
@@ -36,26 +36,49 @@ function openDialog(channel, session=null){
   dialog.showModal();
 }
 function renderSessions(result){
-  el('feedstate').textContent=result.state==='connected'?'Mac Admin connected':'Mac Admin '+result.state;
+  el('feedstate').textContent='Windows local schedule';
   el('feedmessage').textContent=result.message||'';
   const root=el('sessions');root.replaceChildren();
-  if(result.state!=='connected'){root.append(node('div','No synchronized sessions available. Pair the Mac Admin feed first.','empty'));return}
-  if(!result.sessions.length){root.append(node('div','No classes assigned by Admin yet. Create a session in the Mac Admin dashboard.','empty'));return}
+  if(!result.sessions.length){root.append(node('div','No assigned classes yet. Select “Assign Class” to create a schedule on this Windows PC.','empty'));return}
   result.sessions.forEach(item=>{
     const card=node('article',undefined,'session-card');
     const now=Date.now()/1000;
-    const schedule=(now>=item.startsAt&&now<item.endsAt)?'Within scheduled window':(now<item.startsAt?'Upcoming':'Past');
+    const scheduled=(now>=item.startsAt&&now<item.endsAt)?'In scheduled time window':(now<item.startsAt?'Upcoming':'Past');
     card.append(node('strong',item.course+' · '+item.subject));
     card.append(node('div',item.topic,'topic'));
-    card.append(node('div','Faculty '+item.facultyId+' · '+new Date(item.startsAt*1000).toLocaleString(),'source'));
-    card.append(node('div',schedule+' (not meeting status)','note'));
-    const select=node('select');select.setAttribute('aria-label','Select recorder channel for '+item.sessionId);
-    currentChannels.forEach(ch=>{const op=node('option','Channel '+ch.channel+' · '+ch.sourceMode);op.value=ch.channel;op.disabled=!ch.configured||activeState(ch.state);select.append(op)});
-    const actions=node('div',undefined,'controls');actions.append(select);
-    const active=currentChannels.some(ch=>ch.configured&&!activeState(ch.state));
-    actions.append(control('Prepare channel',()=>openDialog(select.value,{...item,faculty:item.facultyId}), 'ghost',!active));
+    card.append(node('div',item.faculty+' ('+item.facultyId+')','source'));
+    card.append(node('div',new Date(item.startsAt*1000).toLocaleString()+' — '+new Date(item.endsAt*1000).toLocaleTimeString(),'source'));
+    card.append(node('div',item.state==='cancelled'?'Cancelled':scheduled+' · NOT Zoom live status','note'));
+    card.append(node('div',item.channel?'Reserved channel '+item.channel:'No recording channel reserved','source'));
+    const actions=node('div',undefined,'controls');
+    if(item.state==='scheduled'){
+      const selected=currentChannels.find(ch=>ch.channel===item.channel);
+      const canPrepare=!!selected&&selected.configured&&!activeState(selected.state)&&!String(selected.sourceMode).includes('TEST MEDIA');
+      actions.append(control('Prepare assigned source',()=>openDialog(item.channel,item),'ghost',!canPrepare));
+      actions.append(control('Cancel class',()=>cancelSession(item.sessionId),'ghost'));
+    }
     card.append(actions);root.append(card);
   });
+}
+const scheduleDialog=el('scheduledialog');
+el('newsession').addEventListener('click',()=>scheduleDialog.showModal());
+el('schedulecancel').addEventListener('click',()=>scheduleDialog.close());
+el('scheduleform').addEventListener('submit',async ev=>{
+  ev.preventDefault();if(busy)return;
+  const field=name=>el('sch-'+name).value.trim();
+  const startsAt=Math.floor(new Date(field('startsAt')).getTime()/1000);
+  const endsAt=Math.floor(new Date(field('endsAt')).getTime()/1000);
+  if(!Number.isFinite(startsAt)||!Number.isFinite(endsAt)||startsAt>=endsAt){toast('Check the start and end times.');return}
+  busy=true;
+  try{
+    const body={};for(const name of ['facultyId','faculty','course','subject','topic','channel'])body[name]=field(name);
+    body.startsAt=startsAt;body.endsAt=endsAt;
+    await api('sessions/create','POST',body);scheduleDialog.close();el('scheduleform').reset();toast('Class saved to this Windows PC. No Mac connection required.');await refresh();
+  }catch(e){toast('Cannot save class: '+e.message)}finally{busy=false}
+});
+async function cancelSession(sessionId){
+  if(!confirm('Cancel this scheduled class? Existing recordings will not be deleted.'))return;
+  try{await api('sessions/cancel','POST',{sessionId});toast('Class cancelled; existing recordings retained.');await refresh()}catch(e){toast(e.message)}
 }
 el('cancel').addEventListener('click',()=>dialog.close());
 el('startform').addEventListener('submit',async ev=>{

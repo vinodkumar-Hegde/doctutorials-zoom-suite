@@ -131,7 +131,7 @@ class HTTPEngineTests(EngineTests):
         self.assertEqual(401,err.exception.code)
         tok=json.load(self.request('/api/login',{'password':'very-long-test-password'}))['token']
         result=json.load(self.request('/api/sessions',token=tok))
-        self.assertEqual(result['state'],'not_configured')
+        self.assertEqual(result['state'],'local_windows')
         self.assertEqual([],result['sessions'])
     def test_seekable_playback_ticket(self):
         rid=self.engine.start('1',self.meta)['id']

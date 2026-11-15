@@ -1,3 +1,5 @@
+> **Current Windows-only update:** Admin session scheduling now lives in the Windows Central Controller. Do not use the earlier Mac-to-Windows session bridge. See [README-WINDOWS.md](README-WINDOWS.md) and [README-LOCAL-ADMIN.md](README-LOCAL-ADMIN.md). The Zoom media connector remains unimplemented.
+
 # DocTutorials Standalone Central Controller — four isolated recorder slots
 
 **Real local recording core, not Zoom Cloud Recording, Zoom standard Local Recording, OBS, or browser screen capture.**

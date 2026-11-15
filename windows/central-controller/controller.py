@@ -21,7 +21,7 @@ import time
 from urllib.parse import urlsplit, parse_qs
 
 from engine import Engine, RecorderError
-from session_feed import SessionFeed
+from local_sessions import LocalSessions, ScheduleError
 
 STATIC=Path(__file__).parent/'web'
 MAX_BODY=16384
@@ -38,9 +38,9 @@ def build_demo_config(root:Path):
 
 
 class ControlState:
-    def __init__(self,engine,password,feed=None):
+    def __init__(self,engine,password,sessions=None):
         self.engine=engine
-        self.feed=feed
+        self.sessions=sessions
         self.password=password
         self.tokens={}
         self.media_tickets={}
@@ -127,7 +127,7 @@ def handler_factory(state):
             if not self.require():return
             try:
                 if path=='/api/sessions':
-                    self.send(200,state.feed.snapshot() if state.feed else {'state':'not_configured','sessions':[]})
+                    self.send(200,state.sessions.snapshot() if state.sessions else {'state':'local_windows','sessions':[]})
                 elif path=='/api/channels':
                     self.send(200,{'channels':state.engine.status(),'recorder':'FFmpeg native OS capture, not browser/Zoom local/cloud'})
                 elif path=='/api/recordings':
@@ -186,7 +186,11 @@ def handler_factory(state):
                     else:self.send(401,{'error':'Invalid password.'})
                     return
                 if not self.require():return
-                if path=='/api/start':
+                if path=='/api/sessions/create':
+                    self.send(201,{'session':state.sessions.create(payload)})
+                elif path=='/api/sessions/cancel':
+                    self.send(200,{'session':state.sessions.cancel(payload.get('sessionId'))})
+                elif path=='/api/start':
                     channel=str(payload.get('channel',''))
                     meta={name:payload.get(name) for name in ('sessionId','course','subject','topic','faculty','facultyId')}
                     self.send(201,state.engine.start(channel,meta))
@@ -208,7 +212,7 @@ def handler_factory(state):
                     state.logout(self.headers.get('Authorization',''))
                     self.send(200,{'ok':True})
                 else:self.send(404,{'error':'Unknown endpoint.'})
-            except (ValueError,KeyError,RecorderError,json.JSONDecodeError) as exc:
+            except (ValueError,KeyError,RecorderError,ScheduleError,json.JSONDecodeError) as exc:
                 self.send(400,{'error':str(exc)})
             except Exception:
                 self.send(500,{'error':'Unexpected recorder error; see server console.'})
@@ -232,11 +236,12 @@ def main(argv=None):
     engine=Engine(config)
     password=os.getenv('DOCTUTORIALS_CONTROLLER_PASSWORD') or getpass.getpass('Choose central controller admin password (hidden, 12+ chars): ')
     if len(password)<12:raise SystemExit('Choose a password of at least 12 characters.')
-    feed_path=Path(os.getenv('LOCALAPPDATA') or (Path.home()/'AppData'/'Local'))/'DocTutorials'/'session-feed.json'
-    state=ControlState(engine,password,SessionFeed(feed_path))
+    sessions_path=engine.root/'windows-admin-sessions.sqlite3'
+    state=ControlState(engine,password,LocalSessions(sessions_path))
     server=ThreadingHTTPServer(('127.0.0.1',args.port),handler_factory(state))
     print(f'DocTutorials Central Controller: http://127.0.0.1:{args.port}')
-    print('Four independent worker slots. Storage: '+str(engine.root))
+    print('Windows-local Admin scheduling + four independent worker slots. Storage: '+str(engine.root))
+    print('No Mac session bridge or pairing required. Zoom media connection remains pending.')
     print('Mode: '+('SYNTHETIC TEST MEDIA (not Zoom)' if args.demo else 'OPERATOR-CONFIGURED NATIVE INPUTS'))
     print('No OBS, Zoom Cloud Recording, or Zoom standard local recording used.')
     print('This service listens ONLY on 127.0.0.1. Keep this window open; Ctrl+C stops the UI.')

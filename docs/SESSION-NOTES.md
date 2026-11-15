@@ -540,3 +540,6 @@
 - Updated Windows controller dashboard with Assigned Sessions and per-channel preparation; scheduled != Zoom live, test sources remain labeled.
 - 27 local offline/integration tests passed, including pinned TLS and 4-channel FFmpeg, but no Windows LAN or live Zoom SDK capture verification.
 - See docs/25-CENTRAL-SESSION-FEED.md. No production settings changed.
+
+## 2026-11-15 — Windows-only Central Controller session scheduling
+Implemented `LocalSessions` SQLite persistence in Windows controller; authenticated create/list/cancel, course/subject/topic/faculty/time/channel, collision rejection, and Windows Admin schedule UI. Removed active Mac pairing from the controller path; previously prepared Mac bridge files are historical only. All 40 offline Python tests passed in the assistant test environment plus JS syntax check; Windows operator retest pending. Test-pattern recording remains separate from Zoom live capture, which is unimplemented. ADR-026 documents the change.

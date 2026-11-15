@@ -7,3 +7,9 @@
 .session-card .topic{margin:8px 0;font-weight:500}
 .session-card .source,.session-card .note{margin:8px 0;font-size:.86rem}
 .session-card select{max-width:260px;min-width:160px;padding:7px;color:#eaf2ff;background:#102038;border:1px solid #415679;border-radius:8px}
+
+/* Windows-local Admin session scheduling */
+.sessions-panel .section-heading .controls{margin:0;align-items:center;flex-wrap:wrap}
+#scheduledialog label{margin:9px 0 3px}
+#scheduledialog input,#scheduledialog select{width:100%;padding:10px;background:#0b111c;color:#fff;border:1px solid #40516b;border-radius:8px}
+#scheduledialog{max-width:570px;max-height:88vh;overflow:auto}

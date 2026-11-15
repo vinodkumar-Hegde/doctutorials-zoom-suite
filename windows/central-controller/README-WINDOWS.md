@@ -1,125 +1,33 @@
-# DocTutorials Central Controller — Windows install / operator notes
+# DocTutorials Central Controller — Windows only
 
-This is an **experimental four-channel local recording and MP4/NAS storage engine**, not a Zoom Meeting SDK connector. Its demo uses **synthetic test media**, not a real Zoom class. It listens on `127.0.0.1:8780` on the Windows PC. Do not expose the port outside that machine.
+**This version runs the Admin session schedule, four recorder channels and local Storage Center on ONE Windows computer. No Mac session bridge, Mac IP, certificate fingerprint, or pairing password is required.**
 
-## Requirements
+The Admin schedule is a local SQLite database saved beside the recorder's data, so it survives restarts. You can create a class, enter course/subject/topic/faculty, schedule a time, optionally reserve a channel, and cancel a scheduled class. Channel conflicts are rejected. The scheduling UI does NOT create Zoom meetings and it does NOT detect whether a meeting is currently live.
 
-Windows 10/11; Python 3 with `py` launcher; FFmpeg + ffprobe in PATH; Python Pillow package. These commands require PowerShell (not Command Prompt).
+## Update the existing Windows installation
 
-If Python or FFmpeg are missing, Windows Package Manager can install them:
-
-```powershell
-winget install --id Python.Python.3.13 --exact
-winget install --id Gyan.FFmpeg --exact
-```
-
-Close and reopen PowerShell after installation. If your workplace has managed software policies, have IT install these from approved sources instead.
-
-Check prerequisites:
+Use **Windows PowerShell** on the recording computer (the one already running Python, FFmpeg and Visual Studio):
 
 ```powershell
-py -3 --version
-ffmpeg -version
-ffprobe -version
-py -3 -m pip install Pillow
-```
-
-## Download from the DocTutorials GitHub repository (no Git client needed)
-
-```powershell
-$ErrorActionPreference = 'Stop'
-$base = Join-Path $env:USERPROFILE 'DocTutorials-Central'
-New-Item -ItemType Directory -Force -Path $base | Out-Null
-$url = 'https://raw.githubusercontent.com/vinodkumar-Hegde/doctutorials-zoom-suite/main/windows/central-controller/DocTutorials-Central-Controller-Windows.zip'
-$zip = Join-Path $base 'DocTutorials-Central-Controller-Windows.zip'
-Invoke-WebRequest -Uri $url -OutFile $zip
-Expand-Archive -LiteralPath $zip -DestinationPath $base -Force
-Set-Location (Join-Path $base 'DocTutorials-Central-Controller')
-py -3 -m pip install Pillow
-.\start-demo-windows.bat
-```
-
-Open `http://127.0.0.1:8780` **on the same Windows machine**. Create a private 12+ character password in the console, log in, and test each of the four **TEST MEDIA** channels. After each test finishes, use Storage Center Play/Download to verify the actual MP4.
-
-## Git clone alternative (source files directly)
-
-```powershell
-git clone https://github.com/vinodkumar-Hegde/doctutorials-zoom-suite.git
-Set-Location .\doctutorials-zoom-suite\windows\central-controller
-py -3 -m pip install Pillow
-.\start-demo-windows.bat
-```
-
-## Tests
-
-```powershell
+cd "$HOME\doctutorials-zoom-suite"
+git pull
+cd .\windows\central-controller
 py -3 -m unittest discover -s tests -v
+.\start-demo-windows.bat
 ```
 
-## Connect your existing Mac Admin assigned classes (new)
+First press Ctrl+C to stop the old Central Controller process if it is already running. Open **http://127.0.0.1:8780** on that same Windows PC, sign in with the password you create in the controller window, then choose **Assign Class**. No additional installation or downloads needed for the scheduler. It does not depend on port 8443 or 8444.
 
-The Windows dashboard now has **Assigned Sessions** ABOVE the four channels. Those
-cards come from the existing Mac DocTutorials Admin SQLite database; they are NOT
-Zoom's 'currently in meeting' state and do not start/stop Zoom automatically.
+If you want to use the ZIP rather than Git, the updated GitHub source ZIP is at `windows/central-controller/DocTutorials-Central-Controller-Windows.zip` and extracts to a `DocTutorials-Central-Controller` directory. It is not needed for an existing Git checkout.
 
-The existing Mac admin server on `127.0.0.1:8443` stays unchanged. A separate
-read-only LAN HTTPS bridge runs on Mac port `8444`. It transmits ONLY: sessionId,
-facultyId, course, subject, topic, startsAt, endsAt. No Zoom meeting number,
-passcode, faculty login, SDK credentials, JWT, join link or recording is sent.
+## Recorder status — read this before testing with a class
 
-**On Mac**, download this repository's `windows/central-controller/mac_session_bridge.py`
-to your Mac (or pull the repo on Mac), then run it with `python3` while keeping
-your existing HTTPS Admin dashboard running. It reuses the existing Mac demo
-TLS certificate and reads the same `~/.config/doctutorials/demo-live-sessions.sqlite3`
-file. Enter a unique pairing secret of at least 20 characters privately.
-The terminal prints the certificate SHA256 fingerprint. On the Mac:
+- **Demo mode** (`start-demo-windows.bat`) uses FFmpeg test-pattern media. Its channel buttons say **Run TEST MEDIA**. Those MP4s are real files but NOT Zoom class recordings.
+- **Configured-input mode** (`start-recorder-windows.bat`) can record real Windows sources set in local, private `config.json`, subject to permissions, independent screen/audio sources and verification. It has NOT been proven to record a complete Zoom class or four parallel Zoom meetings.
+- **Zoom raw-media connector and automatic Zoom joining are not included**. Installing Visual Studio does not supply either the Zoom SDK or working media integration.
+- **Faculty iPad and laptop access to the Windows schedule is not yet wired**. This locally available Admin scheduler is the next working foundation, not an end-to-end teaching solution.
+- The controller is currently loopback-only (`127.0.0.1:8780`). Do not port-forward it to faculty devices, the LAN, or the internet.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/vinodkumar-Hegde/doctutorials-zoom-suite/main/windows/central-controller/mac_session_bridge.py -o "$HOME/Downloads/DocTutorialsDemoReady/doctutorials-live-demo/mac_session_bridge.py"
-python3 "$HOME/Downloads/DocTutorialsDemoReady/doctutorials-live-demo/mac_session_bridge.py"
-```
+The system does not rely on OBS or Zoom Cloud Recording, and its storage library retains verified local MP4s when NAS archive attempts fail.
 
-Keep that Terminal window open; allow incoming port 8444 from your Windows
-recording PC **only**. Mac private LAN IP can usually be shown with `ipconfig
-getifaddr en0` (or check System Settings > Network). Neither the bridge nor
-Windows pairing uses your Meeting SDK client secret.
-
-**On Windows**, from the updated Controller folder run:
-
-```powershell
-.\pair-mac-sessions-windows.bat
-```
-
-Enter the Mac LAN IPv4 address, the exact certificate fingerprint printed by
-Mac, and the same pairing secret (hidden). The Windows client verifies the
-certificate SHA256 **before** sending the pairing secret. The pairing is saved
-per Windows user in `%LOCALAPPDATA%\DocTutorials\session-feed.json`; keep that
-file and user profile private. A production deployment should use Windows
-Credential Manager / DPAPI rather than this development-only file.
-
-Refresh `http://127.0.0.1:8780` after pairing. The Windows app checks for
-assigned sessions every few seconds. It refuses stale data or connections
-without a matching certificate. The **Prepare channel** action pre-fills the
-session metadata in the selected channel. A configured recording source is
-still required and **no Zoom capture is initiated by the schedule feed**.
-
-## Zoom recording support boundary
-
-Visual Studio C++ is installed on the Windows workstation and is a compiler,
-not a Zoom SDK. The Zoom **Plugin SDK** is different from the **Meeting SDK**,
-which has raw video/share/audio callbacks. Zoom's current Windows Meeting SDK
-get-started documentation restricts bot/unattended uses; eligibility, meeting
-access and recording permissions must be verified before an automated SDK
-adapter is deployed. Zoom **RTMS** is an alternative media feed but requires
-RTMS credits. This module does not pretend to connect to either. See:
-https://developers.zoom.us/docs/meeting-sdk/windows/get-started/download/
-https://developers.zoom.us/docs/meeting-sdk/windows/default-ui/advanced-features/raw-data/
-https://developers.zoom.us/docs/rtms/
-
-## Real Windows media source trial (not Zoom SDK)
-
-Copy `config.windows-example.json` to the Git-ignored `config.json` and configure the Windows capture source, independent audio source, local SSD folder and NAS destination. First verify one authorized short meeting before enabling additional channels. Then use `start-recorder-windows.bat`.
-
-The current Windows capture example uses FFmpeg `gdigrab` to capture configured portions of a visible Zoom window, and optionally WASAPI loopback for audio. **It will not reliably isolate four Zoom meetings on one Windows desktop.** The Zoom Meeting SDK raw-media adapter, automatic joins, central session orchestration and four real Zoom-channel acceptance tests remain unimplemented.
-
-Never commit real meeting links, credentials, recordings or `config.json`. Only authorized classes should be recorded, with required consent and permissions.
+Only authorized classes should be recorded, with required participant notice and Zoom permissions. Keep credentials, actual meeting invitations, private configuration and recordings out of GitHub.
