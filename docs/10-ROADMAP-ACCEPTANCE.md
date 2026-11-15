@@ -211,3 +211,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **2026-11-15 local simulator TLS setup PASS:** temporary localhost certificate generated, CA added to booted Simulator keychain by operator script. Server and real Zoom join not yet started/verified.
 - [ ] **Real Basic sandbox meeting assignment setup and participant join:** initial hidden-input attempt rejected grouped/spaced Meeting ID; committed automatic whitespace/hyphen normalization. Immediate workaround: enter Meeting ID as digits only and rerun the one-command pilot. No additional unit test required for this operator input issue.
+
+
+- [x] **2026-11-15 10:51: new SDK-only real faculty login / authorized meeting Join screen renders in iPad (A16) Simulator**, operator screenshot; Xcode `All tests` **5/5 PASS** with new SwiftUI code.
+- [ ] **Local first-party HTTPS faculty sign-in and live Basic sandbox participant join:** no proof yet that localhost server is running, form authenticated or Zoom SDK reached `.inMeeting`. Next immediate runtime check is form login at `https://localhost:8443` and session `ipad-sandbox-class`; preserve Meeting/ReplayKit privacy gates.
