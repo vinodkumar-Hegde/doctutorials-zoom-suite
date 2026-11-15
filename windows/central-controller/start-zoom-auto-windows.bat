@@ -5,10 +5,6 @@ if not exist config.json (
   echo ERROR: Windows Storage Center config.json missing.
   exit /b 1
 )
-if "%ZOOM_EVENTS_ACCOUNT_ID%"=="" (
-  echo ERROR: ZOOM_EVENTS_ACCOUNT_ID missing. Get the Account ID from your Zoom Server-to-Server OAuth app credentials.
-  exit /b 1
-)
 if "%ZOOM_EVENTS_CLIENT_ID%"=="" (
   echo ERROR: ZOOM_EVENTS_CLIENT_ID missing. Configure Zoom meeting EVENT subscription, not RTMS.
   exit /b 1

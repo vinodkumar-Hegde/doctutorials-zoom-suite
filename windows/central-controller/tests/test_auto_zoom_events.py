@@ -21,10 +21,10 @@ class AutoTests(unittest.TestCase):
   with self.assertRaises(m.ZoomAutoUnavailable):m.match_zoom_meeting(self.db,self.plan(),'12345678902')
   with self.assertRaises(m.ZoomAutoUnavailable):m.match_zoom_meeting(self.db,{'sessions':[]},'12345678901')
   with self.assertRaises(m.ZoomAutoUnavailable):m.match_zoom_meeting(self.db,{'sessions':[self.item,self.item]},'12345678901')
- def test_s2s_token_uses_account_credentials(self):
+ def test_websocket_token_uses_verified_client_credentials(self):
   import json
   listener=m.ZoomMeetingEventListener(Mock(),client_id='client-id',client_secret='client-secret',
-      account_id='account-id',event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
+      event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
   response=Mock()
   response.read.return_value=json.dumps({'access_token':'not-a-real-token'}).encode()
   cm=Mock()
@@ -35,12 +35,16 @@ class AutoTests(unittest.TestCase):
   req=call.call_args.args[0]
   self.assertEqual(req.get_method(),'POST')
   self.assertEqual(req.full_url,'https://zoom.us/oauth/token')
-  self.assertEqual(parse_qs(req.data.decode()),{'grant_type':['account_credentials'],'account_id':['account-id']})
+  self.assertEqual(parse_qs(req.data.decode()),{'grant_type':['client_credentials']})
   self.assertEqual(req.get_header('Authorization'),'Basic Y2xpZW50LWlkOmNsaWVudC1zZWNyZXQ=')
- def test_s2s_missing_account_id_rejected(self):
+ def test_websocket_missing_client_secret_rejected(self):
   with self.assertRaises(m.ZoomAutoUnavailable):
-   m.ZoomMeetingEventListener(Mock(),client_id='id',client_secret='secret',
-      account_id='',event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
+   m.ZoomMeetingEventListener(Mock(),client_id='id',client_secret='',
+      event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
+ def test_websocket_account_id_not_required_for_event_token(self):
+  listener=m.ZoomMeetingEventListener(Mock(),client_id='id',client_secret='secret',
+      event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
+  self.assertFalse(hasattr(listener,'account_id'))
  def test_event_url_security(self):
   self.assertEqual(m.zoom_event_wss('wss://ws.zoom.us/ws?subscriptionId=abc'), 'wss://ws.zoom.us/ws?subscriptionId=abc')
   for url in ('ws://ws.zoom.us/','wss://ws.zoom.us.evil.com/a','wss://localhost','wss://user@zoom.us','wss://ws.zoom.us:1234'):

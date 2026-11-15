@@ -223,12 +223,12 @@ class AutoDesktopRecorder:
 class ZoomMeetingEventListener:
     """Account event WebSocket (not RTMS). Outbound only; no public port."""
     def __init__(self, recorder: AutoDesktopRecorder, *, client_id: str,
-                 client_secret: str, account_id: str, event_wss: str):
+                 client_secret: str, event_wss: str):
         if not all(isinstance(v, str) and v.strip() for v in
-                   (client_id, client_secret, account_id)):
-            raise ZoomAutoUnavailable('Zoom Server-to-Server OAuth Account ID, Client ID or Client Secret missing.')
+                   (client_id, client_secret)):
+            raise ZoomAutoUnavailable('Zoom event WebSocket Client ID or Client Secret missing.')
         self.recorder = recorder
-        self.client_id, self.secret, self.account_id = client_id, client_secret, account_id
+        self.client_id, self.secret = client_id, client_secret
         self.event_wss = zoom_event_wss(event_wss)
         self._closed = threading.Event()
         self._socket = None
@@ -236,10 +236,10 @@ class ZoomMeetingEventListener:
 
     def _token(self) -> str:
         auth = base64.b64encode((self.client_id + ':' + self.secret).encode('utf8')).decode('ascii')
-        # Server-to-Server OAuth requires account_credentials and Account ID.
-        # Do not use client_credentials for this Zoom app type.
-        form = urlencode({'grant_type': 'account_credentials',
-                          'account_id': self.account_id}).encode('ascii')
+        # Zoom Event WebSocket grant, verified by Windows diagnostic:
+        # client_credentials PASS + WebSocket CONNECTED. Standard
+        # account_credentials returned HTTP 400 for this event endpoint.
+        form = urlencode({'grant_type': 'client_credentials'}).encode('ascii')
         req = Request('https://zoom.us/oauth/token', data=form, method='POST',
                       headers={'Authorization': 'Basic ' + auth,
                                'Content-Type': 'application/x-www-form-urlencoded'})
@@ -270,6 +270,13 @@ class ZoomMeetingEventListener:
                 query['access_token'] = token
                 url = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, urlencode(query), ''))
                 def on_open(sock):
+                    # Show actual transport readiness rather than inferring it
+                    # solely from a running controller process. Do not replace
+                    # an active recording status on WebSocket reconnect.
+                    if self.recorder.status().get('phase') in (
+                            'waiting_for_zoom_event', 'event_connection_unavailable',
+                            'event_disconnected'):
+                        self.recorder._set('event_connected_waiting_for_meeting')
                     def heartbeat():
                         while not self._closed.wait(30):
                             try:
@@ -293,6 +300,8 @@ class ZoomMeetingEventListener:
                         return
                 self._socket = websocket.WebSocketApp(url, on_open=on_open, on_message=on_message)
                 self._socket.run_forever(ping_interval=25, ping_timeout=10)
+                if not self._closed.is_set() and self.recorder.status().get('phase') == 'event_connected_waiting_for_meeting':
+                    self.recorder._set('event_disconnected', 'Zoom event WebSocket disconnected; reconnecting.')
             except Exception:
                 # Do not log OAuth token, wss URL, meeting IDs or credentials.
                 self.recorder._set('event_connection_unavailable', 'Check Zoom meeting event subscription and app authorization.')

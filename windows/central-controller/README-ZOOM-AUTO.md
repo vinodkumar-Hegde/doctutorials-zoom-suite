@@ -29,11 +29,9 @@ or Goodnotes share is visible. A real Windows meeting acceptance test is require
    Zoom events are account-bound: the faculty host must belong to the app's
    subscribed account (or use an approved app). The Windows PC uses an
    outbound connection; no public listener is needed.
-3. Use the **DocTutorials-Backend Server-to-Server OAuth app** credentials from Zoom Marketplace. Provide **Account ID**, Client ID and Client Secret from a trusted Windows secret mechanism in the
-   Windows PowerShell process environment using names
-   `ZOOM_EVENTS_ACCOUNT_ID`, `ZOOM_EVENTS_CLIENT_ID`, `ZOOM_EVENTS_CLIENT_SECRET`, `ZOOM_EVENTS_WSS`.
-   The WebSocket endpoint must be an official `wss://` Zoom URL. The receiver uses Zoom's documented `grant_type=account_credentials` plus Account ID; the previous client-credentials request was incorrect for Server-to-Server OAuth. Do not store secrets
-   in a .bat, config.json, GitHub or browser.
+3. Use the **DocTutorials-Backend event subscription** and its Client ID, Client Secret and WebSocket URL. Keep them in the Windows PowerShell process environment:
+   `ZOOM_EVENTS_CLIENT_ID`, `ZOOM_EVENTS_CLIENT_SECRET`, `ZOOM_EVENTS_WSS`.
+   **Actual Windows diagnostic evidence (15 November 2026):** `client_credentials` returned a token and connected to the WebSocket; `account_credentials` returned HTTP 400. Therefore the event WebSocket receiver uses `grant_type=client_credentials`, not the standard S2S account grant. The Account ID is not required for this listener. This distinction applies to Zoom's event WebSocket and does not change ordinary Server-to-Server REST OAuth usage. Do not store secrets in a .bat, config.json, GitHub or browser.
 4. Obtain and document faculty/attendee meeting recording notice and permission
    as applicable. For a deployment where every enrolled class has the required
    authorization and notice, set `DOCTUTORIALS_AUTO_NOTICE_CONFIRMED=YES`
@@ -103,3 +101,9 @@ It tries both grant types because the Zoom WebSocket API docs document
 describes \`account_credentials\`. A successful diagnostic connection does NOT
 prove a real Zoom meeting can be joined or recorded. Test during a NEW active
 class schedule; previous class sessions do not reactivate automatically.
+
+## Windows event connection correction (2026-11-15)
+
+The operator's preflight showed `Zoom OAuth client_credentials: PASS`, `Zoom OAuth account_credentials: HTTP 400`, and `Zoom WebSocket using client_credentials: CONNECTED`. The listener and Windows launcher now use only the proven event WebSocket grant. A connected event socket displays `event_connected_waiting_for_meeting`; this is transport readiness, not proof of meeting capture.
+
+Run `git pull --ff-only` and restart `start-zoom-auto-windows.bat` from the SAME PowerShell session containing the prior Zoom environment variables. Use a new future Admin class for the first authorized end-to-end test; the 18:15–20:15 session already ended and cannot trigger an active channel now.
