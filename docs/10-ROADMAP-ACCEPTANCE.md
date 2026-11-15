@@ -144,3 +144,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 
 - [ ] **ARM64-only SDK Simulator clean-build retest:** first isolated build FAILED (exit 65) while trying to link unsupported `x86_64` architecture; Zoom SDK 7.2.5 vendor XCFrameworks are `ios-arm64-simulator` only. SDK-specific XcodeGen spec committed `EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64`; operator must pull, regenerate and rerun isolated build. Prior missing zoomcml runtime packaging still **unverified** until a successful ARM64 Simulator build and launch.
+
+
+- [x] **Stage 4B SDK-linked fresh ARM64 Simulator clean build PASS** after excluding x86_64 in SDK-only XcodeGen spec; operator output `BUILD SUCCEEDED` and 09:16 fresh app bundle includes **MobileRTC.framework + zoomcml.framework**. This resolves vendor linkage / packaging checkpoint; unsigned isolated diagnostic only (2026-11-15).
+- [ ] **Actual Xcode SDK-linked Simulator app launch and five XCTest policy tests** after packaging fix (not yet operator-confirmed). Meeting SDK JWT auth/join and ReplayKit share are separate later stages.
