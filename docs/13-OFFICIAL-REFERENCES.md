@@ -84,3 +84,9 @@ The code for SDK init/participation and signer is STAGED. Documentation is not a
 - On October 15, 2026, Zoom staff stated `zoomcml` has been **mandatory for physical iPhones since SDK 6.4.5**, and promised documentation updates. Operator's SDK 7.2.5 launch on iPadOS 27.2 simulator empirically fails with `@rpath/zoomcml.framework/zoomcml` absent; thus it is a **required runtime dependency** for our current build too: https://devforum.zoom.us/t/is-the-ios-meeting-sdk-still-actively-supported/147169
 - Apple's dynamic linker missing-framework guidance (embed a linked runtime dependency in app bundle): https://developer.apple.com/documentation/xcode/addressing-missing-framework-crashes
 - Corrected XcodeGen `project-sdk.yml` to embed and sign `zoomcml` plus `MobileRTC`; simulator retest is pending.
+
+
+## Stage 4B — Simulator architecture compatibility, verified 2026-11-15
+- Zoom **Meeting SDK 6.7.5+ does not support x86 iOS Simulator**. The user's SDK 7.2.5.40220 has `ios-arm64-simulator` and `ios-arm64`, not `ios-x86_64-simulator`. Official: https://developers.zoom.us/docs/meeting-sdk/ios/get-started/
+- Apple architecture guidance: prefer default `ARCHS`, selectively use `EXCLUDED_ARCHS` on impacted targets for missing architectures, avoid global architecture hacks: https://developer.apple.com/documentation/technotes/tn3117-resolving-build-errors-for-apple-silicon
+- Stage 4B project SDK-only spec now excludes `x86_64` for Simulator; next operator isolated build is unverified. Do not confuse simulator architecture build failure with dynamic-loader missing `zoomcml`.
