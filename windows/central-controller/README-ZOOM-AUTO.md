@@ -78,3 +78,28 @@ Sources: https://developers.zoom.us/docs/api/meetings/events/ ;
 https://developers.zoom.us/docs/api/websockets/ ;
 https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0067266 ;
 https://ffmpeg.org/ffmpeg-devices.html#gdigrab
+
+## Connection diagnostic (does not join or record meetings)
+
+If the Windows dashboard shows \`event_connection_unavailable\`, first verify the
+**DocTutorials-Backend** Server-to-Server OAuth app has completed **Activation**
+and the WebSocket subscription includes Meeting Started and Meeting Ended.
+Zoom will not issue regular Server-to-Server access tokens for an inactive app.
+
+Stop the existing Windows automatic recorder with Ctrl+C to avoid competing
+WebSocket connections, then run from the same Windows PowerShell session:
+
+\`\`\`powershell
+cd "$HOME\doctutorials-zoom-suite"
+git pull --ff-only
+cd .\windows\central-controller
+.\check-zoom-events-windows.bat
+\`\`\`
+
+This check reports only SET/MISSING, OAuth HTTP status, and WebSocket handshake
+status, never access tokens, account IDs, passcodes or the credential-bearing URL.
+It tries both grant types because the Zoom WebSocket API docs document
+\`client_credentials\` whereas generic Server-to-Server OAuth documentation
+describes \`account_credentials\`. A successful diagnostic connection does NOT
+prove a real Zoom meeting can be joined or recorded. Test during a NEW active
+class schedule; previous class sessions do not reactivate automatically.
