@@ -137,3 +137,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] Operator `.pbxproj` grep confirms `zoomcml.xcframework` appears in **Frameworks** and **Embed Frameworks** with `CodeSignOnCopy` (2026-11-15).
 - [ ] **Fresh clean simulator build/run and actual app bundle inspection** after zoomcml change (not yet reported); stage 4B zoomcml loader crash still open.
+
+
+- [x] Vendor `zoomcml.xcframework` ARM64 Simulator and device slices confirmed on Mac; inspected existing app builds contain only `MobileRTC.framework` or no frameworks (operator output 2026-11-15). Timestamps suggest stale DerivedData.
+- [ ] New clean isolated SDK Simulator build with fresh `-derivedDataPath` and compare actual `.app/Frameworks` contents; operator diagnostic PENDING. Do not accept Stage 4B runtime until `zoomcml.framework` is present and app launches.
