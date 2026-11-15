@@ -55,6 +55,6 @@ echo "The next prompts request the separate Meeting SDK General App Client ID/Se
 "$PY" -m backend.local_ipad_sandbox_server serve-https \
   --faculty-file "$FACULTY" \
   --assignment-file "$ASSIGNMENT" \
-  --tls-cert "$TLS/localhost.pem" \
+  --tls-cert "$TLS/localhost-fullchain.pem" \
   --tls-key "$TLS/localhost.key" \
   --port 8443
