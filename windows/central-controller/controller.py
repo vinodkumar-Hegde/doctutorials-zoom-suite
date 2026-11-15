@@ -340,6 +340,7 @@ def main(argv=None):
             event_listener=ZoomMeetingEventListener(state.auto_zoom,
                 client_id=os.environ.get('ZOOM_EVENTS_CLIENT_ID',''),
                 client_secret=os.environ.get('ZOOM_EVENTS_CLIENT_SECRET',''),
+                account_id=os.environ.get('ZOOM_EVENTS_ACCOUNT_ID',''),
                 event_wss=os.environ.get('ZOOM_EVENTS_WSS',''))
         except ZoomAutoUnavailable as exc:
             raise SystemExit(str(exc)) from None

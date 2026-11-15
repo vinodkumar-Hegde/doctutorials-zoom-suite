@@ -1,6 +1,7 @@
 import importlib, os, sqlite3, sys, tempfile, types, unittest, threading, time
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
+from urllib.parse import parse_qs
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import auto_zoom_events as m
 
@@ -20,6 +21,26 @@ class AutoTests(unittest.TestCase):
   with self.assertRaises(m.ZoomAutoUnavailable):m.match_zoom_meeting(self.db,self.plan(),'12345678902')
   with self.assertRaises(m.ZoomAutoUnavailable):m.match_zoom_meeting(self.db,{'sessions':[]},'12345678901')
   with self.assertRaises(m.ZoomAutoUnavailable):m.match_zoom_meeting(self.db,{'sessions':[self.item,self.item]},'12345678901')
+ def test_s2s_token_uses_account_credentials(self):
+  import json
+  listener=m.ZoomMeetingEventListener(Mock(),client_id='client-id',client_secret='client-secret',
+      account_id='account-id',event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
+  response=Mock()
+  response.read.return_value=json.dumps({'access_token':'not-a-real-token'}).encode()
+  cm=Mock()
+  cm.__enter__=Mock(return_value=response)
+  cm.__exit__=Mock(return_value=False)
+  with patch('auto_zoom_events.urlopen',return_value=cm) as call:
+   self.assertEqual(listener._token(),'not-a-real-token')
+  req=call.call_args.args[0]
+  self.assertEqual(req.get_method(),'POST')
+  self.assertEqual(req.full_url,'https://zoom.us/oauth/token')
+  self.assertEqual(parse_qs(req.data.decode()),{'grant_type':['account_credentials'],'account_id':['account-id']})
+  self.assertEqual(req.get_header('Authorization'),'Basic Y2xpZW50LWlkOmNsaWVudC1zZWNyZXQ=')
+ def test_s2s_missing_account_id_rejected(self):
+  with self.assertRaises(m.ZoomAutoUnavailable):
+   m.ZoomMeetingEventListener(Mock(),client_id='id',client_secret='secret',
+      account_id='',event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
  def test_event_url_security(self):
   self.assertEqual(m.zoom_event_wss('wss://ws.zoom.us/ws?subscriptionId=abc'), 'wss://ws.zoom.us/ws?subscriptionId=abc')
   for url in ('ws://ws.zoom.us/','wss://ws.zoom.us.evil.com/a','wss://localhost','wss://user@zoom.us','wss://ws.zoom.us:1234'):

@@ -223,11 +223,12 @@ class AutoDesktopRecorder:
 class ZoomMeetingEventListener:
     """Account event WebSocket (not RTMS). Outbound only; no public port."""
     def __init__(self, recorder: AutoDesktopRecorder, *, client_id: str,
-                 client_secret: str, event_wss: str):
-        if not client_id or not client_secret:
-            raise ZoomAutoUnavailable('Zoom meeting-event app credentials missing.')
+                 client_secret: str, account_id: str, event_wss: str):
+        if not all(isinstance(v, str) and v.strip() for v in
+                   (client_id, client_secret, account_id)):
+            raise ZoomAutoUnavailable('Zoom Server-to-Server OAuth Account ID, Client ID or Client Secret missing.')
         self.recorder = recorder
-        self.client_id, self.secret = client_id, client_secret
+        self.client_id, self.secret, self.account_id = client_id, client_secret, account_id
         self.event_wss = zoom_event_wss(event_wss)
         self._closed = threading.Event()
         self._socket = None
@@ -235,8 +236,13 @@ class ZoomMeetingEventListener:
 
     def _token(self) -> str:
         auth = base64.b64encode((self.client_id + ':' + self.secret).encode('utf8')).decode('ascii')
-        req = Request('https://zoom.us/oauth/token?grant_type=client_credentials',
-                      method='POST', headers={'Authorization': 'Basic ' + auth})
+        # Server-to-Server OAuth requires account_credentials and Account ID.
+        # Do not use client_credentials for this Zoom app type.
+        form = urlencode({'grant_type': 'account_credentials',
+                          'account_id': self.account_id}).encode('ascii')
+        req = Request('https://zoom.us/oauth/token', data=form, method='POST',
+                      headers={'Authorization': 'Basic ' + auth,
+                               'Content-Type': 'application/x-www-form-urlencoded'})
         with urlopen(req, timeout=20) as response:
             data = json.loads(response.read(100_000))
         token = data.get('access_token')

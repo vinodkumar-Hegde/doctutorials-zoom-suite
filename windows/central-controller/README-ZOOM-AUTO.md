@@ -29,10 +29,10 @@ or Goodnotes share is visible. A real Windows meeting acceptance test is require
    Zoom events are account-bound: the faculty host must belong to the app's
    subscribed account (or use an approved app). The Windows PC uses an
    outbound connection; no public listener is needed.
-3. Provide app ID and secret from a trusted Windows secret mechanism in the
+3. Use the **DocTutorials-Backend Server-to-Server OAuth app** credentials from Zoom Marketplace. Provide **Account ID**, Client ID and Client Secret from a trusted Windows secret mechanism in the
    Windows PowerShell process environment using names
-   `ZOOM_EVENTS_CLIENT_ID`, `ZOOM_EVENTS_CLIENT_SECRET`, `ZOOM_EVENTS_WSS`.
-   The value must be an official `wss://` Zoom endpoint. Do not store secrets
+   `ZOOM_EVENTS_ACCOUNT_ID`, `ZOOM_EVENTS_CLIENT_ID`, `ZOOM_EVENTS_CLIENT_SECRET`, `ZOOM_EVENTS_WSS`.
+   The WebSocket endpoint must be an official `wss://` Zoom URL. The receiver uses Zoom's documented `grant_type=account_credentials` plus Account ID; the previous client-credentials request was incorrect for Server-to-Server OAuth. Do not store secrets
    in a .bat, config.json, GitHub or browser.
 4. Obtain and document faculty/attendee meeting recording notice and permission
    as applicable. For a deployment where every enrolled class has the required
