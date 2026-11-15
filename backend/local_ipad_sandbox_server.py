@@ -164,7 +164,7 @@ def main() -> None:
         # Terminal, never typed into the source code or shell history.
         # Zoom commonly displays grouped IDs (e.g. "123 4567 8901").
         # A meeting number is not a secret; accept pasted spacing/hyphens.
-        meeting_number = re.sub(r"[\\s-]+", "", input("Zoom Basic sandbox Meeting number: ").strip())
+        meeting_number = re.sub(r"[\s-]+", "", input("Zoom Basic sandbox Meeting number: ").strip())
         meeting_passcode = getpass.getpass("Zoom Basic sandbox meeting PASSCODE (hidden): ")
         now = int(time.time())
         try:
