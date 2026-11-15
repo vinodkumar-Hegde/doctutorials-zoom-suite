@@ -270,15 +270,14 @@ class ZoomMeetingEventListener:
                 query['access_token'] = token
                 url = urlunsplit((parsed.scheme, parsed.netloc, parsed.path, urlencode(query), ''))
                 def on_open(sock):
-                    # Show actual transport readiness rather than inferring it
-                    # solely from a running controller process. Do not replace
-                    # an active recording status on WebSocket reconnect.
+                    # Show transport readiness without overwriting active capture.
                     if self.recorder.status().get('phase') in (
                             'waiting_for_zoom_event', 'event_connection_unavailable',
                             'event_disconnected'):
                         self.recorder._set('event_connected_waiting_for_meeting')
                     def heartbeat():
-                        while not self._closed.wait(30):
+                        # Ahead of Zoom's 30-second application heartbeat interval.
+                        while not self._closed.wait(20):
                             try:
                                 if not sock.sock or not sock.sock.connected:
                                     return
@@ -298,8 +297,22 @@ class ZoomMeetingEventListener:
                             self.recorder.handle_event(body.get('event'), body)
                     except (ValueError, TypeError):
                         return
-                self._socket = websocket.WebSocketApp(url, on_open=on_open, on_message=on_message)
-                self._socket.run_forever(ping_interval=25, ping_timeout=10)
+                def on_error(_sock, error):
+                    if not self._closed.is_set() and self.recorder.status().get('phase') == 'event_connected_waiting_for_meeting':
+                        # Exception text may contain bearer tokens; report type only.
+                        self.recorder._set('event_disconnected',
+                            'Zoom transport error (' + type(error).__name__ + '); reconnecting.')
+                def on_close(_sock, code, _reason):
+                    if not self._closed.is_set() and self.recorder.status().get('phase') == 'event_connected_waiting_for_meeting':
+                        # Never report server-supplied reason or credential-bearing URL.
+                        safe_code = str(code) if type(code) is int and 1000 <= code <= 4999 else 'unknown'
+                        self.recorder._set('event_disconnected',
+                            'Zoom WebSocket closed (code ' + safe_code + '); reconnecting.')
+                self._socket = websocket.WebSocketApp(url, on_open=on_open, on_message=on_message,
+                    on_error=on_error, on_close=on_close)
+                # Zoom documents application JSON heartbeats, not a mandatory
+                # protocol Ping reply. Avoid unnecessary ping_timeout disconnects.
+                self._socket.run_forever(ping_interval=0)
                 if not self._closed.is_set() and self.recorder.status().get('phase') == 'event_connected_waiting_for_meeting':
                     self.recorder._set('event_disconnected', 'Zoom event WebSocket disconnected; reconnecting.')
             except Exception:

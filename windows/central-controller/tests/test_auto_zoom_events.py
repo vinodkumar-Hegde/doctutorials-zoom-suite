@@ -45,6 +45,45 @@ class AutoTests(unittest.TestCase):
   listener=m.ZoomMeetingEventListener(Mock(),client_id='id',client_secret='secret',
       event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
   self.assertFalse(hasattr(listener,'account_id'))
+ def test_websocket_uses_zoom_json_heartbeat_without_ping_timeout(self):
+  import json, types
+  phases=[]
+  class Recorder:
+   phase='waiting_for_zoom_event'
+   def status(self):return {'phase':self.phase}
+   def _set(self,phase,problem=''):
+    self.phase=phase; phases.append((phase,problem))
+  recorder=Recorder()
+  listener=m.ZoomMeetingEventListener(recorder,client_id='id',client_secret='secret',event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
+  sent=[];kwargs=[]
+  class FakeWS:
+   def __init__(self,url,on_open,on_message,on_error,on_close):
+    self.on_open,self.on_close=on_open,on_close
+    self.sock=types.SimpleNamespace(connected=True)
+   def send(self,data):sent.append(json.loads(data))
+   def run_forever(self,**options):
+    kwargs.append(options);self.on_open(self);self.on_close(self,1006,'sensitive access_token=private');listener._closed.set()
+  fake=types.SimpleNamespace(WebSocketApp=FakeWS, WebSocketException=Exception)
+  with patch.dict(sys.modules,{'websocket':fake}),patch.object(listener,'_token',return_value='secret-token'):
+   listener._run()
+  self.assertEqual(kwargs,[{'ping_interval':0}])
+  self.assertEqual(sent,[{'module':'heartbeat'}])
+  self.assertEqual(phases[0][0],'event_connected_waiting_for_meeting')
+  self.assertEqual(phases[1],('event_disconnected','Zoom WebSocket closed (code 1006); reconnecting.'))
+  self.assertNotIn('private',repr(phases))
+ def test_websocket_close_does_not_interrupt_recording_phase(self):
+  import types
+  class Recorder:
+   def status(self):return {'phase':'capture_started_unverified'}
+   def _set(self,*args):raise AssertionError('Must not overwrite active recording status')
+  listener=m.ZoomMeetingEventListener(Recorder(),client_id='id',client_secret='secret',event_wss='wss://ws.zoom.us/ws?subscriptionId=abc')
+  class FakeWS:
+   def __init__(self,url,on_open,on_message,on_error,on_close):self.on_open,self.on_close=on_open,on_close;self.sock=types.SimpleNamespace(connected=True)
+   def send(self,data):pass
+   def run_forever(self,**options):self.on_open(self);self.on_close(self,1006,'');listener._closed.set()
+  fake=types.SimpleNamespace(WebSocketApp=FakeWS, WebSocketException=Exception)
+  with patch.dict(sys.modules,{'websocket':fake}),patch.object(listener,'_token',return_value='secret-token'):
+   listener._run()
  def test_event_url_security(self):
   self.assertEqual(m.zoom_event_wss('wss://ws.zoom.us/ws?subscriptionId=abc'), 'wss://ws.zoom.us/ws?subscriptionId=abc')
   for url in ('ws://ws.zoom.us/','wss://ws.zoom.us.evil.com/a','wss://localhost','wss://user@zoom.us','wss://ws.zoom.us:1234'):

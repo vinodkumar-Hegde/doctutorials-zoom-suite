@@ -107,3 +107,22 @@ class schedule; previous class sessions do not reactivate automatically.
 The operator's preflight showed `Zoom OAuth client_credentials: PASS`, `Zoom OAuth account_credentials: HTTP 400`, and `Zoom WebSocket using client_credentials: CONNECTED`. The listener and Windows launcher now use only the proven event WebSocket grant. A connected event socket displays `event_connected_waiting_for_meeting`; this is transport readiness, not proof of meeting capture.
 
 Run `git pull --ff-only` and restart `start-zoom-auto-windows.bat` from the SAME PowerShell session containing the prior Zoom environment variables. Use a new future Admin class for the first authorized end-to-end test; the 18:15–20:15 session already ended and cannot trigger an active channel now.
+
+
+## WebSocket lifetime correction (2026-11-15)
+
+The Windows diagnostic verified an initial OAuth/WebSocket handshake, but the
+operator later observed `event_disconnected`. Zoom documents a JSON
+`{"module":"heartbeat"}` every 30 seconds; the event receiver now sends it
+on open and every 20 seconds, without a competing 25-second WebSocket Ping +
+10-second Pong timeout. A sanitized close code or transport-error class is
+shown in the dashboard if the connection still drops. An initial diagnostic
+handshake is not proof of a long-lived connection; run a live Windows test.
+
+**Only one active event WebSocket connection is allowed per Zoom
+subscription.** Do not run `check-zoom-events-windows.bat` while the
+auto-recorder is running because the check may replace that connection.
+Close all older listeners before launching the new one. A gap in WebSocket
+connectivity can permanently miss Zoom meeting-start events; only events
+received while connected are delivered. The old scheduled NEET SS class is
+already past and will not auto-trigger.
