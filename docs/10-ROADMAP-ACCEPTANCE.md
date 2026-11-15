@@ -273,3 +273,15 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [ ] **Still blocked:** independently capture one authorized actual Zoom Meeting's screen, faculty camera and class audio through a verified permitted media connector; then test four isolated meetings, automatic storage and NAS. Neither test media nor scheduled time equals Zoom recording.
 
 - 2026-11-15: Removed duplicate Windows Assign Class form. Existing Admin SQLite schedule adapter and secret-free export tested locally; production Admin migration, Zoom live capture, four-meeting acceptance still pending.
+
+
+## Windows automatic original Admin session reservation — 2026-11-15
+
+- [x] Read imported original Admin class assignments on Windows without duplicate class entry or editing the source database.
+- [x] Deterministically reserve no more than four non-overlapping channel slots and flag fifth overlapping session.
+- [x] Show reservation on channel card; never present schedule as observed Zoom media/live status.
+- [x] Fail closed for TEST MEDIA on imported class recording; operator-confirmed configured native input uses server-derived class metadata.
+- [ ] Connect a permitted Zoom realtime media source (RTMS prerequisite/authorization pending); verify one actual screen+faculty+audio recording and participant notice.
+- [ ] Prove four isolated real Zoom recordings and validated NAS archival on operator Windows system.
+
+See docs/28-WINDOWS-SESSION-AUTO-RESERVATION.md. The 59 passing local tests **do not** prove live Zoom capture.

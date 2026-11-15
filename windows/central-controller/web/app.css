@@ -13,3 +13,7 @@
 #scheduledialog label{margin:9px 0 3px}
 #scheduledialog input,#scheduledialog select{width:100%;padding:10px;background:#0b111c;color:#fff;border:1px solid #40516b;border-radius:8px}
 #scheduledialog{max-width:570px;max-height:88vh;overflow:auto}
+
+/* Automatic reservations from original Admin data, not proof of Zoom media. */
+.reservation{font-size:13px;margin:10px 0;color:#7fdabb;font-weight:650}
+.warning{font-size:12px;margin:10px 0;color:#ffcd7a}

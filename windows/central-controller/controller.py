@@ -23,6 +23,7 @@ from urllib.parse import urlsplit, parse_qs
 from engine import Engine, RecorderError
 from local_sessions import LocalSessions, ScheduleError
 from existing_admin_sessions import ExistingAdminSessions
+from assigned_channel_plan import enrich_admin_schedule, selected_session
 
 STATIC=Path(__file__).parent/'web'
 MAX_BODY=16384
@@ -46,6 +47,11 @@ class ControlState:
         self.tokens={}
         self.media_tickets={}
         self.lock=threading.Lock()
+    def plan(self):
+        snap=self.sessions.snapshot() if self.sessions else {'state':'local_windows','sessions':[]}
+        if isinstance(self.sessions, ExistingAdminSessions):
+            return enrich_admin_schedule(snap, self.engine.status())
+        return {**snap, 'channels': self.engine.status()}
     def login(self,password):
         if not hmac.compare_digest(password.encode('utf8'),self.password.encode('utf8')):
             return None
@@ -128,9 +134,9 @@ def handler_factory(state):
             if not self.require():return
             try:
                 if path=='/api/sessions':
-                    self.send(200,state.sessions.snapshot() if state.sessions else {'state':'local_windows','sessions':[]})
+                    self.send(200,{k:v for k,v in state.plan().items() if k != 'channels'})
                 elif path=='/api/channels':
-                    self.send(200,{'channels':state.engine.status(),'recorder':'FFmpeg native OS capture, not browser/Zoom local/cloud'})
+                    self.send(200,{'channels':state.plan()['channels'],'recorder':'FFmpeg native OS capture, not browser/Zoom local/cloud'})
                 elif path=='/api/recordings':
                     self.send(200,{'recordings':state.engine.recordings()})
                 else:
@@ -195,9 +201,31 @@ def handler_factory(state):
                     if not isinstance(state.sessions, LocalSessions):
                         self.send(405,{'error':'Use the existing DocTutorials Admin portal to manage class assignments.'});return
                     self.send(200,{'session':state.sessions.cancel(payload.get('sessionId'))})
+                elif path=='/api/start-assigned':
+                    if not isinstance(state.sessions, ExistingAdminSessions):
+                        raise RecorderError('Imported Admin session registry is required.')
+                    if payload.get('consentConfirmed') is not True:
+                        raise RecorderError('Operator must confirm permission and participant notice before capture.')
+                    item=selected_session(state.plan(),payload.get('sessionId'))
+                    channel=item['plannedChannel']
+                    source=state.engine.channels[channel]
+                    # A scheduled session is not proof that a Zoom meeting is live.
+                    # Never turn synthetic/file inputs into recordings labeled as classes.
+                    inputs=(source.get(name,{}) for name in ('screen','faculty','audio'))
+                    if (not source.get('configured') or
+                        'TEST MEDIA' in source.get('mode','').upper() or
+                        any(c.get('kind') in ('lavfi','file',None) for c in inputs)):
+                        raise RecorderError('Real independent capture sources are not configured for this channel; TEST MEDIA cannot record an assigned class.')
+                    meta={name:item[name] for name in ('sessionId','course','subject','topic','facultyId')}
+                    meta['faculty']=item['facultyId']  # Source DB has no separate faculty name.
+                    self.send(201,state.engine.start(channel,meta))
                 elif path=='/api/start':
                     channel=str(payload.get('channel',''))
                     meta={name:payload.get(name) for name in ('sessionId','course','subject','topic','faculty','facultyId')}
+                    if isinstance(state.sessions, ExistingAdminSessions):
+                        real_ids={s['sessionId'] for s in state.sessions.snapshot().get('sessions',[])}
+                        if meta['sessionId'] in real_ids:
+                            raise RecorderError('Use the assigned-session capture action; TEST MEDIA cannot be labeled as a real class.')
                     self.send(201,state.engine.start(channel,meta))
                 elif path=='/api/stop':
                     self.send(200,{'recording':state.engine.stop(str(payload.get('channel','')))})

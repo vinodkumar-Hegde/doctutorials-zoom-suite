@@ -14,12 +14,21 @@ function control(label,onclick,css='',disabled=false){const b=node('button',labe
 function renderChannels(data){currentChannels=data;feedIsDemo=data.some(ch=>String(ch.sourceMode).includes('TEST MEDIA'));const root=el('channels');root.replaceChildren();let active=0;
   data.forEach(ch=>{if(['starting','recording','stopping','finalizing'].includes(ch.state))active++;
     const card=node('article',undefined,'channel'), top=node('div',undefined,'channeltop');top.append(node('span','▣  Channel '+ch.channel));top.append(node('span',ch.state.toUpperCase(),'chip '+ch.state));card.append(top);
-    const last=ch.last, title=last?.course||'Not assigned';card.append(node('h3',title));card.append(node('div',last?(last.subject+' · '+last.topic):'Ready for a scheduled session','topic'));
+    const assigned=ch.assignedSession, last=ch.last;
+    const title=assigned?assigned.course:(last?.course||'Not assigned');card.append(node('h3',title));
+    card.append(node('div',assigned?(assigned.subject+' · '+assigned.topic):(last?(last.subject+' · '+last.topic):'Ready for a scheduled session'),'topic'));
+    if(assigned){card.append(node('div','AUTO-RESERVED · Faculty '+assigned.facultyId+' · '+new Date(assigned.startsAt*1000).toLocaleString(),'note'));card.append(node('div','Zoom media NOT CONNECTED — reservation is not a live recording','warning'));} 
     card.append(node('div','Input: '+ch.sourceMode+'  ·  '+(ch.configured?'Configured':'NOT CONFIGURED'),'source'));
     if(last)card.append(node('div','Last session '+last.session_id+' · '+(last.detail||'')+' · NAS: '+last.archive_state,'note'));
     else card.append(node('div','Each channel is an independent FFmpeg recorder.','note'));
     const actions=node('div',undefined,'controls');
-    actions.append(control(String(ch.sourceMode).includes('TEST MEDIA')?'Run TEST MEDIA':'Start configured source',()=>String(ch.sourceMode).includes('TEST MEDIA')?runTest(ch.channel):openDialog(ch.channel),'',!ch.configured||activeState(ch.state)));
+    if(String(ch.sourceMode).includes('TEST MEDIA')){
+      actions.append(control('Run TEST MEDIA',()=>runTest(ch.channel),'',!ch.configured||activeState(ch.state)));
+    }else if(assigned){
+      actions.append(control('Start configured capture',()=>startAssigned(assigned.sessionId),'',!ch.configured||!ch.configuredInput||activeState(ch.state)));
+    }else{
+      actions.append(control('Await assigned class',()=>{},'',true));
+    }
     actions.append(control('Stop & save MP4',()=>stop(ch.channel),'stop',!['recording','starting'].includes(ch.state)));
     card.append(actions);root.append(card);
   });el('health').textContent=active+' of 4 channels active';
@@ -31,21 +40,19 @@ async function runTest(channel){
   try{await api('start','POST',meta);toast('Synthetic recording started, not Zoom.');await refresh()}
   catch(e){toast('Test recording failed: '+e.message)}finally{busy=false}
 }
-const dialog=el('startdialog');
-function openDialog(channel, session=null){
-  el('channel').value=channel;el('dialogchannel').textContent=channel;
-  for(const id of ['sessionId','course','subject','topic','faculty','facultyId'])el(id).value=session?(session[id]||''):'';
-  const source=currentChannels.find(ch=>ch.channel==channel);
-  const mode=source?.sourceMode||'unconfigured';
-  el('recordingwarning').textContent='INPUT MODE: '+mode+'. This does not join Zoom. Only verified media from the configured source will be recorded.';
-  el('recordsubmit').textContent=mode.includes('TEST MEDIA')?'Record TEST MEDIA (not Zoom)':'Start configured recording source';
-  dialog.showModal();
+async function startAssigned(sessionId){
+  if(busy)return;
+  if(!confirm('This starts only the configured Windows media input. Zoom meeting presence is NOT verified. Confirm recording permission and participant notice before proceeding.'))return;
+  busy=true;
+  try{await api('start-assigned','POST',{sessionId,consentConfirmed:true});toast('Configured input started. Zoom identity not verified; inspect the real media recording.');await refresh()}
+  catch(e){toast('Capture unavailable: '+e.message)}finally{busy=false}
 }
+
 function renderSessions(result){
   el('feedstate').textContent=result.state==='existing_admin'?'Original Admin database':'Admin data not connected';
   el('feedmessage').textContent=result.message||'';
   const root=el('sessions');root.replaceChildren();
-  if(!result.sessions.length){root.append(node('div',result.state==='existing_admin'?'No sessions in the existing Admin database.':'No assignments imported. Do not create duplicate classes here.','empty'));return}
+  if(!result.sessions.length){root.append(node('div',result.state==='existing_admin'?'No sessions in the imported Admin database.':'No imported assignments. Do not create duplicate classes here.','empty'));return}
   result.sessions.forEach(item=>{
     const card=node('article',undefined,'session-card');
     const now=Date.now()/1000;
@@ -54,17 +61,11 @@ function renderSessions(result){
     card.append(node('div',item.topic,'topic'));
     card.append(node('div','Assigned faculty: '+item.facultyId,'source'));
     card.append(node('div',new Date(item.startsAt*1000).toLocaleString()+' — '+new Date(item.endsAt*1000).toLocaleTimeString(),'source'));
-    card.append(node('div',window+' · Zoom live/recording status NOT connected','note'));
+    card.append(node('div',item.plannedChannel?'Automatically reserved Channel '+item.plannedChannel:'NO CHANNEL CAPACITY — more than four overlapping classes',item.plannedChannel?'reservation':'warning'));
+    card.append(node('div',window+' · Zoom media NOT connected · No automatic recording','note'));
     root.append(card);
   });
 }
-el('cancel').addEventListener('click',()=>dialog.close());
-el('startform').addEventListener('submit',async ev=>{
-  ev.preventDefault();if(busy)return;busy=true;
-  const obj={channel:el('channel').value};for(const id of ['sessionId','course','subject','topic','faculty','facultyId'])obj[id]=el(id).value;
-  try{const res=await api('start','POST',obj);dialog.close();toast('Recorder process started: '+res.id+'. Waiting for actual media.');await refresh()}
-  catch(e){toast('Cannot start: '+e.message)}finally{busy=false}
-});
 async function stop(channel){if(busy)return;busy=true;try{toast('Flushing and validating recording...');const res=await api('stop','POST',{channel});toast('Verified MP4 ready: '+res.recording.id);await refresh()}catch(e){toast('Stop issue: '+e.message)}finally{busy=false}}
 async function recover(rid){try{await api('recover','POST',{id:rid});toast('Recovery complete: '+rid);await refresh()}catch(e){toast('Recovery failed: '+e.message)}}
 async function retry(rid){try{await api('archive/retry','POST',{id:rid});toast('NAS archive retry started')}catch(e){toast(e.message)}}

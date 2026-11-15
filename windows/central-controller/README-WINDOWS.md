@@ -49,3 +49,7 @@ This does **not** overwrite your original Mac database. The Windows controller r
 - The obsolete `windows-admin-sessions.sqlite3` created by a previous prototype is **not deleted** and is **not used as a source for the dashboard**; no existing recordings are deleted.
 
 Run tests in Windows with `py -3 -m unittest discover -s tests -v`.
+
+## Updated: automatic session-to-channel reservations
+
+Existing Admin session metadata now appears **on its automatically reserved recording channel** without a manual class form or any new export. This is a *schedule reservation*, not proof that a Zoom class is live or being captured. The demo still outputs only test media. See [README-AUTO-CHANNELS.md](README-AUTO-CHANNELS.md) for exact status, source checks and remaining Zoom RTMS integration requirements.
