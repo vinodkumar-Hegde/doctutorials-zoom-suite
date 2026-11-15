@@ -126,6 +126,13 @@ class HTTPEngineTests(EngineTests):
         obj=json.load(self.request('/api/channels',token=tok))
         self.assertEqual(4,len(obj['channels']))
         self.assertIn('not browser',obj['recorder'])
+    def test_sessions_endpoint_is_authenticated_and_fail_closed(self):
+        with self.assertRaises(HTTPError) as err:self.request('/api/sessions')
+        self.assertEqual(401,err.exception.code)
+        tok=json.load(self.request('/api/login',{'password':'very-long-test-password'}))['token']
+        result=json.load(self.request('/api/sessions',token=tok))
+        self.assertEqual(result['state'],'not_configured')
+        self.assertEqual([],result['sessions'])
     def test_seekable_playback_ticket(self):
         rid=self.engine.start('1',self.meta)['id']
         self.wait_for([rid])

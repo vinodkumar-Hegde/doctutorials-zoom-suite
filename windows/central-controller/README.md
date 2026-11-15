@@ -68,3 +68,16 @@ FFmpeg gdigrab docs: https://ffmpeg.org/ffmpeg-devices.html#gdigrab
 - Use one isolated audio device per Zoom meeting. Capturing a shared speaker on the same Windows desktop could mix participant audio from multiple classes.
 - Leave headroom on local disk; NAS failures do not remove the local recording. Stress-test an actual 8-hour class and four independent physical meeting sources before production.
 - Do not erase old Mac Storage Center files. This package creates/updates a catalog only in its explicitly configured `storage_root`, rather than modifying the running HTTPS demo automatically.
+
+
+## Assigned-session synchronization (2026-11-15)
+
+The Controller now displays live **Admin schedule data**, not just recorder slots.
+`mac_session_bridge.py` is a separate read-only HTTPS service running on the Mac
+that already hosts the DocTutorials Admin SQLite session database. `session_feed.py`
+reads the Mac feed from the Windows Controller using SHA256 certificate pinning
+and a unique pairing secret. Pair once with `pair-mac-sessions-windows.bat`.
+Only public scheduling metadata crosses the LAN; meeting credentials do not.
+This synchronization does not implement automatic Zoom joins, recording permission
+or raw media capture. A scheduled class must never be labeled as recorded merely
+because it appears on the dashboard. See `README-WINDOWS.md`.

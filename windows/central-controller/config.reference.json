@@ -1,0 +1,101 @@
+{
+  "storage_root": "./DocTutorialsStorage",
+  "nas_root": "",
+  "width": 1920,
+  "height": 1080,
+  "fps": 25,
+  "segment_seconds": 600,
+  "preset": "veryfast",
+  "crf": 23,
+  "channels": {
+    "1": {
+      "configured": false,
+      "mode": "Windows Zoom Window",
+      "screen": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting"
+      },
+      "faculty": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting",
+        "crop": [
+          1150,
+          80,
+          300,
+          210
+        ]
+      },
+      "audio": {
+        "kind": "wasapi_loopback"
+      }
+    },
+    "2": {
+      "configured": false,
+      "mode": "Windows Zoom Window",
+      "screen": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting"
+      },
+      "faculty": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting",
+        "crop": [
+          1150,
+          80,
+          300,
+          210
+        ]
+      },
+      "audio": {
+        "kind": "wasapi_loopback"
+      }
+    },
+    "3": {
+      "configured": false,
+      "mode": "Windows Zoom Window",
+      "screen": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting"
+      },
+      "faculty": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting",
+        "crop": [
+          1150,
+          80,
+          300,
+          210
+        ]
+      },
+      "audio": {
+        "kind": "wasapi_loopback"
+      }
+    },
+    "4": {
+      "configured": false,
+      "mode": "Windows Zoom Window",
+      "screen": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting"
+      },
+      "faculty": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting",
+        "crop": [
+          1150,
+          80,
+          300,
+          210
+        ]
+      },
+      "audio": {
+        "kind": "wasapi_loopback"
+      }
+    }
+  },
+  "layout": {
+    "name": "screen-plus-faculty",
+    "camera_position": "top-right",
+    "camera_width_percent": 23
+  }
+}

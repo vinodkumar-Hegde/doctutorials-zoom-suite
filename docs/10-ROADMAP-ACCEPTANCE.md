@@ -259,3 +259,10 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [ ] Operator Windows machine: install/test Python, Pillow, FFmpeg and validate test MP4s plus storage/NAS permissions.
 - [ ] Validate **one actual authorized Zoom meeting** screen+faculty+audio capture on Windows, then Zoom Meeting SDK raw-media connector with consent/permissions (not implemented).
 - [ ] Verify four genuinely independent live Zoom sources, no shared audio leaks, 8-hour stability and automatic scheduler integration before production.
+
+
+## 2026-11-15 — Windows Admin session feed (development only)
+- [x] Code and tests: Windows Assigned Sessions panel, read-only Mac SQLite HTTPS schedule bridge, SHA256 certificate pinning, private LAN IP restriction, no Zoom secret transfer (27 local tests PASS).
+- [ ] Operator Mac-to-Windows LAN test, Windows pairing, actual Admin session verification.
+- [ ] Zoom media connector permitted/verified with SDK or RTMS; no live screen/video/audio capture claimed.
+- [ ] Four simultaneous real Zoom captures and reliable NAS transfer acceptance.

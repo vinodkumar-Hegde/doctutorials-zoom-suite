@@ -533,3 +533,10 @@
 - Includes configured screen + faculty-video picture-in-picture, metadata/logo overlay, four isolated workers, local MP4 storage and SHA-256-verified NAS archiving.
 - **Not complete:** Windows Zoom SDK raw-media adapter, real Zoom captures, four concurrent real meetings, automatic Admin assignment links, actual iPad Goodnotes share, and long-duration reliability remain unverified.
 - Operator Windows next: download from `windows/central-controller/README-WINDOWS.md`, launch synthetic demo on localhost:8780 and verify MP4 playback. Do not claim production recording readiness.
+
+
+## 2026-11-15 — Windows assigned-session sync implementation
+- Implemented read-only Mac HTTPS bridge over local Admin sessions SQLite. Windows checks exact certificate SHA256 before transmitting pairing secret, and accepts only seven noncredential fields.
+- Updated Windows controller dashboard with Assigned Sessions and per-channel preparation; scheduled != Zoom live, test sources remain labeled.
+- 27 local offline/integration tests passed, including pinned TLS and 4-channel FFmpeg, but no Windows LAN or live Zoom SDK capture verification.
+- See docs/25-CENTRAL-SESSION-FEED.md. No production settings changed.

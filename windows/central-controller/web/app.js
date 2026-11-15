@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-let token = null, busy = false;
+let token = null, busy = false, feedIsDemo = true, currentChannels = []; 
 const el=id=>document.getElementById(id);
 const toast=(message)=>{const t=el('toast');t.textContent=message;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',6500)};
 async function api(path,method='GET',body=null){
@@ -11,7 +11,7 @@ el('loginform').addEventListener('submit',async ev=>{ev.preventDefault();try{con
 el('logout').addEventListener('click',async()=>{try{await api('logout','POST',{})}catch(_){}token=null;el('signin').hidden=false;el('dashboard').hidden=true;el('logout').hidden=true});
 function node(tag,text,className){const x=document.createElement(tag);if(text!==undefined)x.textContent=text;if(className)x.className=className;return x}
 function control(label,onclick,css='',disabled=false){const b=node('button',label,css);b.disabled=disabled;b.addEventListener('click',onclick);return b}
-function renderChannels(data){const root=el('channels');root.replaceChildren();let active=0;
+function renderChannels(data){currentChannels=data;feedIsDemo=data.some(ch=>String(ch.sourceMode).includes('TEST MEDIA'));const root=el('channels');root.replaceChildren();let active=0;
   data.forEach(ch=>{if(['starting','recording','stopping','finalizing'].includes(ch.state))active++;
     const card=node('article',undefined,'channel'), top=node('div',undefined,'channeltop');top.append(node('span','▣  Channel '+ch.channel));top.append(node('span',ch.state.toUpperCase(),'chip '+ch.state));card.append(top);
     const last=ch.last, title=last?.course||'Not assigned';card.append(node('h3',title));card.append(node('div',last?(last.subject+' · '+last.topic):'Ready for a scheduled session','topic'));
@@ -26,7 +26,37 @@ function renderChannels(data){const root=el('channels');root.replaceChildren();l
 }
 function activeState(s){return ['starting','recording','stopping','finalizing'].includes(s)}
 const dialog=el('startdialog');
-function openDialog(channel){el('channel').value=channel;el('dialogchannel').textContent=channel;dialog.showModal()}
+function openDialog(channel, session=null){
+  el('channel').value=channel;el('dialogchannel').textContent=channel;
+  for(const id of ['sessionId','course','subject','topic','faculty','facultyId'])el(id).value=session?(session[id]||''):'';
+  const source=currentChannels.find(ch=>ch.channel==channel);
+  const mode=source?.sourceMode||'unconfigured';
+  el('recordingwarning').textContent='INPUT MODE: '+mode+'. This does not join Zoom. Only verified media from the configured source will be recorded.';
+  el('recordsubmit').textContent=mode.includes('TEST MEDIA')?'Record TEST MEDIA (not Zoom)':'Start configured recording source';
+  dialog.showModal();
+}
+function renderSessions(result){
+  el('feedstate').textContent=result.state==='connected'?'Mac Admin connected':'Mac Admin '+result.state;
+  el('feedmessage').textContent=result.message||'';
+  const root=el('sessions');root.replaceChildren();
+  if(result.state!=='connected'){root.append(node('div','No synchronized sessions available. Pair the Mac Admin feed first.','empty'));return}
+  if(!result.sessions.length){root.append(node('div','No classes assigned by Admin yet. Create a session in the Mac Admin dashboard.','empty'));return}
+  result.sessions.forEach(item=>{
+    const card=node('article',undefined,'session-card');
+    const now=Date.now()/1000;
+    const schedule=(now>=item.startsAt&&now<item.endsAt)?'Within scheduled window':(now<item.startsAt?'Upcoming':'Past');
+    card.append(node('strong',item.course+' · '+item.subject));
+    card.append(node('div',item.topic,'topic'));
+    card.append(node('div','Faculty '+item.facultyId+' · '+new Date(item.startsAt*1000).toLocaleString(),'source'));
+    card.append(node('div',schedule+' (not meeting status)','note'));
+    const select=node('select');select.setAttribute('aria-label','Select recorder channel for '+item.sessionId);
+    currentChannels.forEach(ch=>{const op=node('option','Channel '+ch.channel+' · '+ch.sourceMode);op.value=ch.channel;op.disabled=!ch.configured||activeState(ch.state);select.append(op)});
+    const actions=node('div',undefined,'controls');actions.append(select);
+    const active=currentChannels.some(ch=>ch.configured&&!activeState(ch.state));
+    actions.append(control('Prepare channel',()=>openDialog(select.value,{...item,faculty:item.facultyId}), 'ghost',!active));
+    card.append(actions);root.append(card);
+  });
+}
 el('cancel').addEventListener('click',()=>dialog.close());
 el('startform').addEventListener('submit',async ev=>{
   ev.preventDefault();if(busy)return;busy=true;
@@ -50,6 +80,6 @@ function renderRecordings(list){const root=el('records');const current=el('inlin
  if(r.state==='ready'&&r.archive_state==='failed')actions.append(control('Retry NAS',()=>retry(r.id),'ghost'));
  row.append(actions);root.append(row)})
 }
-async function refresh(){if(!token)return;try{const [channels,records]=await Promise.all([api('channels'),api('recordings')]);renderChannels(channels.channels);renderRecordings(records.recordings)}catch(e){toast(e.message)}}
+async function refresh(){if(!token)return;try{const [channels,records,sessions]=await Promise.all([api('channels'),api('recordings'),api('sessions')]);renderChannels(channels.channels);renderSessions(sessions);renderRecordings(records.recordings)}catch(e){toast(e.message)}}
 el('refresh').addEventListener('click',refresh);setInterval(()=>{if(token&&!busy)refresh()},3500);
 })();

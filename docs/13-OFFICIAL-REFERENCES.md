@@ -123,3 +123,9 @@ The code for SDK init/participation and signer is STAGED. Documentation is not a
 - Zoom requires `MobileRTCResources.bundle` in Xcode's **Copy Bundle Resources**: https://developers.zoom.us/docs/meeting-sdk/ios/integrate/
 - `MobileRTCSDKInitContext.bundleResPath` is documented as optional explicit resource bundle path: https://marketplacefront.zoom.us/sdk/meeting/ios/interface_mobile_r_t_c_s_d_k_init_context.html
 - No claim that OS mismatch or resource absence is definitive until operator checks actual app bundle/retests; backend HTTPS ticket verified, SDK initialization still fails.
+
+
+## Recording input feasibility — current reference (2026-11-15)
+- Windows Meeting SDK get started, limitations on unattended meeting clients: https://developers.zoom.us/docs/meeting-sdk/windows/get-started/download/
+- Windows raw recording APIs and recording permission: https://developers.zoom.us/docs/meeting-sdk/windows/default-ui/advanced-features/raw-data/
+- Zoom Realtime Media Streams and credit requirement: https://developers.zoom.us/docs/rtms/

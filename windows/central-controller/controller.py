@@ -21,6 +21,7 @@ import time
 from urllib.parse import urlsplit, parse_qs
 
 from engine import Engine, RecorderError
+from session_feed import SessionFeed
 
 STATIC=Path(__file__).parent/'web'
 MAX_BODY=16384
@@ -37,8 +38,9 @@ def build_demo_config(root:Path):
 
 
 class ControlState:
-    def __init__(self,engine,password):
+    def __init__(self,engine,password,feed=None):
         self.engine=engine
+        self.feed=feed
         self.password=password
         self.tokens={}
         self.media_tickets={}
@@ -124,7 +126,9 @@ def handler_factory(state):
                 return
             if not self.require():return
             try:
-                if path=='/api/channels':
+                if path=='/api/sessions':
+                    self.send(200,state.feed.snapshot() if state.feed else {'state':'not_configured','sessions':[]})
+                elif path=='/api/channels':
                     self.send(200,{'channels':state.engine.status(),'recorder':'FFmpeg native OS capture, not browser/Zoom local/cloud'})
                 elif path=='/api/recordings':
                     self.send(200,{'recordings':state.engine.recordings()})
@@ -228,7 +232,8 @@ def main(argv=None):
     engine=Engine(config)
     password=os.getenv('DOCTUTORIALS_CONTROLLER_PASSWORD') or getpass.getpass('Choose central controller admin password (hidden, 12+ chars): ')
     if len(password)<12:raise SystemExit('Choose a password of at least 12 characters.')
-    state=ControlState(engine,password)
+    feed_path=Path(os.getenv('LOCALAPPDATA') or (Path.home()/'AppData'/'Local'))/'DocTutorials'/'session-feed.json'
+    state=ControlState(engine,password,SessionFeed(feed_path))
     server=ThreadingHTTPServer(('127.0.0.1',args.port),handler_factory(state))
     print(f'DocTutorials Central Controller: http://127.0.0.1:{args.port}')
     print('Four independent worker slots. Storage: '+str(engine.root))
