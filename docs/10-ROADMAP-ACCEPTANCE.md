@@ -178,3 +178,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **19/19 iPad join-ticket HTTP security contract tests PASS on operator Mac** (`Ran 19 tests in 0.085s`, `OK`, 2026-11-15); mock faculty verifier and meeting assignment, no deployed live HTTPS.
 - [ ] **Mac compile latest SDK-only Swift HTTPS ticket client + rerun five iPad policy XCTest cases** after new client file was committed; operator verification PENDING. Join action remains disabled.
+
+
+- [x] **2026-11-15 09:54 — Latest Xcode SDK-enabled iPad Simulator 5/5 policy XCTest tests PASS** after adding staged Swift HTTPS join-ticket client source; all individual tests PASS, zero failures. Network and UIKit warnings did not fail suite.
+- [ ] Latest Swift HTTPS join-ticket client is compiled but **NOT runtime exercised** with a genuine authenticated faculty API; real faculty login / assignment + trusted HTTPS and live Zoom Meeting SDK participant joining remain outstanding.
