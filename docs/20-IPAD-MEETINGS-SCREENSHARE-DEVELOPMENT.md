@@ -354,3 +354,19 @@ Official source: https://developers.zoom.us/docs/meeting-sdk/auth/
 **iPad HTTPS ticket transport staged:** `SDKApp/HTTPSFacultyJoinTicketClient.swift` uses HTTPS-only API origin, ephemeral URLSession with redirects rejected, in-memory faculty token, post-only call and bounded response/expiry validation. No login/token is fabricated, no UI call is wired, no join enabled, no ReplayKit controls unlocked. **Not yet compiled under Xcode after new source was added**. The SDK-linked project's existing 5/5 test pass predates this newly added file.
 
 Runbook: **[21-IPAD-JOIN-API-RUNBOOK.md](21-IPAD-JOIN-API-RUNBOOK.md)**. **Next operator test** after `git pull`: create a Python venv under `~/.venvs/doctutorials-ipad-api`, install `backend/requirements-ipad-dev.txt`, execute `python -m unittest discover -s tests -p 'test_ipad_join_http.py' -v` from repository root. Expect `Ran 19 tests` / `OK`; do not claim until seen. Then regenerate `project-sdk.yml` and run Xcode Cmd+B/Cmd+U for Swift compile/regression check. Any real Zoom SDK join must wait for provider-backed faculty auth, server-owned assignments, secure HTTPS deployment, and backend secret provisioning.
+
+
+## 2026-11-15 — 19/19 HTTPS join-ticket HTTP tests PASS on operator Mac
+Operator terminal reports **`Ran 19 tests in 0.085s`, `OK`** for `tests/test_ipad_join_http.py`. This confirms the offline FastAPI TestClient contract tests pass, including auth/permission denials, HTTPS and host restrictions, disabled-by-default behavior, response shape, no-store and no demo endpoints. No live identity system or public server exists yet.
+
+**Next acceptance check:** compile the newly committed `SDKApp/HTTPSFacultyJoinTicketClient.swift` in the SDK-linked iPad project and rerun five XCTest policy tests:
+
+```bash
+cd ~/doctutorials-zoom-suite
+git pull
+cd ipad/DocTutorialsScreenShare
+xcodegen generate --spec project-sdk.yml
+open DocTutorialsScreenShare.xcodeproj
+```
+
+Choose **DocTutorialsScreenShare** and **iPad (A16) Simulator**; press **Cmd+B**, then **Cmd+U**. The Swift client is still unconnected to Join; a compilation pass does not imply any actual Zoom SDK authorization/join. If compilation fails, capture first red Xcode error. The HTTP tests use fake faculty verification and sandbox meeting records; production security controls and backend HTTPS deployment remain pending.
