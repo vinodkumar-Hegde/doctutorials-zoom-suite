@@ -234,3 +234,19 @@ Operator's `grep -n zoomcml DocTutorialsScreenShare.xcodeproj/project.pbxproj` s
 - `PBXFileReference` to `vendor/ZoomMeetingSDK/lib/zoomcml.xcframework`
 
 This closes the question whether the current generated project has an XcodeGen reference. **It does**. It does **not** demonstrate that a fresh app build packaged the framework into `.app/Frameworks` or that the simulator loads successfully. Next operator: Xcode → Product → Clean Build Folder, run iPad (A16) simulator. If `dyld` still reports missing `zoomcml.framework`, list the vendor xcframework subframeworks and exact built app's Frameworks directory to diagnose embed phase/file output. No additional project changes justified from grep alone.
+
+## 2026-11-15 — Confirmed SDK package includes zoomcml but existing app bundle does not
+Operator `find` shows `zoomcml.framework` present in both `ios-arm64-simulator` and `ios-arm64` vendor XCFramework slices. Current inspected `.app/Frameworks` contains `MobileRTC.framework` only (one additional empty bundle also found). The inspected product directories have **00:40–00:52** timestamps; latest operator Terminal session began around 09:04, so **may be stale outputs**. Project spec and generated `.pbxproj` have correct zoomcml embed entries, but a freshly generated app bundle has not been verified.
+
+Instead of changing more project settings, force an isolated clean Simulator build with a **new** DerivedData location:
+
+```bash
+cd ~/doctutorials-zoom-suite/ipad/DocTutorialsScreenShare
+xcodegen generate --spec project-sdk.yml
+xcodebuild -project DocTutorialsScreenShare.xcodeproj -scheme DocTutorialsScreenShare -configuration Debug -destination 'generic/platform=iOS Simulator' -derivedDataPath "$HOME/Downloads/DocTutorialsIpadBuildCheck" CODE_SIGNING_ALLOWED=NO clean build > "$HOME/Downloads/DocTutorialsIpadBuildCheck.log" 2>&1
+echo "Build exit status: $?"
+tail -n 12 "$HOME/Downloads/DocTutorialsIpadBuildCheck.log"
+ls -la "$HOME/Downloads/DocTutorialsIpadBuildCheck/Build/Products/Debug-iphonesimulator/DocTutorialsScreenShare.app/Frameworks"
+```
+
+This is a throwaway **unsigned Simulator packaging diagnosis**; a succeeding build does not prove Apple signing or Zoom auth. If zoomcml appears in the new bundle, Xcode's prior DerivedData was stale; return to fresh Xcode build/test. If it is still absent, inspect complete clean build output for `zoomcml` copy phase and exact generated `PBXCopyFilesBuildPhase` / target phase ordering; do not guess. Source: https://developer.apple.com/documentation/xcode/addressing-missing-framework-crashes .
