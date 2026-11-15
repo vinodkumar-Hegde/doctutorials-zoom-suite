@@ -499,3 +499,10 @@ xcrun simctl keychain 7E489CA4-7F02-4749-A8D7-DA9036527652 add-root-cert "$HOME/
 xcrun simctl list devices booted
 ```
 Confirm only 26.5 booted. Load **`https://127.0.0.1:8443/docs`** in Safari with **no privacy warning**; JSON `{"detail":"Not Found"}` is expected. Only then retry existing app login, no rebuild/tests/password reset. If native trust still fails, next inspect fullchain backend and iOS 26.5 Certificate Trust Settings; do not weaken TLS verification or expose localhost server.
+
+
+## 2026-11-15 11:32 — Only iOS 26.5 Simulator booted; explicit local CA install command completed
+- Operator successfully stopped old iOS 27.2 iPad simulator and explicitly ran `simctl keychain 7E489CA4-7F02-4749-A8D7-DA9036527652 add-root-cert` on iPadOS 26.5, no tool error. `simctl list devices booted` confirms **only iPad (A16), iOS 26.5**. This corrects the previous ambiguous `booted` CA installation.
+- Simulator Safari reaches local HTTPS and shows `{"detail":"Not Found"}`; **native app URLSession still needs a successful login test** because Safari could have cached a trust exception.
+- `zsh: command not found: #` was caused by pasted shell comment lines, harmless.
+- Next: in current SDK iPad app use HTTPS IPv4 `https://127.0.0.1:8443`, existing private faculty login/password, tap Sign in. If success, proceed directly to authorized `ipad-sandbox-class` Zoom join; if -1202 recurs, inspect iOS 26.5 trust settings/server fullchain. No unrelated tests or rebuild before trying.
