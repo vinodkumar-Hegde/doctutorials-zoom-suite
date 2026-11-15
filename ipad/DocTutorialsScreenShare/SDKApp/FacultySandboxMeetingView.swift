@@ -12,7 +12,8 @@ struct FacultySandboxMeetingView: View {
     @State private var httpsOrigin = ""
     @State private var facultyID = "sandbox-faculty"
     @State private var password = ""
-    @State private var assignedSessionID = ""
+    // One assigned internal session in this Basic sandbox pilot. This is NOT the Zoom Meeting number.
+    @State private var assignedSessionID = "ipad-sandbox-class"
     @State private var accessSession: FacultyAccessSession?
 
     @State private var loggingIn = false
@@ -142,7 +143,7 @@ struct FacultySandboxMeetingView: View {
                 Label(meeting.statusMessage, systemImage: "circle.dashed")
                     .foregroundStyle(.secondary)
 
-                TextField("Assigned DocTutorials session ID", text: $assignedSessionID)
+                TextField("Assigned class ID — not Zoom Meeting ID", text: $assignedSessionID)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
                     .textFieldStyle(.roundedBorder)
@@ -274,7 +275,7 @@ struct FacultySandboxMeetingView: View {
             self.accessSession = nil
             notice = "Your login expired. Please sign in again."
         } catch FacultyJoinTicketError.meetingAccessDenied {
-            notice = "This sandbox meeting is not assigned to this faculty member or is outside its allowed time."
+            notice = "The server denied this class. Use ipad-sandbox-class (not the Zoom Meeting number), then check assignment time."
         } catch {
             notice = "The join ticket could not be issued. Verify the backend and assignment."
         }
