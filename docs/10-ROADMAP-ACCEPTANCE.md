@@ -215,3 +215,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **2026-11-15 10:51: new SDK-only real faculty login / authorized meeting Join screen renders in iPad (A16) Simulator**, operator screenshot; Xcode `All tests` **5/5 PASS** with new SwiftUI code.
 - [ ] **Local first-party HTTPS faculty sign-in and live Basic sandbox participant join:** no proof yet that localhost server is running, form authenticated or Zoom SDK reached `.inMeeting`. Next immediate runtime check is form login at `https://localhost:8443` and session `ipad-sandbox-class`; preserve Meeting/ReplayKit privacy gates.
+
+
+- [x] **2026-11-15 10:56: actual static faculty password sign-in over local HTTPS succeeds in iPad Simulator** (green `Signed in to DocTutorials (sandbox)` screenshot). Login is now runtime-proven.
+- [ ] Actual SDK Meeting join: first authorized-join attempt used numeric Zoom meeting number as the internal class ID; backend correctly denied it. Operator should retry with `ipad-sandbox-class`. No live connected SDK callback yet.
