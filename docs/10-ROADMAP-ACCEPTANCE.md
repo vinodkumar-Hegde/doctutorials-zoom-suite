@@ -174,3 +174,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] **HTTPS iPad join-ticket network client source committed** in SDKApp, with no redirect-following, no stored credentials, and NO connection to SwiftUI Join action; new source compilation **not yet verified**.
 - [ ] **Operator Mac** runs 19 HTTP offline TestClient cases and Xcode Cmd+B/Cmd+U with new Swift client; **PENDING**.
 - [ ] Select and integrate real DocTutorials faculty identity verifier, secure server-owned assignment persistence, sandbox SDK credential vault, correctly trusted TLS backend + rate limits, live iPad ticket request and observable `.inMeeting` callback. Full device screen sharing still separate. See `docs/21-IPAD-JOIN-API-RUNBOOK.md`.
+
+
+- [x] **19/19 iPad join-ticket HTTP security contract tests PASS on operator Mac** (`Ran 19 tests in 0.085s`, `OK`, 2026-11-15); mock faculty verifier and meeting assignment, no deployed live HTTPS.
+- [ ] **Mac compile latest SDK-only Swift HTTPS ticket client + rerun five iPad policy XCTest cases** after new client file was committed; operator verification PENDING. Join action remains disabled.
