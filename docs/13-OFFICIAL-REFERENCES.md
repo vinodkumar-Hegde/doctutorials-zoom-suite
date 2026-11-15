@@ -110,3 +110,9 @@ The code for SDK init/participation and signer is STAGED. Documentation is not a
 - OWASP Password Storage Cheat Sheet: salted slow password KDF, scrypt N=2^17, r=8, p=1 fallback when Argon2id unavailable: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
 - OWASP Authentication Cheat Sheet: generic error messages, login throttling and avoiding username enumeration: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
 - DocTutorials' static faculty password is a separate first-party security principal; it is neither a Zoom Meeting password nor an SDK signing credential. Basic sandbox login routes remain OFF until security gates and operator testing pass.
+
+
+## 2026-11-15 — Temporary Simulator-only localhost TLS for first live Basic sandbox proof
+- `xcrun simctl keychain booted add-root-cert <root-ca.pem>` installs a temporary **root CA in the booted iOS Simulator only**, not on a real iPad or Mac-wide system root store. Third-party verified usage guide: https://mikolajwilczek.dev/blog/add-root-cert-ios-simulator/ (2026-07-06).
+- Zoom Meeting SDK iOS actual meeting join/callback remains the SDK runtime source of truth: https://developers.zoom.us/docs/meeting-sdk/ios/start-join-mtg-webinar/join-meeting/
+- This localhost TLS pilot must not be exposed publicly or reused to claim safe production deployment.
