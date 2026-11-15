@@ -102,8 +102,9 @@ def create_ipad_join_app(
 
         # Client can request a join for an internal session ID only.
         # Reject any supplied identity/Zoom metadata, including JSON bodies.
-        if await request.body():
-            raise HTTPException(status_code=400, detail="Request body is not permitted.")
+        async for chunk in request.stream():
+            if chunk:
+                raise HTTPException(status_code=400, detail="Request body is not permitted.")
 
         authorization = request.headers.get("authorization", "")
         match = _BEARER.fullmatch(authorization)
@@ -120,7 +121,11 @@ def create_ipad_join_app(
             faculty = verify_faculty_token(match.group(1))
         except Exception:
             # Avoid disclosing or logging user or token details.
-            raise HTTPException(status_code=401, detail="Authentication required.") from None
+            raise HTTPException(
+                status_code=401,
+                detail="Authentication required.",
+                headers={"WWW-Authenticate": "Bearer"},
+            ) from None
         if not isinstance(faculty, AuthenticatedFaculty):
             raise HTTPException(
                 status_code=401,
