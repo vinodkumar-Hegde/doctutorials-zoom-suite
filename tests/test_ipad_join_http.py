@@ -82,6 +82,31 @@ class IPadJoinHTTPTests(unittest.TestCase):
         self.assertNotIn(_TEST_SECRET, response.text)
         self.assertNotIn("hostPassword", response.text)
 
+    def test_join_hook_only_runs_after_authenticated_authorized_ticket(self):
+        observed = []
+        app = create_ipad_join_app(self.service, self.verifier,
+            enable_ipad_join_api=True, allowed_hosts=("testserver",),
+            on_join_ticket_issued=lambda faculty, session_id: observed.append((faculty.faculty_id, session_id)))
+        client = TestClient(app, base_url="https://testserver")
+        denied = client.post("/api/sessions/test-session/join/ipad")
+        self.assertEqual(denied.status_code, 401)
+        self.assertEqual(observed, [])
+        allowed = client.post("/api/sessions/test-session/join/ipad", headers=self.auth)
+        self.assertEqual(allowed.status_code, 200)
+        self.assertEqual(observed, [("faculty-001", "test-session")])
+
+    def test_join_hook_failure_does_not_issue_unrecorded_join(self):
+        def failed(_, __):
+            raise OSError("Sensitive local DB error")
+        app = create_ipad_join_app(self.service, self.verifier,
+            enable_ipad_join_api=True, allowed_hosts=("testserver",),
+            on_join_ticket_issued=failed)
+        client = TestClient(app, base_url="https://testserver")
+        response = client.post("/api/sessions/test-session/join/ipad", headers=self.auth)
+        self.assertEqual(response.status_code, 503)
+        self.assertNotIn("Sensitive", response.text)
+        self.assertNotIn("meetingSDKJWT", response.text)
+
     def test_sensitive_ticket_is_not_cacheable(self):
         response = self.post(headers=self.auth)
         self.assertEqual(response.headers["cache-control"], "no-store, private")

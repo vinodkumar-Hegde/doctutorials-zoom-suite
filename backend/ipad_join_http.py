@@ -42,6 +42,7 @@ def create_ipad_join_app(
     *,
     enable_ipad_join_api: bool = False,
     allowed_hosts: tuple[str, ...] = (),
+    on_join_ticket_issued: Callable[[AuthenticatedFaculty, str], None] | None = None,
 ) -> FastAPI:
     """Construct a narrowly scoped HTTPS-only route, OFF by default.
 
@@ -55,6 +56,8 @@ def create_ipad_join_app(
         raise TypeError("A trusted sandbox assignment service is required.")
     if not callable(verify_faculty_token):
         raise TypeError("A real faculty-token verifier must be supplied.")
+    if on_join_ticket_issued is not None and not callable(on_join_ticket_issued):
+        raise TypeError("Faculty join event callback must be callable.")
     if type(enable_ipad_join_api) is not bool:
         raise TypeError("Enablement must be an explicit boolean.")
     if (
@@ -138,6 +141,16 @@ def create_ipad_join_app(
         except JoinDenied:
             # Same generic error for unknown meetings and unauthorized faculty.
             raise HTTPException(status_code=403, detail="Meeting access denied.") from None
+
+        # Optional trusted same-host Windows event enqueue. Only called AFTER
+        # faculty bearer authentication AND a successful authorized join ticket.
+        # Never copy meeting numbers/passcodes, JWTs, or OAuth secrets into
+        # this durable event stream. Fail closed if the recorder queue is down.
+        if on_join_ticket_issued is not None:
+            try:
+                on_join_ticket_issued(faculty, session_id)
+            except Exception:
+                raise HTTPException(status_code=503, detail="Faculty recorder handoff is temporarily unavailable.") from None
 
         # Do not return SDK Client Secret, Zoom host credentials, join URLs,
         # user records, assignment state, or server configuration.

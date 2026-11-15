@@ -11,7 +11,7 @@ Do not turn it on publicly before the documented HTTPS and ingress gates.
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, Callable
 
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse, Response
@@ -49,6 +49,7 @@ def create_first_party_faculty_app(
     enable_password_login_api: bool = False,
     enable_ipad_join_api: bool = False,
     allowed_hosts: tuple[str, ...] = (),
+    on_join_ticket_issued: Callable | None = None,
 ):
     """Create explicit opt-in HTTPS faculty login and join endpoints.
 
@@ -66,6 +67,7 @@ def create_first_party_faculty_app(
         authenticator.verify_faculty_token,
         enable_ipad_join_api=enable_ipad_join_api,
         allowed_hosts=allowed_hosts,
+        on_join_ticket_issued=on_join_ticket_issued,
     )
 
     @app.post("/api/faculty/login")
