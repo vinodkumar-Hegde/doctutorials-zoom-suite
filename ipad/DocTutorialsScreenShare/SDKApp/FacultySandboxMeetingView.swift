@@ -9,12 +9,14 @@ import SwiftUI
 struct FacultySandboxMeetingView: View {
     @StateObject private var meeting = ZoomMeetingJoinAdapter()
 
-    // Mac loopback address for the one-device Basic sandbox Simulator pilot.
-    @State private var httpsOrigin = "https://127.0.0.1:8443"
+    // The authoritative backend is Windows-hosted. Never default to Mac localhost;
+    // the trusted HTTPS origin can be supplied by the deployment configuration.
+    @State private var httpsOrigin = Bundle.main.object(forInfoDictionaryKey: "DocTutorialsBackendURL") as? String ?? ""
     @State private var facultyID = "sandbox-faculty"
     @State private var password = ""
-    // One assigned internal session in this Basic sandbox pilot. This is NOT the Zoom Meeting number.
-    @State private var assignedSessionID = "ipad-sandbox-class"
+    // No fabricated internal session. The backend returns actual Admin assignments.
+    @State private var assignedSessionID = ""
+    @State private var assignedSessions: [AssignedFacultySession] = []
     @State private var accessSession: FacultyAccessSession?
 
     @State private var loggingIn = false
@@ -144,14 +146,25 @@ struct FacultySandboxMeetingView: View {
                 Label(meeting.statusMessage, systemImage: "circle.dashed")
                     .foregroundStyle(.secondary)
 
-                TextField("Assigned class ID — not Zoom Meeting ID", text: $assignedSessionID)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .textFieldStyle(.roundedBorder)
-                    .disabled(!isAuthenticated || meeting.connection == .inMeeting)
+                if assignedSessions.isEmpty {
+                    Text("No assigned class loaded from the Windows Admin backend.")
+                        .foregroundStyle(.secondary)
+                } else {
+                    Picker("Assigned class", selection: $assignedSessionID) {
+                        ForEach(assignedSessions) { item in
+                            Text("\(item.course) · \(item.subject) · \(item.topic)")
+                                .tag(item.sessionId)
+                        }
+                    }
                     .accessibilityIdentifier("assignedSessionID")
-
-                Text("A session ID is not a Zoom Meeting ID. The backend verifies that this faculty member owns the assigned sandbox class before issuing any join ticket.")
+                }
+                Button("Refresh assigned classes") {
+                    if let accessSession {
+                        Task { await refreshAssignedSessions(accessSession: accessSession) }
+                    }
+                }
+                .disabled(!isAuthenticated)
+                Text("The class list is provided by DocTutorials Admin. No meeting number or manual session ID entry is required.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
@@ -219,7 +232,10 @@ struct FacultySandboxMeetingView: View {
                 password: enteredPassword
             )
             accessSession = granted
-            notice = "Signed in. Enter your assigned DocTutorials session ID to request Zoom access."
+            await refreshAssignedSessions(accessSession: granted)
+            notice = assignedSessions.isEmpty
+                ? "Signed in, but no assigned class is available in the Windows backend."
+                : "Signed in. Select your assigned class and join."
         } catch FacultyPasswordLoginError.rejectedCredentials {
             accessSession = nil
             notice = "Faculty ID or password was rejected."
@@ -257,6 +273,7 @@ struct FacultySandboxMeetingView: View {
         let existing = accessSession
         accessSession = nil
         assignedSessionID = ""
+        assignedSessions = []
         password = ""
         privacyAcknowledged = false
         notice = "Signed out locally. A connected Zoom meeting must be left separately."
@@ -266,6 +283,49 @@ struct FacultySandboxMeetingView: View {
                     try? await client.logout(accessToken: existing.accessToken)
                 }
             }
+        }
+    }
+
+
+    @MainActor
+    private func refreshAssignedSessions(accessSession: FacultyAccessSession) async {
+        guard let base = URL(string: httpsOrigin),
+              let parts = URLComponents(url: base, resolvingAgainstBaseURL: false),
+              parts.scheme == "https", parts.host != nil,
+              parts.user == nil, parts.password == nil,
+              parts.query == nil, parts.fragment == nil,
+              parts.path == "" || parts.path == "/" else {
+            notice = "Enter the trusted Windows DocTutorials HTTPS backend URL."
+            return
+        }
+        let url = base.appendingPathComponent("api").appendingPathComponent("me").appendingPathComponent("sessions")
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.timeoutInterval = 15
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.setValue("Bearer \(accessSession.accessToken)", forHTTPHeaderField: "Authorization")
+        let session = URLSession(configuration: .ephemeral, delegate: RejectAssignmentRedirects(), delegateQueue: nil)
+        do {
+            let (data, response) = try await session.data(for: request)
+            guard let http = response as? HTTPURLResponse,
+                  http.statusCode == 200, data.count <= 65536,
+                  let decoded = try? JSONDecoder().decode(AssignedFacultySessionsResponse.self, from: data),
+                  self.accessSession?.accessToken == accessSession.accessToken else {
+                notice = "The Windows Admin assignment list is unavailable."
+                return
+            }
+            let owned = decoded.sessions.filter { $0.facultyId == facultyID }
+            assignedSessions = owned
+            let now = Int(Date().timeIntervalSince1970)
+            if let current = owned.first(where: { $0.startsAt - 900 <= now && now < $0.endsAt + 900 }) {
+                assignedSessionID = current.sessionId
+            } else {
+                assignedSessionID = owned.first?.sessionId ?? ""
+            }
+        } catch {
+            assignedSessions = []
+            assignedSessionID = ""
+            notice = "Could not load assignments from the Windows DocTutorials backend."
         }
     }
 
@@ -300,9 +360,33 @@ struct FacultySandboxMeetingView: View {
             self.accessSession = nil
             notice = "Your login expired. Please sign in again."
         } catch FacultyJoinTicketError.meetingAccessDenied {
-            notice = "The server denied this class. Use ipad-sandbox-class (not the Zoom Meeting number), then check assignment time."
+            notice = "The Windows Admin backend denied this assigned class. Refresh the assigned class list."
         } catch {
             notice = "The join ticket could not be issued. Verify the backend and assignment."
         }
+    }
+}
+
+private struct AssignedFacultySessionsResponse: Decodable {
+    let sessions: [AssignedFacultySession]
+}
+
+private struct AssignedFacultySession: Decodable, Identifiable {
+    let sessionId: String
+    let facultyId: String
+    let course: String
+    let subject: String
+    let topic: String
+    let startsAt: Int
+    let endsAt: Int
+    var id: String { sessionId }
+}
+
+private final class RejectAssignmentRedirects: NSObject, URLSessionTaskDelegate {
+    func urlSession(_ session: URLSession, task: URLSessionTask,
+                    willPerformHTTPRedirection response: HTTPURLResponse,
+                    newRequest request: URLRequest,
+                    completionHandler: @escaping (URLRequest?) -> Void) {
+        completionHandler(nil)
     }
 }
