@@ -240,3 +240,8 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **2026-11-15 11:14: iOS 26.5 Simulator Safari successfully reaches local HTTPS FastAPI**; `https://localhost:8443/docs` shows expected `{"detail":"Not Found"}` with no TLS warning. Simulator certificate trust/reachability PASSED.
 - [ ] **Native password login still reports generic unavailable; root cause unknown**. Swift diagnostics improved to expose only safe HTTP status or URLSession error category/code, plus sandbox URL default. Pull/rebuild iPad SDK app and retry login once; new code not yet operator compiled or tested. No password reset.
+
+
+- [x] **2026-11-15 11:15: exact iOS 26.5 login failure identified in native Xcode log:** `NSURLErrorDomain -1202` / TLS chain `-9807` for localhost cert; separate IPv6 `::1:8443` connection refused while backend serves IPv4. Faculty password is not the issue.
+- [ ] **Simulator HTTPS native trust fix/runtime proof:** explicitly re-add CA for booted 26.5 iPad, switch app backend origin to IPv4 `https://127.0.0.1:8443`, retry login. Code additionally staged IPv4 default and fullchain serving for next backend restart; operator confirmation pending. Never bypass server trust.
+- [ ] Zoom Meeting SDK init/join callback on iOS 26.5, then physical iPad ReplayKit remain outstanding.
