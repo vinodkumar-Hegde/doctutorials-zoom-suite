@@ -370,3 +370,11 @@ open DocTutorialsScreenShare.xcodeproj
 ```
 
 Choose **DocTutorialsScreenShare** and **iPad (A16) Simulator**; press **Cmd+B**, then **Cmd+U**. The Swift client is still unconnected to Join; a compilation pass does not imply any actual Zoom SDK authorization/join. If compilation fails, capture first red Xcode error. The HTTP tests use fake faculty verification and sandbox meeting records; production security controls and backend HTTPS deployment remain pending.
+
+
+## 2026-11-15 09:54 — Latest iPad Simulator XCTest regression PASS after HTTPS ticket client integration into build
+- Xcode screenshot-free console text from operator confirms `Test Suite 'All tests' passed`, **`Executed 5 tests, with 0 failures (0 unexpected) in 0.006 (0.011) seconds`**.
+- All five `ScreenSharePolicyTests` passed in new SDK-enabled Xcode test run, after prior addition of `SDKApp/HTTPSFacultyJoinTicketClient.swift`; project-specific SDKApp sources are compiled by `project-sdk.yml`. **Latest client code build compatibility + policy regression pass**. The newly added HTTPS client itself has no direct network tests and is not wired to SwiftUI login/Join.
+- Other current operator-confirmed proof: JWT signer **8/8**, faculty Basic sandbox policy **12/12**, FastAPI authenticated HTTPS ticket API contract **19/19**, iPad SDK frameworks and ARM64 simulator launch PASS.
+- Nonfatal simulator/network/keyboard/PointerUI and iPad full-orientation warning remain; release Info.plist fix tracked separately.
+- **Next implementation gate remains real verified DocTutorials faculty identity and server-owned assignment storage; API factory is OFF by default.** Then configure trusted HTTPS and backend SDK credentials, integrate SwiftUI token retrieval, observe a real Zoom Basic sandbox `.inMeeting` callback. A passing XCTest is NOT a live Meeting join.
