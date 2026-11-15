@@ -32,6 +32,7 @@ targets:
         # Generic simulator builds must not request an unsupported x86_64 link.
         # Restrict only the Simulator SDK; physical iPad (arm64) remains supported.
         "EXCLUDED_ARCHS[sdk=iphonesimulator*]": x86_64
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) ZOOM_MEETING_SDK_ENABLED"
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
         OTHER_LDFLAGS: "$(inherited) -ObjC"
         INFOPLIST_KEY_NSCameraUsageDescription: "Zoom Meetings may request the camera when authorized by the faculty member."
