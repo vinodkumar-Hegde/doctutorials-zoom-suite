@@ -316,3 +316,24 @@ Operator Mac Terminal verifies:
 - Existing nonfatal `Info.plist` interface orientation warning should be resolved before release. Do not confuse it with a test or SDK failure.
 
 **Next active milestone:** real, security-gated Meetings-only sandbox participant join. Implement a proper HTTPS DocTutorials faculty authentication + assignment authorization endpoint `POST /api/sessions/{id}/join/ipad`. Reuse backend-only Meeting SDK JWT signer and strictly scoped participant ticket; **never embed Zoom SDK Client Secret or production host credentials** in Swift code, logs or Git. The local Basic sandbox read-only FastAPI operator API is loopback-only and is NOT the faculty HTTPS join backend. Then wire SwiftUI Join button only after an actual faculty session and assigned meeting ticket, and drive UI meeting status from real `MobileRTCMeetingServiceDelegate` callbacks; keep broadcast gate disabled until share permission and ReplayKit implementation are proven on a real iPad. Backend JWT offline tests: `python3 -m unittest discover -s tests -p 'test_ipad_sdk_jwt.py' -v` (assistant previously reported 8/8 PASS locally; operator Mac run still not reported).
+
+
+## 2026-11-15 — JWT signer Mac 8/8 PASS; next server-side faculty authorization scaffold staged
+The operator's Mac Terminal explicitly reports **`Ran 8 tests in 0.000s / OK`** for `tests/test_ipad_sdk_jwt.py`. This passes the **backend HS256 Meeting SDK participant JWT signer unit tests**, not real credential authorization or a Zoom meeting connection.
+
+**New Stage 4B authorization code committed**:
+- `backend/ipad_join_authorization.py`: domain-only `SandboxIPadJoinService`, `AuthenticatedFaculty`, `AssignedSandboxMeeting`, `AuthorizedIPadJoinTicket`. It requires an authenticated faculty principal from *trusted server auth*, checks faculty-to-session assignment, Basic sandbox-only environment, session eligibility, numeric Zoom Meeting ID and join window (15 min before until 15 min after scheduled end), and issues a 30-minute JWT **as participant role=0** via backend-only secret. Ticket contains `meetingNumber`, `meetingPasscode`, `displayName`, `meetingSDKJWT`, `expiresAtEpoch`; it must only be sent over authenticated HTTPS and never logged.
+- `tests/test_ipad_join_authorization.py`: 12 offline authorization and invalid-input tests, **operator execution PENDING**. No real Zoom IDs or credentials in tests.
+- This is intentionally **NOT a public FastAPI route**, not a faculty login system, not a meeting assignment database and not wired to the SwiftUI app. In particular, **never expose `backend/meetings_api.py` localhost operator service publicly**, and never accept faculty identity or assigned meeting metadata directly from app JSON. Do not turn on the Join button until authenticated HTTPS endpoint and signed join ticket are integrated and runtime verified.
+
+**Mac test command:**
+
+```bash
+cd ~/doctutorials-zoom-suite
+git pull
+python3 -m unittest discover -s tests -p 'test_ipad_join_authorization.py' -v
+```
+
+Expected after testing: `Ran 12 tests` and `OK`. This number is **not yet confirmed**. Next milestone after proof is connecting genuine DocTutorials faculty authentication / server-owned sandbox assignment persistence to the endpoint, then requesting join ticket from the SwiftUI app and invoking the compiled Zoom SDK adapter only when authorized. Actual Zoom connection, share permission and ReplayKit broadcast still remain unverified.
+
+Official source: https://developers.zoom.us/docs/meeting-sdk/auth/
