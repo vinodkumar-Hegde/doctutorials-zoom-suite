@@ -403,3 +403,11 @@ Operator attempted private `python3 -m backend.faculty_password_auth setup --fac
 Operator terminal confirms `Created PRIVATE salted-password-hash config at: /Users/vinod/.config/doctutorials/faculty-basic-sandbox.json` after entering a valid hidden password twice. The static password hash is stored outside the repository; **no plaintext credential or hash was shared in chat**, and **no Zoom/public server started**. Previous failed password length attempts are superseded by this successful provisioning. First-party password security 28/28 offline tests already passed on operator Mac.
 
 **Next acceptance check:** Pull latest repo; regenerate SDK-linked Xcode project; compile `SDKApp/HTTPSFacultyPasswordLoginClient.swift` with **Cmd+B** and rerun **Cmd+U** on iPad (A16). Record 5/5 result or first compilation failure. This remains a one-user Zoom Basic sandbox identity bootstrap, not live faculty HTTPS API or observed Zoom join.
+
+
+## 2026-11-15 10:26 — SDK-enabled iPad tests PASS with new first-party password login client
+Operator Xcode test result: `All tests` PASSED at **10:26:33**, `Executed 5 tests, with 0 failures`. All five existing screen-share policy test methods passed after the new `SDKApp/HTTPSFacultyPasswordLoginClient.swift` source was added. Thus the staged first-party login transport is **build-compatible in the SDK-enabled test project**. This is NOT evidence that any real login API call was sent, Zoom authenticated or any meeting was joined.
+
+Backend Mac accepted: **28/28 first-party password unit/HTTP tests PASS**, **19/19 join HTTP tests PASS**, **12/12 faculty assignment tests PASS**, **8/8 Meeting SDK JWT signer tests PASS**. Fixed sandbox faculty password hash was successfully saved privately outside GitHub. Xcode simulator warnings regarding PointerUI/input and `Info.plist` orientations remain non-blocking; track orientation for release.
+
+**Next:** design/wire a password entry + faculty session UI that obtains an ephemeral backend token from `HTTPSFacultyPasswordLoginClient`. Keep disabled/no false 'connected' claims until actual first-party HTTPS backend is deployed with verified TLS, private server-owned session assignment, basic-sandbox Zoom SDK signing credentials and secure request controls. Then independently verify SDK callback before any ReplayKit broadcast. Webinar and Windows phases deferred.
