@@ -304,3 +304,15 @@ Operator screenshot at **09:19 AM, 15 Nov 2026** displays DocTutorials faculty i
 The app still clearly states **Development preview — no meeting is joined or broadcast** and the Zoom Meeting participant Join button is disabled. **This is a startup + UI pass only**, not an SDK authorization or Zoom meeting join success; the SDK adapter code remains unconnected to faculty assignment/login. ReplayKit extension not yet built.
 
 **Next check:** run Cmd+U from Xcode with iPad (A16) Simulator selected; report green 5/5 `ScreenSharePolicyTests`. If tests pass, proceed to HTTPS faculty authentication/assignment and backend-issued Meeting SDK JWT join ticket in the separate Basic sandbox, not production.
+
+
+## 2026-11-15 — Stage 4B Xcode SDK-enabled five policy tests: PASS
+Operator Mac Terminal verifies:
+- **`Test exit status: 0`**
+- **`Executed 5 tests, with 0 failures (0 unexpected)`**
+- **`** TEST SUCCEEDED **`**
+- Xcode test destination: `platform=iOS Simulator,name=iPad (A16),OS=27.2`. This is a **new successful test run with SDK-linked project**, distinct from earlier five UI-only shell policy tests.
+- Previous clean isolated ARM64 build / both required runtime frameworks / visually confirmed simulator launch already passed.
+- Existing nonfatal `Info.plist` interface orientation warning should be resolved before release. Do not confuse it with a test or SDK failure.
+
+**Next active milestone:** real, security-gated Meetings-only sandbox participant join. Implement a proper HTTPS DocTutorials faculty authentication + assignment authorization endpoint `POST /api/sessions/{id}/join/ipad`. Reuse backend-only Meeting SDK JWT signer and strictly scoped participant ticket; **never embed Zoom SDK Client Secret or production host credentials** in Swift code, logs or Git. The local Basic sandbox read-only FastAPI operator API is loopback-only and is NOT the faculty HTTPS join backend. Then wire SwiftUI Join button only after an actual faculty session and assigned meeting ticket, and drive UI meeting status from real `MobileRTCMeetingServiceDelegate` callbacks; keep broadcast gate disabled until share permission and ReplayKit implementation are proven on a real iPad. Backend JWT offline tests: `python3 -m unittest discover -s tests -p 'test_ipad_sdk_jwt.py' -v` (assistant previously reported 8/8 PASS locally; operator Mac run still not reported).
