@@ -61,6 +61,7 @@ class ControlState:
                         c['sourceMode']='ZOOM RTMS — actual media packets observed'
                         c['state']='recording'
                 result['mediaState']='rtms_media_observed' if observed else 'rtms_waiting_for_real_media'
+                result['rtmsHealth']={k:v for k,v in self.rtms.state().items() if k in ('enabled','phase','problem','streamRequests')}
             return result
         return {**snap, 'channels': self.engine.status()}
     def login(self,password):

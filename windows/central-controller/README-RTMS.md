@@ -39,3 +39,32 @@ The standard `start-demo-windows.bat` intentionally **does not** activate Zoom R
 - Native RTMS WebSocket protocol samples: https://github.com/zoom/rtms-samples
 - Zoom RTMS media codecs/timestamps: https://developers.zoom.us/docs/rtms/meetings/media/
 - Zoom Meeting SDK usage policy: https://developers.zoom.us/docs/meeting-sdk/windows/get-started/download/
+
+## Protocol corrections and first Windows readiness check (v7)
+
+The transport now accepts both published flat and nested RTMS event payloads,
+selects only allowed Zoom `wss://` URLs from alternate endpoint lists, and
+uses the required initial signaling `sequence=1`. `CLIENT_READY_ACK` is sent
+once only after the three requested media handshakes succeed. Missing Zoom
+media permissions and handshake failures are shown as sanitized RTMS health
+states in the authenticated Admin dashboard, without token/meeting-ID logging.
+
+Run this read-only command on the Windows recording PC; it does **not** start a
+Zoom meeting, record anything, or change the app configuration:
+
+```powershell
+cd "$HOME\doctutorials-zoom-suite\windows\central-controller"
+.\check-zoom-rtms-windows.bat
+```
+
+It reports local FFmpeg/FFprobe, imported Admin schedule, local storage config,
+Python WebSocket dependency, and whether RTMS-only environment variables exist.
+If an approved paid RTMS app is available, `--check-auth` additionally tests
+OAuth token issuance without disclosing the token. It cannot verify account
+credits or stream permissions. **A Free/Basic Zoom account cannot authorize
+RTMS**, per current Zoom troubleshooting documentation.
+
+**Still outstanding:** production entitlement, one real authorized Zoom RTMS
+meeting, faculty-locked picture-in-picture video, jitter-aware A/V timing,
+four-meeting identity routing and concurrent stream acceptance. The app still
+rejects ambiguous classes and never reports synthetic media as Zoom recording.

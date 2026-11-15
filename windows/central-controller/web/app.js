@@ -54,7 +54,7 @@ async function startAssigned(sessionId){
 
 function renderSessions(result){
   el('feedstate').textContent=result.state==='existing_admin'?'Original Admin database':'Admin data not connected';
-  el('feedmessage').textContent=result.message||'';
+  el('feedmessage').textContent=(result.message||'')+(result.rtmsHealth?' | RTMS: '+result.rtmsHealth.phase+(result.rtmsHealth.problem?' — '+result.rtmsHealth.problem:''):'');
   const root=el('sessions');root.replaceChildren();
   if(!result.sessions.length){root.append(node('div',result.state==='existing_admin'?'No sessions in the imported Admin database.':'No imported assignments. Do not create duplicate classes here.','empty'));return}
   result.sessions.forEach(item=>{

@@ -57,3 +57,16 @@ Existing Admin session metadata now appears **on its automatically reserved reco
 ## Native outbound Zoom RTMS media spike — NOT live Zoom verified
 
 The new optional `--rtms` mode has a first-pass direct Zoom Event WebSocket/RTMS media transport and track-to-branded-MP4 compositor. It does not use Mac, OBS, Zoom Cloud Recording, or Zoom Workplace local recording. **It has only been tested with offline generated packet fixtures, not with an authorized Zoom RTMS meeting.** It is not enabled by `start-demo-windows.bat`. See [README-RTMS.md](README-RTMS.md) before any account changes. It requires a separate enabled RTMS app, credits, scopes, participant notice, and an outbound Event WebSocket subscription. With the exported schedule alone, it can safely match **one** active class; multiple active meetings are blocked until the Admin backend stores a secure Zoom meeting identity mapping.
+
+## Zoom RTMS connection preflight — v7
+
+Updated transport now handles published event envelope variants, validates Zoom WebSocket endpoints, uses the mandatory handshake sequence=1, and reports sanitized RTMS handshake status. These are offline-tested fixes, **not a live Zoom recording acceptance**.
+
+Run on the Windows PC, after `git pull --ff-only`:
+
+```powershell
+cd "$HOME\doctutorials-zoom-suite\windows\central-controller"
+.\check-zoom-rtms-windows.bat
+```
+
+This check is read-only. A `NOT READY` RTMS credential means a separate RTMS-enabled General app/Developer Pack is missing, not that FFmpeg, Visual Studio or Python must be reinstalled. The normal `start-demo-windows.bat` remains test media. See `README-RTMS.md`.

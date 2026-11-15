@@ -16,7 +16,6 @@ import hmac
 import json
 import os
 from pathlib import Path
-import random
 import re
 import shutil
 import subprocess
@@ -24,7 +23,7 @@ import threading
 import time
 from urllib.parse import urlsplit, parse_qsl, urlencode, urlunsplit
 from urllib.request import Request, urlopen
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from engine import RecorderError, make_overlay
 
@@ -52,6 +51,37 @@ def trusted_wss(value: str) -> str:
     return value
 
 
+def select_zoom_wss(value: str) -> str:
+    """Zoom may offer comma-separated alternate signaling/media endpoints.
+
+    Only a verified Zoom wss URL may be selected; never connect to another host.
+    """
+    if not isinstance(value, str) or len(value) > 8192:
+        raise RtmsUnavailable('Invalid RTMS endpoint list.')
+    for candidate in value.split(','):
+        try:
+            return trusted_wss(candidate.strip())
+        except RtmsUnavailable:
+            continue
+    raise RtmsUnavailable('No trusted Zoom WebSocket endpoint is available.')
+
+
+def event_fields(payload: dict) -> dict:
+    """Accept flat and nested event payloads without echoing Zoom IDs to the UI."""
+    if not isinstance(payload, dict):
+        return {}
+    child=payload.get('object')
+    data=child if isinstance(child, dict) else payload
+    result={}
+    for key in ('meeting_uuid','meeting_id','rtms_stream_id','server_urls'):
+        val=data.get(key)
+        if val is None and isinstance(child, dict):
+            val=payload.get(key)
+        if isinstance(val, (str,int)) and not isinstance(val,bool):
+            result[key]=str(val)
+    return result
+
+
 def rtms_signature(client_id: str, secret: str, meeting_uuid: str, stream_id: str) -> str:
     if not all(isinstance(v,str) and v for v in (client_id,secret,meeting_uuid,stream_id)):
         raise RtmsUnavailable('RTMS app credentials or stream identity missing.')
@@ -68,6 +98,14 @@ def unique_active_assignment(snapshot: dict, *, now: int | None = None):
     if len(items) != 1:
         raise RtmsUnavailable('Cannot uniquely match RTMS stream to an assigned class; Zoom-to-class identity mapping required.')
     return dict(items[0])
+
+
+def signaling_handshake(meeting_uuid: str, stream_id: str, client_id: str, secret: str) -> dict:
+    """Zoom RTMS handshake sequence MUST start at 1 (official event spec)."""
+    return {'msg_type':1, 'protocol_version':1, 'sequence':1,
+            'meeting_uuid':meeting_uuid, 'rtms_stream_id':stream_id,
+            'signature':rtms_signature(client_id,secret,meeting_uuid,stream_id),
+            'buffer_data':False}
 
 
 def media_handshake(media_kind: str, meeting_uuid: str, stream_id: str, client_id: str, secret: str):
@@ -205,6 +243,8 @@ class LiveStream:
     capture:RtmsTrackRecorder
     signaling:object|None=None
     media:dict|None=None
+    handshakes:set=field(default_factory=set)
+    ready_sent:bool=False
 
 
 class ZoomRtmsReceiver:
@@ -224,13 +264,22 @@ class ZoomRtmsReceiver:
         self.lock=threading.RLock()
         self.live={}
         self.errors=[]
+        self.phase='initializing'
+        self.problem=''
         self._event_socket=None
         self._thread=None
         self._closing=False
 
+    def status(self, phase: str, problem: str = ''):
+        # Never store OAuth tokens, Zoom IDs, endpoints or exception bodies here.
+        with self.lock:
+            self.phase=phase
+            self.problem=problem
+
     def state(self):
         with self.lock:
-            return {'enabled':True,'streamRequests':len(self.live),
+            return {'enabled':True,'phase':self.phase,'problem':self.problem,
+                    'streamRequests':len(self.live),
                     'observedMediaChannels':[s.capture.channel for s in self.live.values()
                         if all(s.capture.sizes[k]>0 for k in ('screen','faculty','audio'))]}
 
@@ -248,6 +297,7 @@ class ZoomRtmsReceiver:
 
     def start(self):
         if self._thread:return
+        self.status('connecting')
         self._thread=threading.Thread(target=self._run_events,daemon=True,name='doctutorials-rtms-events')
         self._thread.start()
 
@@ -256,6 +306,7 @@ class ZoomRtmsReceiver:
         retries=0
         while not self._closing:
             try:
+                self.status('authenticating')
                 token=self.oauth_token()
                 base=urlsplit(self.event_base)
                 query=dict(parse_qsl(base.query,keep_blank_values=True))
@@ -264,6 +315,7 @@ class ZoomRtmsReceiver:
                 def opened(ws):
                     nonlocal retries
                     retries=0
+                    self.status('waiting_for_zoom_rtms_event')
                     ws.send(json.dumps({'module':'heartbeat'}))
                     def beat():
                         while not self._closing and ws.sock and ws.sock.connected:
@@ -275,24 +327,28 @@ class ZoomRtmsReceiver:
                     try:
                         data=json.loads(message)
                         if data.get('module')!='message':return
-                        body=json.loads(data.get('content','{}'))
-                        self.handle_event(body.get('event'),body.get('payload'))
+                        raw=data.get('content','{}')
+                        body=json.loads(raw) if isinstance(raw,str) else raw
+                        if isinstance(body,dict):self.handle_event(body.get('event'),body.get('payload'))
                     except (ValueError,TypeError,RtmsUnavailable):
                         pass # No raw Zoom event payloads in logs.
-                self._event_socket=websocket.WebSocketApp(url,on_open=opened,on_message=received)
+                self._event_socket=websocket.WebSocketApp(
+                    url,on_open=opened,on_message=received,
+                    on_error=lambda ws,err:self.status('event_socket_failed','Zoom Event WebSocket connection failed'),
+                    on_close=lambda ws,code,reason:self.status('event_socket_closed','Zoom Event WebSocket disconnected'))
                 self._event_socket.run_forever(ping_interval=25,ping_timeout=10)
             except (OSError,ValueError,KeyError,ImportError,RtmsUnavailable):
-                pass
+                self.status('auth_or_network_failed','RTMS authorization or network connection failed')
             if self._closing:break
             retries=min(retries+1,5)
             time.sleep(min(30,2**retries))
 
     def handle_event(self,event:str,payload:dict):
+        fields=event_fields(payload)
         if event=='meeting.rtms_started':
-            self._start_media(payload)
+            self._start_media(fields)
         elif event=='meeting.rtms_stopped':
-            uuid_value=payload.get('meeting_uuid') if isinstance(payload,dict) else None
-            if isinstance(uuid_value,str):self._stop_media(uuid_value)
+            self._stop_media(fields.get('meeting_uuid'),fields.get('rtms_stream_id'))
 
     def _start_media(self,payload):
         if not isinstance(payload,dict):return
@@ -300,9 +356,10 @@ class ZoomRtmsReceiver:
         if not isinstance(uuid_value,str) or not uuid_value or len(uuid_value)>256 or not isinstance(stream_id,str) or not _STREAM_ID.fullmatch(stream_id):
             return
         try:
-            trusted_wss(url)
+            url=select_zoom_wss(url)
             assignment=unique_active_assignment(self.plan())
         except RtmsUnavailable:
+            self.status('meeting_unmatched','No unambiguous active Admin class or trusted Zoom endpoint')
             return
         channel=assignment['plannedChannel']
         with self.lock:
@@ -313,32 +370,39 @@ class ZoomRtmsReceiver:
             capture=RtmsTrackRecorder(staging,assignment,channel)
             record=LiveStream(stream_id,uuid_value,assignment,capture,media={})
             self.live[stream_id]=record
+            self.phase='rtms_signaling'
+            self.problem=''
         try:
             self._connect_signal(record,url)
         except (ImportError,OSError,ValueError):
             capture.close()
             with self.lock:self.live.pop(stream_id,None)
+            self.status('rtms_signal_failed','RTMS signaling socket could not be opened')
 
     def _connect_signal(self,record,url):
         import websocket
         def on_open(ws):
-            ws.send(json.dumps({'msg_type':1,'protocol_version':1,
-                'meeting_uuid':record.meeting_uuid,'rtms_stream_id':record.stream_id,
-                'sequence':random.SystemRandom().randint(1,10**9),
-                'signature':rtms_signature(self.client_id,self.secret,record.meeting_uuid,record.stream_id),
-                'buffer_data':False}))
+            ws.send(json.dumps(signaling_handshake(record.meeting_uuid,record.stream_id,self.client_id,self.secret)))
         def on_msg(ws,message):
             try:
                 msg=json.loads(message)
                 if msg.get('msg_type')==2 and msg.get('status_code')==0:
                     urls=msg.get('media_server',{}).get('server_urls',{})
+                    if not isinstance(urls,dict) or any(not urls.get(k) for k in _MEDIA_KEYS.values()):
+                        self.status('rtms_missing_media_scopes',
+                            'Zoom did not offer all three required media types (audio, video, screen share)')
+                        return
                     for kind,key in _MEDIA_KEYS.items():
                         endpoint=urls.get(key)
-                        if endpoint:self._connect_media(record,kind,trusted_wss(endpoint))
+                        if endpoint:self._connect_media(record,kind,select_zoom_wss(endpoint))
+                elif msg.get('msg_type')==2:
+                    self.status('rtms_signal_rejected','Zoom rejected the RTMS signaling handshake')
                 elif msg.get('msg_type')==12:
                     ws.send(json.dumps({'msg_type':13,'timestamp':msg['timestamp']}))
             except (ValueError,KeyError,TypeError,RtmsUnavailable):pass
-        sock=websocket.WebSocketApp(url,on_open=on_open,on_message=on_msg)
+        sock=websocket.WebSocketApp(
+            url,on_open=on_open,on_message=on_msg,
+            on_error=lambda ws,err:self.status('rtms_signal_failed','RTMS signaling connection failed'))
         record.signaling=sock
         threading.Thread(target=sock.run_forever,daemon=True).start()
 
@@ -351,22 +415,44 @@ class ZoomRtmsReceiver:
             try:
                 msg=json.loads(message)
                 if msg.get('msg_type')==4 and msg.get('status_code')==0:
-                    if record.signaling:
-                        record.signaling.send(json.dumps({'msg_type':7,'rtms_stream_id':record.stream_id}))
+                    self.media_ready(record,kind)
+                elif msg.get('msg_type')==4:
+                    self.status('rtms_media_rejected','Zoom rejected a media handshake')
                 elif msg.get('msg_type')==12:
                     ws.send(json.dumps({'msg_type':13,'timestamp':msg['timestamp']}))
                 elif msg.get('msg_type') in _PACKET_TYPES:
                     expected=_PACKET_TYPES[msg['msg_type']]
-                    if expected==kind:record.capture.ingest(msg)
+                    if expected==kind:
+                        if record.capture.ingest(msg):self.status('receiving_zoom_media')
             except (ValueError,TypeError,KeyError,OSError):pass
-        sock=websocket.WebSocketApp(url,on_open=on_open,on_message=on_msg)
+        sock=websocket.WebSocketApp(
+            url,on_open=on_open,on_message=on_msg,
+            on_error=lambda ws,err:self.status('rtms_media_failed','RTMS media socket disconnected'))
         record.media[kind]=sock
         threading.Thread(target=sock.run_forever,daemon=True).start()
 
-    def _stop_media(self,meeting_uuid):
+    def media_ready(self,record,kind):
+        # Send CLIENT_READY_ACK exactly once after *all* requested media sockets
+        # acknowledge their handshakes; one early ACK risks a partial recording.
         with self.lock:
-            matched=[(sid,rec) for sid,rec in self.live.items() if rec.meeting_uuid==meeting_uuid]
+            if record.stream_id not in self.live or record.ready_sent:return
+            record.handshakes.add(kind)
+            if record.handshakes != set(_MEDIA_KEYS):return
+            record.ready_sent=True
+            signaling=record.signaling
+        if signaling:
+            try:
+                signaling.send(json.dumps({'msg_type':7,'rtms_stream_id':record.stream_id}))
+                self.status('rtms_ready_waiting_for_media')
+            except (OSError,ValueError):
+                self.status('rtms_signal_failed','Client ready acknowledgement failed')
+
+    def _stop_media(self,meeting_uuid=None,stream_id=None):
+        with self.lock:
+            matched=[(sid,rec) for sid,rec in self.live.items()
+                if (stream_id and sid==stream_id) or (not stream_id and meeting_uuid and rec.meeting_uuid==meeting_uuid)]
             for sid,_ in matched:self.live.pop(sid,None)
+        if matched:self.status('rtms_finalizing')
         for _,record in matched:
             for sock in [record.signaling,*record.media.values()]:
                 if sock:
@@ -375,13 +461,17 @@ class ZoomRtmsReceiver:
             def finish(rec):
                 # Give in-flight media packet callbacks a short time to exit.
                 time.sleep(.3)
-                try:rec.capture.compose(self.engine)
+                try:
+                    rec.capture.compose(self.engine)
+                    self.status('rtms_recording_saved')
                 except (RecorderError,ValueError,OSError):
                     rec.capture.close() # staged media preserved for analysis/recovery
+                    self.status('rtms_incomplete','Real media tracks are incomplete; staged files retained')
             threading.Thread(target=finish,args=(record,),daemon=True).start()
 
     def close(self):
         self._closing=True
+        self.status('stopped')
         if self._event_socket:self._event_socket.close()
         with self.lock:
             active=list(self.live.values())
