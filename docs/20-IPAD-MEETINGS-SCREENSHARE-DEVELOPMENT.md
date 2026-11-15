@@ -286,3 +286,13 @@ ls -la "$HOME/Downloads/DocTutorialsIpadBuildCheck/Build/Products/Debug-iphonesi
 Expected fresh build architecture is `arm64` only. Expected embedded frameworks after link: `MobileRTC.framework` and `zoomcml.framework`. If exit status remains 65, collect `grep -n 'error:' ~/Downloads/DocTutorialsIpadBuildCheck.log | head -n 15` and the `xcodebuild` architecture lines. If build passes but `zoomcml.framework` is absent, investigate XcodeGen copy phase packaging separately; do not conflate issues or claim SDK runtime success.
 
 Sources: https://developers.zoom.us/docs/meeting-sdk/ios/get-started/ ; https://developer.apple.com/documentation/technotes/tn3117-resolving-build-errors-for-apple-silicon .
+
+
+## 2026-11-15 — SDK Stage 4B ARM64 Simulator build and embed verification PASS
+Operator isolated clean `xcodebuild` after XcodeGen ARM64-only Simulator fix now outputs **`BUILD SUCCEEDED`**. Fresh app bundle framework listing from 09:16 shows:
+- `MobileRTC.framework` present
+- `zoomcml.framework` present
+
+Therefore **fresh ARM64 Simulator compile and dynamic framework packaging have passed**; prior missing zoomcml from older products and unsupported x86_64 generic-link failures are resolved at the build/package stage. This is an **unsigned diagnostic build**, so real app launch/test remains independently unverified.
+
+**Next operator checkpoint:** Open `DocTutorialsScreenShare.xcodeproj`, select iPad (A16) Simulator, Product → Clean Build Folder (Shift+Cmd+K), Cmd+R to launch then Cmd+U to rerun five policy XCTest cases with SDK source linked. The Join button and screen sharing remain disabled; no real Meeting SDK authentication, Zoom participant join, faculty HTTPS assignment API or ReplayKit broadcast has been completed. Report any remaining loader errors from a fresh app run, without sharing Zoom credentials.
