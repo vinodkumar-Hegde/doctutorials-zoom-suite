@@ -1,0 +1,4 @@
+# Isolated development/test dependencies for the staged iPad join-ticket API.
+# Installation does not start a public API, alter Zoom, or load any credentials.
+-r requirements-local.txt
+httpx>=0.27,<1.0  # required by fastapi.testclient.TestClient in HTTP contract tests
