@@ -239,8 +239,9 @@ struct FacultySandboxMeetingView: View {
         notice = "Signed out locally. A connected Zoom meeting must be left separately."
         if let existing, let origin = URL(string: httpsOrigin) {
             Task {
-                try? await HTTPSFacultyPasswordLoginClient(apiOrigin: origin)
-                    .logout(accessToken: existing.accessToken)
+                if let client = try? HTTPSFacultyPasswordLoginClient(apiOrigin: origin) {
+                    try? await client.logout(accessToken: existing.accessToken)
+                }
             }
         }
     }
@@ -261,6 +262,12 @@ struct FacultySandboxMeetingView: View {
                 sessionID: assignedSessionID.trimmingCharacters(in: .whitespacesAndNewlines),
                 facultyAccessToken: accessSession.accessToken
             )
+            // Do not initiate an SDK join if faculty signed out or the
+            // in-memory login changed while the HTTPS request was in flight.
+            guard self.accessSession?.accessToken == accessSession.accessToken else {
+                notice = "Sign in again before joining a meeting."
+                return
+            }
             notice = "The backend authorized this session. Waiting for Zoom's meeting callback."
             meeting.joinAssignedMeeting(ticket)
         } catch FacultyJoinTicketError.authenticationRequired {
