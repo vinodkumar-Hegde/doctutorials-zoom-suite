@@ -296,3 +296,11 @@ Operator isolated clean `xcodebuild` after XcodeGen ARM64-only Simulator fix now
 Therefore **fresh ARM64 Simulator compile and dynamic framework packaging have passed**; prior missing zoomcml from older products and unsupported x86_64 generic-link failures are resolved at the build/package stage. This is an **unsigned diagnostic build**, so real app launch/test remains independently unverified.
 
 **Next operator checkpoint:** Open `DocTutorialsScreenShare.xcodeproj`, select iPad (A16) Simulator, Product → Clean Build Folder (Shift+Cmd+K), Cmd+R to launch then Cmd+U to rerun five policy XCTest cases with SDK source linked. The Join button and screen sharing remain disabled; no real Meeting SDK authentication, Zoom participant join, faculty HTTPS assignment API or ReplayKit broadcast has been completed. Report any remaining loader errors from a fresh app run, without sharing Zoom credentials.
+
+
+## 2026-11-15 — Zoom SDK-linked app visibly launches in Simulator: PASS
+Operator screenshot at **09:19 AM, 15 Nov 2026** displays DocTutorials faculty iPad SwiftUI app after the successful fresh ARM64 build including `MobileRTC.framework` and `zoomcml.framework`. UI is responsive enough to render full layout. The earlier missing `zoomcml` loader crash is no longer blocking this launch.
+
+The app still clearly states **Development preview — no meeting is joined or broadcast** and the Zoom Meeting participant Join button is disabled. **This is a startup + UI pass only**, not an SDK authorization or Zoom meeting join success; the SDK adapter code remains unconnected to faculty assignment/login. ReplayKit extension not yet built.
+
+**Next check:** run Cmd+U from Xcode with iPad (A16) Simulator selected; report green 5/5 `ScreenSharePolicyTests`. If tests pass, proceed to HTTPS faculty authentication/assignment and backend-issued Meeting SDK JWT join ticket in the separate Basic sandbox, not production.
