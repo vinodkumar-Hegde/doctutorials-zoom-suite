@@ -133,3 +133,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 
 - [ ] **Second SDK-enabled Simulator runtime attempt still FAILS** (`dyld @rpath/zoomcml.framework/zoomcml` absent). Confirm updated XcodeGen file was pulled/regenerated; verify `zoomcml` in generated `.pbxproj`, selected XCFramework slice, app target Embed Frameworks, and final `.app/Frameworks` before changing build configuration again. SDK runtime join and Stage 4B five-policy-test rerun remain blocked.
+
+
+- [x] Operator `.pbxproj` grep confirms `zoomcml.xcframework` appears in **Frameworks** and **Embed Frameworks** with `CodeSignOnCopy` (2026-11-15).
+- [ ] **Fresh clean simulator build/run and actual app bundle inspection** after zoomcml change (not yet reported); stage 4B zoomcml loader crash still open.
