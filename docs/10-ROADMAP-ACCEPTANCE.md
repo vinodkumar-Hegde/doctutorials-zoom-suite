@@ -163,3 +163,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] Committed **sandbox-only faculty-to-session join-ticket authorization domain logic** in `backend/ipad_join_authorization.py` with 12 offline tests, no real credentials, SDK binaries or production host access.
 - [ ] Operator Mac run **12/12 new authorization offline tests** (`tests/test_ipad_join_authorization.py`) — pending.
 - [ ] Implement and independently verify **real DocTutorials faculty authentication**, server-owned sandbox assignment storage, encrypted SDK secret management and authenticated HTTPS ticket endpoint, then iPad live request and Zoom Meeting SDK participant join. Code scaffold alone is NOT proof of any of these.
+
+
+- [x] **12/12 sandbox faculty assignment authorization tests PASS on operator Mac** (`Ran 12 tests in 0.001s`, `OK`, 2026-11-15). All tests offline; do not treat as live faculty authentication or Zoom Meeting join.
+- [ ] Secure authenticated HTTPS faculty session assignment + ticket endpoint, client hookup, and observed Basic sandbox participant join proof; next Stage 4B gate.
