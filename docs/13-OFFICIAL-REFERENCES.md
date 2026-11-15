@@ -96,3 +96,11 @@ The code for SDK init/participation and signer is STAGED. Documentation is not a
 - JWT from the Meeting SDK app is sufficient for **non-host attendee join within the owning developer Zoom account**, but not for other accounts; external meetings need Zoom review and applicable ZAK/OBF authorization. Generate SDK JWT on a trusted backend; native appKey / iat / exp / tokenExp required, mn / role=0 supported: https://developers.zoom.us/docs/meeting-sdk/auth/
 - iOS meeting join response is a request; authoritative joining status comes from MobileRTCMeetingServiceDelegate callbacks: https://developers.zoom.us/docs/meeting-sdk/ios/start-join-mtg-webinar/join-meeting/
 - The DocTutorials faculty session assignment, authentication and ephemeral ticket HTTP API are **our own application policies**, not offered by Zoom's SDK as a built-in faculty identity provider.
+
+
+## Stage 4B — HTTPS authenticated faculty iPad join-ticket boundary (consulted 2026-11-15)
+- Zoom Meeting SDK JWTs are server-signed using the separate Meeting SDK app Client ID and Client Secret. A **non-host participant in a meeting in the same developer Zoom account** can use the signed JWT; production external-account joins need separate Zoom review and applicable ZAK/OBF. Required native claims appKey/iat/exp/tokenExp and optional mn/role=0: https://developers.zoom.us/docs/meeting-sdk/auth/
+- FastAPI HTTPS deployment concerns: https://fastapi.tiangolo.com/deployment/https/
+- Starlette HTTPS/TrustedHost middleware: https://www.starlette.io/middleware/
+- Apple's network App Transport Security HTTPS policy: https://developer.apple.com/documentation/bundleresources/information-property-list/nsapptransportsecurity
+- No claim that library examples substitute for real DocTutorials faculty auth, deployment protections or live Zoom testing. The HTTPS join API scaffold is committed but OFF by default.
