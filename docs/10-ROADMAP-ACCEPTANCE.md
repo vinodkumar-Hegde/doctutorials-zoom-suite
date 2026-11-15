@@ -157,3 +157,9 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] **Stage 4B SDK-enabled iPad (A16) Simulator XCTest suite 5/5 PASS** with `Test exit status: 0`, `Executed 5 tests, with 0 failures`, and `TEST SUCCEEDED` (operator terminal output 2026-11-15), following actual Simulator launch and verified MobileRTC/zoomcml packaging.
 - [ ] Resolve iPad interface orientation build warning before distribution (not blocking current test pass).
 - [ ] Real faculty-authenticated HTTPS assignment, server-signed short-lived Meeting SDK JWT/participant ticket and SDK-connected Join button; no live Zoom meeting join yet.
+
+
+- [x] **Backend-only Meeting SDK signer 8/8 offline Python tests PASS on operator Mac** (`Ran 8 tests in 0.000s`, `OK`, 2026-11-15).
+- [x] Committed **sandbox-only faculty-to-session join-ticket authorization domain logic** in `backend/ipad_join_authorization.py` with 12 offline tests, no real credentials, SDK binaries or production host access.
+- [ ] Operator Mac run **12/12 new authorization offline tests** (`tests/test_ipad_join_authorization.py`) — pending.
+- [ ] Implement and independently verify **real DocTutorials faculty authentication**, server-owned sandbox assignment storage, encrypted SDK secret management and authenticated HTTPS ticket endpoint, then iPad live request and Zoom Meeting SDK participant join. Code scaffold alone is NOT proof of any of these.
