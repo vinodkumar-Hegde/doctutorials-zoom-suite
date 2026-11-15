@@ -90,3 +90,9 @@ The code for SDK init/participation and signer is STAGED. Documentation is not a
 - Zoom **Meeting SDK 6.7.5+ does not support x86 iOS Simulator**. The user's SDK 7.2.5.40220 has `ios-arm64-simulator` and `ios-arm64`, not `ios-x86_64-simulator`. Official: https://developers.zoom.us/docs/meeting-sdk/ios/get-started/
 - Apple architecture guidance: prefer default `ARCHS`, selectively use `EXCLUDED_ARCHS` on impacted targets for missing architectures, avoid global architecture hacks: https://developer.apple.com/documentation/technotes/tn3117-resolving-build-errors-for-apple-silicon
 - Stage 4B project SDK-only spec now excludes `x86_64` for Simulator; next operator isolated build is unverified. Do not confuse simulator architecture build failure with dynamic-loader missing `zoomcml`.
+
+
+## Stage 4B — Meetings-only authorization rules (rechecked 2026-11-15)
+- JWT from the Meeting SDK app is sufficient for **non-host attendee join within the owning developer Zoom account**, but not for other accounts; external meetings need Zoom review and applicable ZAK/OBF authorization. Generate SDK JWT on a trusted backend; native appKey / iat / exp / tokenExp required, mn / role=0 supported: https://developers.zoom.us/docs/meeting-sdk/auth/
+- iOS meeting join response is a request; authoritative joining status comes from MobileRTCMeetingServiceDelegate callbacks: https://developers.zoom.us/docs/meeting-sdk/ios/start-join-mtg-webinar/join-meeting/
+- The DocTutorials faculty session assignment, authentication and ephemeral ticket HTTP API are **our own application policies**, not offered by Zoom's SDK as a built-in faculty identity provider.
