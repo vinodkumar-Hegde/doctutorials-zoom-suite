@@ -83,3 +83,10 @@ Choose iPad (A16) and press Cmd+B, then Cmd+U. **Compilation and five existing t
 - FastAPI deployment and HTTPS deployment guidance: https://fastapi.tiangolo.com/deployment/https/
 - Starlette TrustedHostMiddleware: https://www.starlette.io/middleware/
 - Apple ATS HTTPS network guidelines: https://developer.apple.com/documentation/bundleresources/information-property-list/nsapptransportsecurity
+
+
+## Update — 2026-11-15: no third-party identity provider for the Basic sandbox
+
+Operator chose **first-party static faculty password**, not an external login platform. The separate [22-FIRST-PARTY-STATIC-PASSWORD-AUTH.md](22-FIRST-PARTY-STATIC-PASSWORD-AUTH.md) documents the new one-user password hash setup, `POST /api/faculty/login` (off by default), 15-minute opaque bearer tokens, logout and tests. `StaticFacultyPasswordAuthenticator.verify_faculty_token` now supplies a trusted internal token verifier to `create_ipad_join_app` through `create_first_party_faculty_app` in a **one-faculty Zoom Basic sandbox prototype**. This replaces the prior unspecified third-party login selection for the sandbox only.
+
+**Both APIs remain OFF by default and NOT deployed**; the new login implementation does not replace TLS, ingress rate limiting, secure meeting assignment persistence, Zoom SDK secret vault or real iPad Meeting join. No real password in source or Git. **New 28 offline tests unverified** until the operator reports a run.
