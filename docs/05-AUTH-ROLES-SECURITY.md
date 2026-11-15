@@ -23,3 +23,9 @@
 - Private GitHub repository, protected main branch, code review, dependency scanning, secret scanning.
 - Do not expose signed cloud download links or direct NAS paths to unauthorized users.
 - Do not automatically delete original cloud file before verified local archival.
+
+
+## 2026-11-15 — Basic sandbox first-party faculty password pilot
+The operator explicitly selected **DocTutorials-managed static password** for initial one-faculty Zoom Basic Meetings/iPad testing rather than an external identity platform. Implementation is staged, default-OFF, **not a production authentication system**. Backend provides salted scrypt password hash stored in private mode-0600 local config, five-failed-attempt lockout per 15 minutes, and in-memory, revocable/expiring opaque bearer sessions lasting 15 minutes. Faculty join requires a distinct server-owned sandbox session assignment and server-signed participant-only Meeting SDK JWT.
+
+Do not hardcode a password in the iPad, distribute one password among multiple real faculty, accept client-supplied faculty IDs as identity proof, embed SDK Client Secrets or Zoom host credentials, or reuse the existing localhost operator API as a public faculty API. Protected HTTPS + correct trusted proxy scheme, ingress rate limiting, no credential-bearing logs, and backend-only secret storage remain prerequisites to activation. See `docs/22-FIRST-PARTY-STATIC-PASSWORD-AUTH.md`.
