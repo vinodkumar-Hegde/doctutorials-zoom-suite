@@ -201,3 +201,9 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **2026-11-15 10:26 IST: latest SDK-enabled iPad (A16) Simulator XCTest 5/5 PASS with first-party Swift HTTPS static-password client in SDKApp**; log includes `Test Suite 'All tests' passed` and `Executed 5 tests, with 0 failures`. No live HTTP login or Zoom meeting join yet.
 - [ ] Build/wire first-party faculty login screen, authenticated assigned-session state, server-owned sandbox meeting assignment and trusted HTTPS backend. Keep join/broadcast controls fail-closed until observed SDK states.
+
+
+- [x] **First real SDK-only faculty login and authorized Zoom Meeting Join UI IMPLEMENTED IN SOURCE** (SDKApp/FacultySandboxMeetingView.swift); actually calls first-party HTTPS login and scoped join-ticket clients, then SDK adapter, with observer-only inMeeting status. SDK variant conditional in app entrypoint, known-good UI-only preview preserved. **Mac compile/runtime not yet verified**.
+- [x] **Real localhost HTTPS first-party Basic sandbox server + one-command Mac demo bootstrap IMPLEMENTED IN SOURCE** (backend/local_ipad_sandbox_server.py, setup_local_simulator_https.sh, run_local_sandbox_demo.sh), using private static password config, private assignment, hidden SDK credentials; NO public/production endpoints. 6 new server tests committed, **not run**.
+- [ ] **2026-11-15 next high-priority runtime:** operator starts Basic host Meeting, runs one-command local Mac simulator pilot, observes successful static password login, authorized join-ticket issuance and real Zoom SDK `.inMeeting` callback on iPad Simulator. Do not claim before screenshot/logs. Instructions `docs/23-FIRST-LIVE-BASIC-SANDBOX-JOIN.md`.
+- [ ] **Full-device Goodnotes ReplayKit share on physical iPad** after successful Basic sandbox joining and server hardening; still a separate pending capability.
