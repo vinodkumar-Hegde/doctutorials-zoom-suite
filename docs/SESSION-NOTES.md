@@ -526,3 +526,10 @@
 - iPadOS 26.5 Safari screenshot then displayed `{"detail":"Not Found"}` from local `127.0.0.1` backend with no visible TLS prompt. Caution: earlier Safari might have accepted a site-specific exception, so **this does not yet prove native URLSession strict trust succeeds**. The `-1202/-9807` native app error needs one fresh login retry.
 - Shell printed `zsh: command not found: #` for copied comment lines; operationally harmless and unrelated to simulator keychain calls.
 - **Next immediate**: leave HTTPS backend running, in existing iPad app set backend URL `https://127.0.0.1:8443`, faculty `sandbox-faculty`, enter preconfigured private password and tap Sign in. If green signed-in status, use internal class ID `ipad-sandbox-class` and retry SDK join; if TLS -1202 persists, investigate device root CA full trust and server fullchain instead of password reset, bypass, repeated suites or unsupported OS. No actual SDK join on iOS 26.5 confirmed.
+
+## 2026-11-15 — Standalone Windows Central Controller prototype published
+- Operator explicitly requested the four-channel Windows local recorder and GitHub deployment path. Prototype is isolated under `windows/central-controller`; no existing Zoom settings, iPad code, or live backend changed.
+- Assistant-side tests: **20/20 PASS** using synthetic generated media and FFmpeg; not independently verified on operator Windows hardware.
+- Includes configured screen + faculty-video picture-in-picture, metadata/logo overlay, four isolated workers, local MP4 storage and SHA-256-verified NAS archiving.
+- **Not complete:** Windows Zoom SDK raw-media adapter, real Zoom captures, four concurrent real meetings, automatic Admin assignment links, actual iPad Goodnotes share, and long-duration reliability remain unverified.
+- Operator Windows next: download from `windows/central-controller/README-WINDOWS.md`, launch synthetic demo on localhost:8780 and verify MP4 playback. Do not claim production recording readiness.

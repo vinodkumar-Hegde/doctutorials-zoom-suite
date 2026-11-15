@@ -252,3 +252,10 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **2026-11-15 11:32: Only correct iOS 26.5 iPad A16 Simulator booted and simulator CA installed by explicit UDID**; Safari displays expected local API 404 JSON with no visible warning. Native URLSession HTTPS faculty login still needs one confirmation; prior -1202 not yet independently cleared.
 - [ ] **Retry native first-party static-password sign-in at `https://127.0.0.1:8443`**, then first Zoom Meeting SDK participant join on supported iOS 26.5. No repeated unit tests.
+
+## 2026-11-15 — Operator reopened Windows central-recording prototype
+- [x] Isolated standalone Windows-oriented recording engine committed under `windows/central-controller` with source, safe demo launcher and GitHub/PowerShell download instructions.
+- [x] Assistant environment: 20 automated tests PASS (including four concurrent **synthetic** FFmpeg workers); not Windows/Zoom acceptance.
+- [ ] Operator Windows machine: install/test Python, Pillow, FFmpeg and validate test MP4s plus storage/NAS permissions.
+- [ ] Validate **one actual authorized Zoom meeting** screen+faculty+audio capture on Windows, then Zoom Meeting SDK raw-media connector with consent/permissions (not implemented).
+- [ ] Verify four genuinely independent live Zoom sources, no shared audio leaks, 8-hour stability and automatic scheduler integration before production.

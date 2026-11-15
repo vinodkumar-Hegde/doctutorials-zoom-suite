@@ -1,0 +1,65 @@
+{
+  "storage_root": "D:\\DocTutorials\\StorageCenter",
+  "nas_root": "\\\\OFFICE-NAS\\DocTutorials\\Recordings",
+  "width": 1920,
+  "height": 1080,
+  "fps": 25,
+  "segment_seconds": 600,
+  "preset": "veryfast",
+  "crf": 23,
+  "channels": {
+    "1": {
+      "configured": false,
+      "mode": "WINDOWS ZOOM CAPTURE (NOT ZOOM SDK)",
+      "screen": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting",
+        "crop": [
+          0,
+          0,
+          1200,
+          720
+        ]
+      },
+      "faculty": {
+        "kind": "gdigrab",
+        "window_title": "Zoom Meeting",
+        "crop": [
+          1200,
+          0,
+          300,
+          200
+        ]
+      },
+      "audio": {
+        "kind": "wasapi_loopback"
+      }
+    },
+    "2": {
+      "configured": false,
+      "mode": "INDEPENDENT MEDIA INPUT",
+      "screen": {},
+      "faculty": {},
+      "audio": {}
+    },
+    "3": {
+      "configured": false,
+      "mode": "INDEPENDENT MEDIA INPUT",
+      "screen": {},
+      "faculty": {},
+      "audio": {}
+    },
+    "4": {
+      "configured": false,
+      "mode": "INDEPENDENT MEDIA INPUT",
+      "screen": {},
+      "faculty": {},
+      "audio": {}
+    }
+  },
+  "layout": {
+    "name": "screen-plus-faculty",
+    "camera_position": "top-right",
+    "camera_width_percent": 23
+  }
+}
