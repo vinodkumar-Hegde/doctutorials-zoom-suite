@@ -472,3 +472,11 @@ Operator booted **iPad (A16), iPadOS 26.5** and supplied Xcode suite output: **5
 Operator's `curl --cacert ~/.config/doctutorials/localhost-tls/sandbox-root-ca.pem https://localhost:8443/docs` returned **HTTP 404**, expected with OpenAPI docs disabled. Thus a reachable HTTPS server answered from **Mac** at that moment, regardless of earlier `^C` in session history. This does not test new **iPadOS 26.5 Simulator** trust or connectivity.
 
 On new iPad Simulator login status `Login unavailable` indicates network/TLS/general service issue, **not a proven incorrect password**; an actual 401 would show rejected faculty credentials. **First direct check:** iPad Simulator Safari `https://localhost:8443/docs` with no credentials. If Safari displays Not Found, TLS path works; if privacy warning, install temporary CA in exact booted iOS 26.5 simulator; if unable to connect, check Mac server listener. No new security unit tests or password resets. SDK core init on 26.5 still pending once login works.
+
+
+## 2026-11-15 11:14 — Safari confirms iOS 26.5 Simulator HTTPS trust; native login generic failure targeted
+Safari screenshot inside the actual iOS 26.5 iPad Simulator shows `{"detail":"Not Found"}` for `https://localhost:8443/docs`: **iPad Simulator-to-Mac localhost TLS trust and basic HTTPS service response PASS**. The 404 is correct because FastAPI OpenAPI docs are disabled.
+
+Unlike Safari GET, the native app makes authenticated HTTPS **POST**. Its generic prior `Login unavailable` might represent HTTP 4xx/5xx, malformed response, invalid local input or URLSession error; the precise cause is **not known** and should not be guessed.
+
+Code committed: native HTTPS password client now returns a **safe HTTP status** for non-200/non-401 responses; UI now distinguishes HTTP statuses, password format, invalid session, TLS certificate errors, timeouts and other URLSession failures. Sandbox URL prefilled `https://localhost:8443`. No secrets disclosed and no backend changes needed. Operator **must pull and rebuild** before these messages appear. Reopen SDK project via XcodeGen, Cmd+R iOS 26.5, submit real private password once and report exact new status. No need for unit test rounds. Zoom SDK join remains unverified.
