@@ -96,8 +96,9 @@ def create_first_party_faculty_app(
             raise HTTPException(status_code=503, detail="Faculty login is not enabled.")
         if request.scope.get("scheme") != "https":
             raise HTTPException(status_code=426, detail="HTTPS is required.")
-        if await request.body():
-            raise HTTPException(status_code=400, detail="Request body is not permitted.")
+        async for chunk in request.stream():
+            if chunk:
+                raise HTTPException(status_code=400, detail="Request body is not permitted.")
         header = request.headers.get("authorization", "")
         if not header.startswith("Bearer "):
             raise HTTPException(status_code=401, detail="Authentication required.")
