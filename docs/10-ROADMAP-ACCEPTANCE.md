@@ -167,3 +167,10 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **12/12 sandbox faculty assignment authorization tests PASS on operator Mac** (`Ran 12 tests in 0.001s`, `OK`, 2026-11-15). All tests offline; do not treat as live faculty authentication or Zoom Meeting join.
 - [ ] Secure authenticated HTTPS faculty session assignment + ticket endpoint, client hookup, and observed Basic sandbox participant join proof; next Stage 4B gate.
+
+
+- [x] **Stage 4B HTTPS iPad join-ticket route staged**, off by default: `backend/ipad_join_http.py` uses verified faculty token callback + server-owned assignment policy, requires HTTPS + allowed API host, no arbitrary client metadata, no-store ticket; no public server or configured real identity provider.
+- [x] **19 HTTP API contract/security test cases added** in `tests/test_ipad_join_http.py` and `backend/requirements-ipad-dev.txt`; **not yet run** on Mac.
+- [x] **HTTPS iPad join-ticket network client source committed** in SDKApp, with no redirect-following, no stored credentials, and NO connection to SwiftUI Join action; new source compilation **not yet verified**.
+- [ ] **Operator Mac** runs 19 HTTP offline TestClient cases and Xcode Cmd+B/Cmd+U with new Swift client; **PENDING**.
+- [ ] Select and integrate real DocTutorials faculty identity verifier, secure server-owned assignment persistence, sandbox SDK credential vault, correctly trusted TLS backend + rate limits, live iPad ticket request and observable `.inMeeting` callback. Full device screen sharing still separate. See `docs/21-IPAD-JOIN-API-RUNBOOK.md`.
