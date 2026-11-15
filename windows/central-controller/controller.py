@@ -44,6 +44,7 @@ class ControlState:
         self.engine=engine
         self.sessions=sessions
         self.rtms=None
+        self.desktop=None
         self.password=password
         self.tokens={}
         self.media_tickets={}
@@ -52,6 +53,8 @@ class ControlState:
         snap=self.sessions.snapshot() if self.sessions else {'state':'local_windows','sessions':[]}
         if isinstance(self.sessions, ExistingAdminSessions):
             result=enrich_admin_schedule(snap, self.engine.status())
+            if self.desktop:
+                result['desktopCapture']=self.desktop.status()
             if self.rtms:
                 observed=self.rtms.state()['observedMediaChannels']
                 for c in result['channels']:
@@ -149,6 +152,13 @@ def handler_factory(state):
                     self.send(200,{k:v for k,v in state.plan().items() if k != 'channels'})
                 elif path=='/api/channels':
                     self.send(200,{'channels':state.plan()['channels'],'recorder':'FFmpeg native OS capture, not browser/Zoom local/cloud'})
+                elif path=='/api/desktop/preview':
+                    if not state.desktop or not isinstance(state.sessions,ExistingAdminSessions):
+                        raise RecorderError('Zoom desktop capture is not enabled.')
+                    params=parse_qs(urlsplit(self.path).query)
+                    session_id=params.get('sessionId',[''])[0]
+                    item=selected_session(state.plan(),session_id)
+                    self.send(200,state.desktop.preview(state.engine,item),'image/png')
                 elif path=='/api/recordings':
                     self.send(200,{'recordings':state.engine.recordings()})
                 else:
@@ -213,7 +223,23 @@ def handler_factory(state):
                     if not isinstance(state.sessions, LocalSessions):
                         self.send(405,{'error':'Use the existing DocTutorials Admin portal to manage class assignments.'});return
                     self.send(200,{'session':state.sessions.cancel(payload.get('sessionId'))})
+                elif path=='/api/desktop/open':
+                    if not state.desktop:
+                        raise RecorderError('Zoom desktop capture is not enabled; start the Windows desktop recorder, not TEST MEDIA.')
+                    if not isinstance(state.sessions,ExistingAdminSessions):
+                        raise RecorderError('Existing Admin class schedule required.')
+                    assignment=selected_session(state.plan(),payload.get('sessionId'))
+                    self.send(200,state.desktop.open(assignment))
+                elif path=='/api/desktop/record':
+                    if not state.desktop:
+                        raise RecorderError('Zoom desktop capture is not enabled.')
+                    if not isinstance(state.sessions,ExistingAdminSessions):
+                        raise RecorderError('Existing Admin class schedule required.')
+                    assignment=selected_session(state.plan(),payload.get('sessionId'))
+                    self.send(201,state.desktop.start_capture(state.engine,assignment,payload.get('consentConfirmed')))
                 elif path=='/api/start-assigned':
+                    if state.desktop:
+                        raise RecorderError('Use the Zoom desktop capture action with its live window and session checks.')
                     if not isinstance(state.sessions, ExistingAdminSessions):
                         raise RecorderError('Imported Admin session registry is required.')
                     if payload.get('consentConfirmed') is not True:
@@ -270,7 +296,8 @@ def main(argv=None):
     group.add_argument('--config',type=Path,help='Production input and NAS paths config (not Zoom SDK)')
     group.add_argument('--demo',action='store_true',help='Synthetic-media demonstration, NEVER Zoom capture')
     ap.add_argument('--port',type=int,default=8780)
-    ap.add_argument('--rtms',action='store_true',help='Explicitly connect authorized Zoom RTMS outbound WebSockets (requires separate app + credits)')
+    ap.add_argument('--rtms',action='store_true',help='Optional paid RTMS integration (NOT required for Zoom desktop capture)')
+    ap.add_argument('--desktop',action='store_true',help='Operator-assisted Zoom Workplace window capture, Windows only (no RTMS)')
     ap.add_argument('--storage-root',type=Path,default=Path.home()/'.config'/'doctutorials'/'central-demo-storage')
     args=ap.parse_args(argv)
     if args.demo:
@@ -281,10 +308,18 @@ def main(argv=None):
             raise SystemExit('storage_root must be an absolute Windows path in production config.')
     if args.rtms and args.demo:
         raise SystemExit('Zoom RTMS cannot be enabled with TEST MEDIA demo inputs; use --config.')
+    if args.desktop and (args.demo or args.rtms):
+        raise SystemExit('Zoom desktop capture requires --config, without --demo or --rtms.')
+    if args.desktop and os.name!='nt':
+        raise SystemExit('Zoom Workplace desktop capture requires a Windows workstation.')
     engine=Engine(config)
     password=os.getenv('DOCTUTORIALS_CONTROLLER_PASSWORD') or getpass.getpass('Choose central controller admin password (hidden, 12+ chars): ')
     if len(password)<12:raise SystemExit('Choose a password of at least 12 characters.')
     state=ControlState(engine,password,ExistingAdminSessions())
+    if args.desktop:
+        from zoom_desktop_capture import ZoomDesktopController, PRIVATE_DB
+        private_path=Path(os.environ.get('DOCTUTORIALS_PRIVATE_ADMIN_DB') or PRIVATE_DB)
+        state.desktop=ZoomDesktopController(private_path)
     if args.rtms:
         from zoom_rtms_ingest import ZoomRtmsReceiver
         client_id=os.environ.get('ZOOM_RTMS_CLIENT_ID','')
@@ -296,8 +331,14 @@ def main(argv=None):
     server=ThreadingHTTPServer(('127.0.0.1',args.port),handler_factory(state))
     print(f'DocTutorials Central Controller: http://127.0.0.1:{args.port}')
     print('Original Admin session reader + four independent worker slots. Storage: '+str(engine.root))
-    print('No Mac session bridge or pairing required. Zoom media connection remains pending.')
-    print('Mode: '+('SYNTHETIC TEST MEDIA (not Zoom)' if args.demo else 'OPERATOR-CONFIGURED NATIVE INPUTS'))
+    print('No Mac session bridge or pairing required.')
+    if args.desktop:
+        print('Mode: operator-assisted Zoom desktop capture (NO RTMS / NO OBS).')
+        print('One visible Zoom meeting only; operator must verify meeting content and grant recording notice.')
+    else:
+        print('Zoom desktop capture is not active in this launch mode.')
+    if not args.desktop:
+        print('Mode: '+('SYNTHETIC TEST MEDIA (not Zoom)' if args.demo else 'OPERATOR-CONFIGURED NATIVE INPUTS'))
     print('No OBS, Zoom Cloud Recording, or Zoom standard local recording used.')
     print('This service listens ONLY on 127.0.0.1. Keep this window open; Ctrl+C stops the UI.')
     try:server.serve_forever()

@@ -1,6 +1,6 @@
 (() => {
 'use strict';
-let token = null, busy = false, feedIsDemo = true, currentChannels = []; 
+let token = null, busy = false, feedIsDemo = true, desktopMode = false, currentChannels = []; 
 const el=id=>document.getElementById(id);
 const toast=(message)=>{const t=el('toast');t.textContent=message;t.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.display='none',6500)};
 async function api(path,method='GET',body=null){
@@ -24,6 +24,8 @@ function renderChannels(data){currentChannels=data;feedIsDemo=data.some(ch=>Stri
     const actions=node('div',undefined,'controls');
     if(String(ch.sourceMode).includes('TEST MEDIA')){
       actions.append(control('Run TEST MEDIA',()=>runTest(ch.channel),'',!ch.configured||activeState(ch.state)));
+    }else if(assigned && desktopMode){
+      actions.append(node('span','Zoom join and capture controls are on the assigned class card above.','note'));
     }else if(assigned){
       actions.append(control('Start configured capture',()=>startAssigned(assigned.sessionId),'',!ch.configured||!ch.configuredInput||activeState(ch.state)));
     }else{
@@ -66,9 +68,44 @@ function renderSessions(result){
     card.append(node('div','Assigned faculty: '+item.facultyId,'source'));
     card.append(node('div',new Date(item.startsAt*1000).toLocaleString()+' — '+new Date(item.endsAt*1000).toLocaleTimeString(),'source'));
     card.append(node('div',item.plannedChannel?'Automatically reserved Channel '+item.plannedChannel:'NO CHANNEL CAPACITY — more than four overlapping classes',item.plannedChannel?'reservation':'warning'));
-    card.append(node('div',window+' · Zoom media '+(result.mediaState==='rtms_media_observed' && item.plannedChannel?'PACKETS OBSERVED':'NOT connected')+' · Live source requires RTMS approval','note'));
+    card.append(node('div',window+' · Zoom media '+(result.mediaState==='rtms_media_observed' && item.plannedChannel?'PACKETS OBSERVED':'NOT connected'),'note'));
+    if(result.desktopCapture){
+      const d=result.desktopCapture;
+      card.append(node('div','Windows Zoom: private join data '+d.privateMeetingData+' · meeting window '+d.windowState,'source'));
+      const actions=node('div',undefined,'controls');
+      const inWindow=now>=item.startsAt&&now<item.endsAt;
+      actions.append(control('Open assigned Zoom',()=>openAssignedZoom(item.sessionId),'',!inWindow||!item.plannedChannel||busy||d.privateMeetingData!=='available'));
+      actions.append(control('Preview Zoom window',()=>previewDesktopZoom(item.sessionId),'ghost',!inWindow||!d.captureReady||d.openedSessionId!==item.sessionId));
+      actions.append(control('Capture Zoom window',()=>recordDesktopZoom(item.sessionId),'',!inWindow||!item.plannedChannel||busy||!d.captureReady||d.openedSessionId!==item.sessionId));
+      card.append(actions);
+      card.append(node('div','One meeting only. Confirm faculty screen, camera tile, meeting audio and recording notice before capture. Audio uses the Windows default speaker.','note'));
+    }
     root.append(card);
   });
+}
+async function openAssignedZoom(sessionId){
+  if(busy)return;busy=true;
+  try{const r=await api('desktop/open','POST',{sessionId});toast(r.message);await refresh()}
+  catch(e){toast('Zoom could not be opened: '+e.message)}finally{busy=false}
+}
+async function previewDesktopZoom(sessionId){
+  if(busy)return;busy=true;
+  try{
+    const r=await fetch('/api/desktop/preview?sessionId='+encodeURIComponent(sessionId),{headers:{'Authorization':'Bearer '+token},cache:'no-store'});
+    if(!r.ok){const d=await r.json();throw Error(d.error||'Preview unavailable')}
+    const url=URL.createObjectURL(await r.blob());
+    const img=node('img');img.src=url;img.alt='Zoom meeting window as seen by Windows recorder; verify share and speaker tile';
+    img.style.maxWidth='100%';img.style.borderRadius='10px';
+    const host=el('zoom-preview');host.replaceChildren(img);img.onload=()=>URL.revokeObjectURL(url);
+    toast('Verify the actual Zoom screen and faculty video location before capturing.');
+  }catch(e){toast('Zoom preview failed: '+e.message)}finally{busy=false}
+}
+async function recordDesktopZoom(sessionId){
+  if(busy)return;
+  if(!confirm('Confirm: this is the correct Zoom meeting, Goodnotes screen and faculty tile are visible, Zoom audio uses the Windows default speaker, and all recording permissions/notices are in place. This is screen capture of a Zoom window, not a Zoom SDK stream.'))return;
+  busy=true;
+  try{await api('desktop/record','POST',{sessionId,consentConfirmed:true});toast('FFmpeg Zoom window capture requested; verify the live preview/output.');await refresh()}
+  catch(e){toast('Zoom capture unavailable: '+e.message)}finally{busy=false}
 }
 async function stop(channel){if(busy)return;busy=true;try{toast('Flushing and validating recording...');const res=await api('stop','POST',{channel});toast('Verified MP4 ready: '+res.recording.id);await refresh()}catch(e){toast('Stop issue: '+e.message)}finally{busy=false}}
 async function recover(rid){try{await api('recover','POST',{id:rid});toast('Recovery complete: '+rid);await refresh()}catch(e){toast('Recovery failed: '+e.message)}}
@@ -86,6 +123,6 @@ function renderRecordings(list){const root=el('records');const current=el('inlin
  if(r.state==='ready'&&r.archive_state==='failed')actions.append(control('Retry NAS',()=>retry(r.id),'ghost'));
  row.append(actions);root.append(row)})
 }
-async function refresh(){if(!token)return;try{const [channels,records,sessions]=await Promise.all([api('channels'),api('recordings'),api('sessions')]);renderChannels(channels.channels);renderSessions(sessions);renderRecordings(records.recordings)}catch(e){toast(e.message)}}
+async function refresh(){if(!token)return;try{const [channels,records,sessions]=await Promise.all([api('channels'),api('recordings'),api('sessions')]);desktopMode=!!sessions.desktopCapture;renderChannels(channels.channels);renderSessions(sessions);renderRecordings(records.recordings)}catch(e){toast(e.message)}}
 el('refresh').addEventListener('click',refresh);setInterval(()=>{if(token&&!busy)refresh()},3500);
 })();

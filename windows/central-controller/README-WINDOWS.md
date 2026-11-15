@@ -70,3 +70,7 @@ cd "$HOME\doctutorials-zoom-suite\windows\central-controller"
 ```
 
 This check is read-only. A `NOT READY` RTMS credential means a separate RTMS-enabled General app/Developer Pack is missing, not that FFmpeg, Visual Studio or Python must be reinstalled. The normal `start-demo-windows.bat` remains test media. See `README-RTMS.md`.
+
+## Zoom Workplace desktop-capture first meeting (v8) — no RTMS required
+
+A separate operator-assisted `start-zoom-desktop-windows.bat` capture mode has been added. It opens the assigned class from privately migrated join details, previews the real Zoom meeting window, captures its displayed teaching screen and an estimated faculty tile with FFmpeg GDI and Windows speaker loopback, and uses the existing branded MP4/Storage Center pipeline. **Not a proven live Zoom recording yet; not automatic from faculty Start.** See [README-ZOOM-DESKTOP.md](README-ZOOM-DESKTOP.md). The older RTMS build is optional/disabled and is **not part of this workflow**.

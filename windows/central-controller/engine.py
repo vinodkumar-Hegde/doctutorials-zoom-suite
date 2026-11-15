@@ -98,11 +98,18 @@ def source_args(source: dict, *, fps: int, video: bool) -> list[str]:
     if kind == 'gdigrab' and video:
         if sys.platform != 'win32':
             raise RecorderError('gdigrab needs a Windows recorder workstation.')
-        title = source.get('window_title')
-        if not title or any(ch in title for ch in '\r\n'):
-            raise RecorderError('Configure a valid Zoom window title.')
+        hwnd = source.get('window_hwnd')
+        if hwnd is not None:
+            if isinstance(hwnd, bool) or not isinstance(hwnd,int) or not (0 < hwnd < 2**64):
+                raise RecorderError('Zoom window handle must be a positive integer.')
+            target = 'hwnd=0x%x' % hwnd
+        else:
+            title = source.get('window_title')
+            if not title or any(ch in title for ch in '\r\n'):
+                raise RecorderError('Configure a valid Zoom window title.')
+            target = 'title=' + title
         return ['-thread_queue_size','512','-f','gdigrab','-framerate',str(fps),
-                '-draw_mouse','0','-i','title='+title]
+                '-draw_mouse','0','-i',target]
     if kind == 'dshow':
         if sys.platform != 'win32':
             raise RecorderError('DirectShow needs Windows.')
