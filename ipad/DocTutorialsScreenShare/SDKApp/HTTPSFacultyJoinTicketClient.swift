@@ -18,7 +18,7 @@ struct HTTPSFacultyJoinTicketClient {
 
     /// apiOrigin must be an HTTPS origin only, not a URL containing credentials,
     /// a session path, query or fragment. Never point this to localhost HTTP.
-    init(apiOrigin: URL, session: URLSession = URLSession(configuration: .ephemeral)) throws {
+    init(apiOrigin: URL, session: URLSession = URLSession(configuration: .ephemeral, delegate: RejectJoinTicketRedirects(), delegateQueue: nil)) throws {
         guard let parts = URLComponents(url: apiOrigin, resolvingAgainstBaseURL: false),
               parts.scheme?.lowercased() == "https",
               parts.host != nil,
@@ -100,4 +100,16 @@ private struct JoinTicketPayload: Decodable {
     let displayName: String
     let meetingSDKJWT: String
     let expiresAtEpoch: Int
+}
+
+/// Prevent a join ticket request from following HTTPS-to-HTTP, cross-host,
+/// or other HTTP redirects that could expose faculty Bearer credentials.
+private final class RejectJoinTicketRedirects: NSObject, URLSessionTaskDelegate {
+    func urlSession(_ session: URLSession,
+                    task: URLSessionTask,
+                    willPerformHTTPRedirection response: HTTPURLResponse,
+                    newRequest request: URLRequest,
+                    completionHandler: @escaping (URLRequest?) -> Void) {
+        completionHandler(nil)
+    }
 }
