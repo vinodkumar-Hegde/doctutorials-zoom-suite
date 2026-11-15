@@ -245,3 +245,6 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] **2026-11-15 11:15: exact iOS 26.5 login failure identified in native Xcode log:** `NSURLErrorDomain -1202` / TLS chain `-9807` for localhost cert; separate IPv6 `::1:8443` connection refused while backend serves IPv4. Faculty password is not the issue.
 - [ ] **Simulator HTTPS native trust fix/runtime proof:** explicitly re-add CA for booted 26.5 iPad, switch app backend origin to IPv4 `https://127.0.0.1:8443`, retry login. Code additionally staged IPv4 default and fullchain serving for next backend restart; operator confirmation pending. Never bypass server trust.
 - [ ] Zoom Meeting SDK init/join callback on iOS 26.5, then physical iPad ReplayKit remain outstanding.
+
+
+- [ ] **2026-11-15 11:28: exact iOS 26.5 TLS-trust fix pending**: operator revealed **two booted iPad A16 simulators**; `simctl keychain booted` did not reliably target the intended 26.5 device. Safari still warns `This Connection Is Not Private` for local IPv4 endpoint. Shut down old 27.2 device, explicitly add CA to 26.5 UDID, verify trusted `/docs` without Safari exception. Native login and Zoom join still pending.
