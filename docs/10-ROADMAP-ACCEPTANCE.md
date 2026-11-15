@@ -207,3 +207,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 - [x] **Real localhost HTTPS first-party Basic sandbox server + one-command Mac demo bootstrap IMPLEMENTED IN SOURCE** (backend/local_ipad_sandbox_server.py, setup_local_simulator_https.sh, run_local_sandbox_demo.sh), using private static password config, private assignment, hidden SDK credentials; NO public/production endpoints. 6 new server tests committed, **not run**.
 - [ ] **2026-11-15 next high-priority runtime:** operator starts Basic host Meeting, runs one-command local Mac simulator pilot, observes successful static password login, authorized join-ticket issuance and real Zoom SDK `.inMeeting` callback on iPad Simulator. Do not claim before screenshot/logs. Instructions `docs/23-FIRST-LIVE-BASIC-SANDBOX-JOIN.md`.
 - [ ] **Full-device Goodnotes ReplayKit share on physical iPad** after successful Basic sandbox joining and server hardening; still a separate pending capability.
+
+
+- [x] **2026-11-15 local simulator TLS setup PASS:** temporary localhost certificate generated, CA added to booted Simulator keychain by operator script. Server and real Zoom join not yet started/verified.
+- [ ] **Real Basic sandbox meeting assignment setup and participant join:** initial hidden-input attempt rejected grouped/spaced Meeting ID; committed automatic whitespace/hyphen normalization. Immediate workaround: enter Meeting ID as digits only and rerun the one-command pilot. No additional unit test required for this operator input issue.
