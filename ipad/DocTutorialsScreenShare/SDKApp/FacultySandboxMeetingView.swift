@@ -9,7 +9,8 @@ import SwiftUI
 struct FacultySandboxMeetingView: View {
     @StateObject private var meeting = ZoomMeetingJoinAdapter()
 
-    @State private var httpsOrigin = ""
+    // Mac loopback address for the one-device Basic sandbox Simulator pilot.
+    @State private var httpsOrigin = "https://localhost:8443"
     @State private var facultyID = "sandbox-faculty"
     @State private var password = ""
     // One assigned internal session in this Basic sandbox pilot. This is NOT the Zoom Meeting number.
@@ -224,9 +225,30 @@ struct FacultySandboxMeetingView: View {
             notice = "Faculty ID or password was rejected."
         } catch FacultyPasswordLoginError.invalidConfiguration {
             notice = "A trusted HTTPS backend URL is required."
+        } catch FacultyPasswordLoginError.invalidInput {
+            notice = "Enter sandbox-faculty and a password between 16 and 128 characters."
+        } catch FacultyPasswordLoginError.invalidServerResponse {
+            accessSession = nil
+            notice = "The login server returned an invalid or expired session response."
+        } catch FacultyPasswordLoginError.serviceUnavailable(let status) {
+            accessSession = nil
+            notice = "Faculty login endpoint returned HTTP \(status)."
+        } catch let error as URLError {
+            accessSession = nil
+            switch error.code {
+            case .serverCertificateUntrusted, .secureConnectionFailed, .serverCertificateHasBadDate,
+                 .serverCertificateNotYetValid, .serverCertificateHasUnknownRoot:
+                notice = "iPad HTTPS certificate trust failed (network error \(error.errorCode))."
+            case .cannotConnectToHost, .cannotFindHost, .notConnectedToInternet, .networkConnectionLost:
+                notice = "Could not contact localhost HTTPS service (network error \(error.errorCode))."
+            case .timedOut:
+                notice = "Faculty HTTPS login timed out."
+            default:
+                notice = "Login transport failed (network error \(error.errorCode))."
+            }
         } catch {
             accessSession = nil
-            notice = "Login unavailable. Check your private HTTPS backend and network."
+            notice = "Faculty login failed before receiving a valid server response."
         }
     }
 
