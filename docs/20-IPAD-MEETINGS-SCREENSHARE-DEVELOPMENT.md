@@ -378,3 +378,16 @@ Choose **DocTutorialsScreenShare** and **iPad (A16) Simulator**; press **Cmd+B**
 - Other current operator-confirmed proof: JWT signer **8/8**, faculty Basic sandbox policy **12/12**, FastAPI authenticated HTTPS ticket API contract **19/19**, iPad SDK frameworks and ARM64 simulator launch PASS.
 - Nonfatal simulator/network/keyboard/PointerUI and iPad full-orientation warning remain; release Info.plist fix tracked separately.
 - **Next implementation gate remains real verified DocTutorials faculty identity and server-owned assignment storage; API factory is OFF by default.** Then configure trusted HTTPS and backend SDK credentials, integrate SwiftUI token retrieval, observe a real Zoom Basic sandbox `.inMeeting` callback. A passing XCTest is NOT a live Meeting join.
+
+
+## 2026-11-15 — First-party static password selected for Basic sandbox faculty
+Operator decision: **use one stable DocTutorials-managed faculty password for the first Zoom Basic Meetings test, no third-party identity platform**. To avoid putting a shared password in the distributed iPad binary or private GitHub history, the faculty password is chosen locally by the operator (hidden Terminal prompt) and stored server-side as a salted scrypt hash. Login gives a new 15-minute opaque access token used to request an existing server-authorized participant Meeting SDK join ticket. The login password is NOT the Zoom passcode/host secret or SDK Client Secret.
+
+**Staged (not yet Mac-tested):**
+- `backend/faculty_password_auth.py`: one sandbox identity, private local CLI config and one-way password hash, failed-attempt lockout, in-memory expiring/revocable tokens
+- `backend/faculty_password_http.py`: default-DISABLED trusted-HTTPS `POST /api/faculty/login` and `POST /api/faculty/logout` sharing backend authorization with `POST /api/sessions/{id}/join/ipad`
+- `tests/test_faculty_password_auth.py`: **28 new offline tests, operator execution PENDING**
+- `SDKApp/HTTPSFacultyPasswordLoginClient.swift`: non-persistent HTTPS login client, rejects redirects; **SDK-enabled Swift compile PENDING; UI remains Join disabled**
+- `docs/22-FIRST-PARTY-STATIC-PASSWORD-AUTH.md`: setup, API flow, caveats and test commands
+
+**Next operator action:** `git pull`, run the **28-test suite** under existing `~/.venvs/doctutorials-ipad-api` with no real password. Then create a private static sandbox faculty password via CLI (never copy into chat or GitHub) and regenerate the SDK-only Xcode project, Cmd+B/Cmd+U. This account is intentionally a one-faculty sandbox bootstrap, not identity integration for real DocTutorials staff. Trustworthy HTTPS ingress, assignment storage, server SDK credentials and real SDK Meeting join remain unimplemented/unverified. Webinar and Windows work remain deferred.
