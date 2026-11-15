@@ -148,3 +148,7 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **Stage 4B SDK-linked fresh ARM64 Simulator clean build PASS** after excluding x86_64 in SDK-only XcodeGen spec; operator output `BUILD SUCCEEDED` and 09:16 fresh app bundle includes **MobileRTC.framework + zoomcml.framework**. This resolves vendor linkage / packaging checkpoint; unsigned isolated diagnostic only (2026-11-15).
 - [ ] **Actual Xcode SDK-linked Simulator app launch and five XCTest policy tests** after packaging fix (not yet operator-confirmed). Meeting SDK JWT auth/join and ReplayKit share are separate later stages.
+
+
+- [x] **SDK-linked app launches and renders full SwiftUI shell in iPad Simulator** after packaging MobileRTC + zoomcml, operator screenshot at 09:19 on 2026-11-15. Previous `zoomcml` loader crash no longer blocks startup; no live Zoom connection occurred.
+- [ ] **Rerun 5/5 SwiftUI policy XCTest cases using latest SDK-linked app** after runtime fix; operator confirmation pending.
