@@ -337,3 +337,10 @@ python3 -m unittest discover -s tests -p 'test_ipad_join_authorization.py' -v
 Expected after testing: `Ran 12 tests` and `OK`. This number is **not yet confirmed**. Next milestone after proof is connecting genuine DocTutorials faculty authentication / server-owned sandbox assignment persistence to the endpoint, then requesting join ticket from the SwiftUI app and invoking the compiled Zoom SDK adapter only when authorized. Actual Zoom connection, share permission and ReplayKit broadcast still remain unverified.
 
 Official source: https://developers.zoom.us/docs/meeting-sdk/auth/
+
+
+## 2026-11-15 — 12/12 sandbox faculty join authorization tests PASS on operator Mac
+- User's Terminal output confirms **`Ran 12 tests in 0.001s`, `OK`** for `test_ipad_join_authorization.py`.
+- With previous Mac backend JWT **8/8 PASS** and iPad SDK-enabled policy XCTest **5/5 PASS**, the current backend domain logic for scoped non-host join tickets has passed offline validation.
+- **Not yet implemented or verified:** actual DocTutorials faculty sign-in, server-controlled assignment database, secret vault/provisioning, HTTPS `POST /api/sessions/{id}/join/ipad`, iPad authenticated request, Zoom SDK JWT authentication, observed participant join, real-device ReplayKit broadcast.
+- Next implementation work should focus on the authenticated HTTPS faculty ticket boundary, followed by first Basic sandbox meeting join. Do not expose the existing loopback-only operator API publicly or enable Join from a sample class.
