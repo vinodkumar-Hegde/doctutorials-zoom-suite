@@ -152,3 +152,8 @@ The default four-host read-only smoke test has been changed to **meetings-only**
 
 - [x] **SDK-linked app launches and renders full SwiftUI shell in iPad Simulator** after packaging MobileRTC + zoomcml, operator screenshot at 09:19 on 2026-11-15. Previous `zoomcml` loader crash no longer blocks startup; no live Zoom connection occurred.
 - [ ] **Rerun 5/5 SwiftUI policy XCTest cases using latest SDK-linked app** after runtime fix; operator confirmation pending.
+
+
+- [x] **Stage 4B SDK-enabled iPad (A16) Simulator XCTest suite 5/5 PASS** with `Test exit status: 0`, `Executed 5 tests, with 0 failures`, and `TEST SUCCEEDED` (operator terminal output 2026-11-15), following actual Simulator launch and verified MobileRTC/zoomcml packaging.
+- [ ] Resolve iPad interface orientation build warning before distribution (not blocking current test pass).
+- [ ] Real faculty-authenticated HTTPS assignment, server-signed short-lived Meeting SDK JWT/participant ticket and SDK-connected Join button; no live Zoom meeting join yet.
