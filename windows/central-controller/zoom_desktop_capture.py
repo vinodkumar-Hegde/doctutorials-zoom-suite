@@ -56,15 +56,17 @@ def private_meeting_for(db_path: Path, assignment: dict) -> dict:
     try:
         uri = path.resolve().as_uri() + '?mode=ro'
         with sqlite3.connect(uri, uri=True, timeout=4) as db:
-            row = db.execute('''SELECT faculty_id, starts_at, ends_at, meeting_id, meeting_passcode
+            row = db.execute('''SELECT faculty_id, course, subject, topic, meeting_id, meeting_passcode
                                 FROM sessions WHERE session_id=?''', (session_id,)).fetchone()
     except (OSError,sqlite3.Error) as exc:
         raise ZoomDesktopUnavailable('Windows private Zoom registry cannot be read.') from exc
     if not row:
         raise ZoomDesktopUnavailable('No Zoom join details for this existing Admin assignment.')
-    faculty, start, end, meeting_id, passcode = row
-    if (faculty != assignment.get('facultyId') or start != assignment.get('startsAt')
-            or end != assignment.get('endsAt')):
+    faculty, course, subject, topic, meeting_id, passcode = row
+    # Admin may reschedule a class after the private Zoom registry was exported.
+    # Its unique session/faculty/course/subject/topic, not mutable times, bind its Zoom ID.
+    if (faculty != assignment.get('facultyId') or course != assignment.get('course')
+            or subject != assignment.get('subject') or topic != assignment.get('topic')):
         raise ZoomDesktopUnavailable('The private Zoom registry does not match the current Admin schedule; do not join a potentially wrong class.')
     if not isinstance(meeting_id,str) or not MEETING.fullmatch(meeting_id):
         raise ZoomDesktopUnavailable('Private Zoom meeting number is invalid.')

@@ -74,3 +74,17 @@ This check is read-only. A `NOT READY` RTMS credential means a separate RTMS-ena
 ## Zoom Workplace desktop-capture first meeting (v8) — no RTMS required
 
 A separate operator-assisted `start-zoom-desktop-windows.bat` capture mode has been added. It opens the assigned class from privately migrated join details, previews the real Zoom meeting window, captures its displayed teaching screen and an estimated faculty tile with FFmpeg GDI and Windows speaker loopback, and uses the existing branded MP4/Storage Center pipeline. **Not a proven live Zoom recording yet; not automatic from faculty Start.** See [README-ZOOM-DESKTOP.md](README-ZOOM-DESKTOP.md). The older RTMS build is optional/disabled and is **not part of this workflow**.
+
+
+## Optional automatic Zoom meeting event capture (Windows one-meeting pilot)
+
+The new `start-zoom-auto-windows.bat` starts an **ordinary Zoom meeting event** listener
+(not RTMS). When a subscribed `meeting.started` event matches the private Admin
+Zoom ID, Windows requests the Zoom Workplace join, waits for a new Zoom meeting
+window, starts FFmpeg capture, and stops on `meeting.ended`. The UI no longer
+requires per-class Open/Preview/Capture actions in this mode. Zoom prompts,
+waiting rooms, recording permissions and faculty-specific PIP still require a
+real Windows acceptance test. **Not four-channel production-ready.**
+
+See `README-ZOOM-AUTO.md` for the one-time app event subscription and recording
+notice setup. No RTMS Developer Pack is used by this mode.

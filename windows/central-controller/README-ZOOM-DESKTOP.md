@@ -55,3 +55,11 @@ Zoom may show launch, admission, audio prompts or waiting rooms; this mode **doe
 - Zoom does not reliably expose a faculty-start signal to this local window recorder. Future true hands-free joining needs a trusted event emitted from the **Windows-hosted** DocTutorials Faculty start action; this release does not claim it.
 
 Tests: `py -3 -m unittest discover -s tests -v`. Offline tests verify private mapping, gatekeeping, Windows source construction, authenticated operator actions, preview and safe failure, but they **do not** verify Zoom rendering on a real Windows workstation.
+
+
+## Automatic mode (no per-class operator buttons)
+
+For the experimental ordinary Zoom `meeting.started`/`meeting.ended` WebSocket
+event path, see `README-ZOOM-AUTO.md` and `start-zoom-auto-windows.bat`.
+This mode does **not** require RTMS. It is separate from this operator-assisted
+verification mode and is limited to one window/audio channel pending acceptance.

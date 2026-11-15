@@ -69,7 +69,11 @@ function renderSessions(result){
     card.append(node('div',new Date(item.startsAt*1000).toLocaleString()+' — '+new Date(item.endsAt*1000).toLocaleTimeString(),'source'));
     card.append(node('div',item.plannedChannel?'Automatically reserved Channel '+item.plannedChannel:'NO CHANNEL CAPACITY — more than four overlapping classes',item.plannedChannel?'reservation':'warning'));
     card.append(node('div',window+' · Zoom media '+(result.mediaState==='rtms_media_observed' && item.plannedChannel?'PACKETS OBSERVED':'NOT connected'),'note'));
-    if(result.desktopCapture){
+    if(result.desktopAutomation){
+      const a=result.desktopAutomation;
+      card.append(node('div','AUTOMATIC Zoom recording: '+a.phase+(a.problem?' · '+a.problem:''),a.phase==='blocked'?'warning':'note'));
+      card.append(node('div','Windows joins and starts capture on a matched Zoom meeting-start event; stop and MP4 verification follow the meeting-ended event. No manual class capture action.','source'));
+    } else if(result.desktopCapture){
       const d=result.desktopCapture;
       card.append(node('div','Windows Zoom: private join data '+d.privateMeetingData+' · meeting window '+d.windowState,'source'));
       const actions=node('div',undefined,'controls');

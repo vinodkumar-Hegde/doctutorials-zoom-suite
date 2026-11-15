@@ -45,6 +45,7 @@ class ControlState:
         self.sessions=sessions
         self.rtms=None
         self.desktop=None
+        self.auto_zoom=None
         self.password=password
         self.tokens={}
         self.media_tickets={}
@@ -55,6 +56,8 @@ class ControlState:
             result=enrich_admin_schedule(snap, self.engine.status())
             if self.desktop:
                 result['desktopCapture']=self.desktop.status()
+            if self.auto_zoom:
+                result['desktopAutomation']=self.auto_zoom.status()
             if self.rtms:
                 observed=self.rtms.state()['observedMediaChannels']
                 for c in result['channels']:
@@ -224,6 +227,8 @@ def handler_factory(state):
                         self.send(405,{'error':'Use the existing DocTutorials Admin portal to manage class assignments.'});return
                     self.send(200,{'session':state.sessions.cancel(payload.get('sessionId'))})
                 elif path=='/api/desktop/open':
+                    if state.auto_zoom:
+                        raise RecorderError('Automatic Zoom mode is active; manual opening is disabled.')
                     if not state.desktop:
                         raise RecorderError('Zoom desktop capture is not enabled; start the Windows desktop recorder, not TEST MEDIA.')
                     if not isinstance(state.sessions,ExistingAdminSessions):
@@ -231,6 +236,8 @@ def handler_factory(state):
                     assignment=selected_session(state.plan(),payload.get('sessionId'))
                     self.send(200,state.desktop.open(assignment))
                 elif path=='/api/desktop/record':
+                    if state.auto_zoom:
+                        raise RecorderError('Automatic Zoom mode is active; manual capture is disabled.')
                     if not state.desktop:
                         raise RecorderError('Zoom desktop capture is not enabled.')
                     if not isinstance(state.sessions,ExistingAdminSessions):
@@ -297,7 +304,8 @@ def main(argv=None):
     group.add_argument('--demo',action='store_true',help='Synthetic-media demonstration, NEVER Zoom capture')
     ap.add_argument('--port',type=int,default=8780)
     ap.add_argument('--rtms',action='store_true',help='Optional paid RTMS integration (NOT required for Zoom desktop capture)')
-    ap.add_argument('--desktop',action='store_true',help='Operator-assisted Zoom Workplace window capture, Windows only (no RTMS)')
+    ap.add_argument('--desktop',action='store_true',help='Zoom Workplace window capture, Windows only (no RTMS)')
+    ap.add_argument('--auto-desktop',action='store_true',help='Subscribe to ordinary Zoom meeting events and capture automatically (one meeting only)')
     ap.add_argument('--storage-root',type=Path,default=Path.home()/'.config'/'doctutorials'/'central-demo-storage')
     args=ap.parse_args(argv)
     if args.demo:
@@ -310,6 +318,8 @@ def main(argv=None):
         raise SystemExit('Zoom RTMS cannot be enabled with TEST MEDIA demo inputs; use --config.')
     if args.desktop and (args.demo or args.rtms):
         raise SystemExit('Zoom desktop capture requires --config, without --demo or --rtms.')
+    if args.auto_desktop and not args.desktop:
+        raise SystemExit('Automatic capture requires --desktop with the private Admin registry.')
     if args.desktop and os.name!='nt':
         raise SystemExit('Zoom Workplace desktop capture requires a Windows workstation.')
     engine=Engine(config)
@@ -320,6 +330,20 @@ def main(argv=None):
         from zoom_desktop_capture import ZoomDesktopController, PRIVATE_DB
         private_path=Path(os.environ.get('DOCTUTORIALS_PRIVATE_ADMIN_DB') or PRIVATE_DB)
         state.desktop=ZoomDesktopController(private_path)
+    event_listener=None
+    if args.auto_desktop:
+        from auto_zoom_events import AutoDesktopRecorder, ZoomMeetingEventListener, ZoomAutoUnavailable
+        if os.environ.get('DOCTUTORIALS_AUTO_NOTICE_CONFIRMED') != 'YES':
+            raise SystemExit('Unattended capture requires institutional recording notice/permission approval.')
+        try:
+            state.auto_zoom=AutoDesktopRecorder(engine,state.desktop,lambda:state.plan(),notice_approved=True)
+            event_listener=ZoomMeetingEventListener(state.auto_zoom,
+                client_id=os.environ.get('ZOOM_EVENTS_CLIENT_ID',''),
+                client_secret=os.environ.get('ZOOM_EVENTS_CLIENT_SECRET',''),
+                event_wss=os.environ.get('ZOOM_EVENTS_WSS',''))
+        except ZoomAutoUnavailable as exc:
+            raise SystemExit(str(exc)) from None
+        event_listener.start()
     if args.rtms:
         from zoom_rtms_ingest import ZoomRtmsReceiver
         client_id=os.environ.get('ZOOM_RTMS_CLIENT_ID','')
@@ -333,8 +357,12 @@ def main(argv=None):
     print('Original Admin session reader + four independent worker slots. Storage: '+str(engine.root))
     print('No Mac session bridge or pairing required.')
     if args.desktop:
-        print('Mode: operator-assisted Zoom desktop capture (NO RTMS / NO OBS).')
-        print('One visible Zoom meeting only; operator must verify meeting content and grant recording notice.')
+        if args.auto_desktop:
+            print('Mode: AUTOMATIC Zoom meeting event -> Windows Workplace capture (NO RTMS / NO OBS).')
+            print('One Zoom meeting only. Waiting rooms, Zoom prompts and unverified screen/camera remain blockers.')
+        else:
+            print('Mode: operator-assisted Zoom desktop capture (NO RTMS / NO OBS).')
+            print('One visible Zoom meeting only; operator must verify meeting content and grant recording notice.')
     else:
         print('Zoom desktop capture is not active in this launch mode.')
     if not args.desktop:
@@ -346,6 +374,8 @@ def main(argv=None):
     finally:
         server.server_close()
         if state.rtms:state.rtms.close()
+        if state.auto_zoom:state.auto_zoom.close()
+        if event_listener:event_listener.close()
         print('Stopping active recorders and finalizing their files...')
         engine.close()
         print('Controller stopped. Check Storage Center for finalized recordings.')

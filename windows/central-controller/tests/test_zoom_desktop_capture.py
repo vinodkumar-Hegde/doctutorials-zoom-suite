@@ -33,16 +33,19 @@ class DesktopSafetyTests(unittest.TestCase):
                    'endsAt':self.now+800,'plannedChannel':'1'}
         with sqlite3.connect(self.private) as db:
             db.execute('''CREATE TABLE sessions(session_id TEXT PRIMARY KEY,faculty_id TEXT,
-                starts_at INTEGER,ends_at INTEGER, meeting_id TEXT,meeting_passcode TEXT)''')
-            db.execute('INSERT INTO sessions VALUES (?,?,?,?,?,?)',
-                       (self.item['sessionId'],self.item['facultyId'],self.item['startsAt'],
+                course TEXT,subject TEXT,topic TEXT,starts_at INTEGER,ends_at INTEGER,
+                meeting_id TEXT,meeting_passcode TEXT)''')
+            db.execute('INSERT INTO sessions VALUES (?,?,?,?,?,?,?,?,?)',
+                       (self.item['sessionId'],self.item['facultyId'],self.item['course'],
+                        self.item['subject'],self.item['topic'],self.item['startsAt'],
                         self.item['endsAt'],'12345678901','aPass#1'))
         self.window=ZoomWindow(10001,1280,720)
 
     def test_real_admin_meeting_lookup_not_public(self):
         self.assertEqual('12345678901',private_meeting_for(self.private,self.item)['meeting_id'])
         with self.assertRaises(ZoomDesktopUnavailable):private_meeting_for(self.private,{**self.item,'facultyId':'other'})
-        with self.assertRaises(ZoomDesktopUnavailable):private_meeting_for(self.private,{**self.item,'endsAt':self.item['endsAt']+1})
+        self.assertEqual('12345678901',private_meeting_for(self.private,{**self.item,'endsAt':self.item['endsAt']+1})['meeting_id'])
+        with self.assertRaises(ZoomDesktopUnavailable):private_meeting_for(self.private,{**self.item,'topic':'different'})
         with self.assertRaises(ZoomDesktopUnavailable):private_meeting_for(self.root/'missing.sqlite3',self.item)
         self.assertFalse((self.root/'missing.sqlite3').exists())
 
